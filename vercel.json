@@ -1,15 +1,50 @@
 {
   "rewrites": [
-    { "source": "/api/health", "destination": "/api/index.py?route=health" },
-    { "source": "/api/blizzard-config-status", "destination": "/api/index.py?route=blizzard-config-status" },
-    { "source": "/api/blizzard-config", "destination": "/api/index.py?route=blizzard-config" },
-    { "source": "/api/character-media", "destination": "/api/index.py?route=character-media" },
-    { "source": "/api/equipment-details", "destination": "/api/index.py?route=equipment-details" },
-    { "source": "/api/item-tooltip", "destination": "/api/index.py?route=item-tooltip" },
-    { "source": "/api/item-media", "destination": "/api/index.py?route=item-media" },
-    { "source": "/api/render-image", "destination": "/api/index.py?route=render-image" },
-    { "source": "/api/character-stats", "destination": "/api/index.py?route=character-stats" },
-    { "source": "/api/raiderio", "destination": "/api/index.py?route=raiderio" },
-    { "source": "/api/bis-refresh", "destination": "/api/index.py?route=bis-refresh" }
-  ]
+    {
+      "source": "/api/health",
+      "destination": "/api/index.py?route=health"
+    },
+    {
+      "source": "/api/blizzard-config-status",
+      "destination": "/api/index.py?route=blizzard-config-status"
+    },
+    {
+      "source": "/api/blizzard-config",
+      "destination": "/api/index.py?route=blizzard-config"
+    },
+    {
+      "source": "/api/character-media",
+      "destination": "/api/index.py?route=character-media"
+    },
+    {
+      "source": "/api/equipment-details",
+      "destination": "/api/index.py?route=equipment-details"
+    },
+    {
+      "source": "/api/item-tooltip",
+      "destination": "/api/index.py?route=item-tooltip"
+    },
+    {
+      "source": "/api/item-media",
+      "destination": "/api/index.py?route=item-media"
+    },
+    {
+      "source": "/api/render-image",
+      "destination": "/api/index.py?route=render-image"
+    },
+    {
+      "source": "/api/character-stats",
+      "destination": "/api/index.py?route=character-stats"
+    },
+    {
+      "source": "/api/raiderio",
+      "destination": "/api/index.py?route=raiderio"
+    },
+    {
+      "source": "/api/bis-refresh",
+      "destination": "/api/index.py?route=bis-refresh"
+    }
+  ],
+  "buildCommand": "python build_index.py",
+  "outputDirectory": "public"
 }
