@@ -5,6 +5,7 @@ if not parts:
     raise SystemExit("Keine BIS-HTML-Teile gefunden")
 
 html = "".join(p.read_text(encoding="utf-8") for p in parts)
+Path("index.html").write_text(html, encoding="utf-8", newline="")
 out = Path("public")
 out.mkdir(parents=True, exist_ok=True)
 (out / "index.html").write_text(html, encoding="utf-8", newline="")
