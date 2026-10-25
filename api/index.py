@@ -997,7 +997,8 @@ def fetch_item_media(region, item_id):
     if region not in {'eu', 'us', 'kr', 'tw'}:
         region = 'eu'
     key = (region, item_id)
-    cached = _cache_get(ITEM_MEDIA_CACHE, key, 21600)    if cached is not None:
+    cached = _cache_get(ITEM_MEDIA_CACHE, key, 21600)
+    if cached is not None:
         return cached
     token = blizzard_access_token()
     data, _ = _blizzard_game_data_get(region, f'media/item/{item_id}', token, locale='de_DE')
