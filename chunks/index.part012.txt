@@ -997,7 +997,8 @@ function updateProfile(){
     localHelperBaseCache=null;
     const err=new Error('Web-API nicht erreichbar. Bitte die Serverkonfiguration von waschi.fun prüfen.');
     err.details=errors;
-    throw err;  }
+    throw err;
+  }
   async function refreshBlizzardApiStatus(){
     const el=$('blizzardApiStatus');if(!el)return;
     try{
@@ -1996,7 +1997,8 @@ function updateProfile(){
   }
   function detailLines(items,kind){
     if(!Array.isArray(items)||!items.length)return'';
-    return items.map(x=>{      const text=x?.display||x?.display_string||x?.text||x?.name||'';
+    return items.map(x=>{
+      const text=x?.display||x?.display_string||x?.text||x?.name||'';
       const id=x?.itemId||x?.id||'';
       return text?`<div class="${kind==='Verzauberung'?'wc-tip-enchant':'wc-tip-gem'}">${escapeHtml(String(text))}${id?` <span class="wc-tip-id">#${escapeHtml(String(id))}</span>`:''}</div>`:'';
     }).filter(Boolean).join('');
