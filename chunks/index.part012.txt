@@ -396,13 +396,42 @@ function updateProfile(){
 
   function visibleTargetGear(){return activeProfile.gear.filter(item=>!item.invalidForRaidfree&&!item.hiddenRaidTarget)}
 
-  // Web-BiS-Ansichten: Die kuratierte M+-Liste bleibt die Arbeits-/Farm-Liste.
-  // Gesamt und Raid werden nur zur Anzeige geladen und überschreiben activeProfile.gear nicht.
+  // Web-BiS-Ansichten: Gesamt, Mythic+ und Raid sind drei getrennte KeystoneLoot-Listen.
+  // Jede Ansicht wird unabhängig geladen und lokal zwischengespeichert. Die kuratierte Profil-Liste
+  // bleibt nur noch als Ausfallsicherung für Mythic+ erhalten.
   let bisListView='mythicplus';
   const bisListViewCache=new Map();
+  const BIS_VIEW_STORE='wow-bis-view-cache-v1:';
   function bisViewCacheKey(view,profile=activeProfile){return `${profile?.key||'unknown'}:${view}`}
+  function bisViewStoreKey(view,profile=activeProfile){return BIS_VIEW_STORE+bisViewCacheKey(view,profile)}
   function bisViewLabel(view=bisListView){return view==='overall'?'Gesamt':view==='raid'?'Raid':'M+'}
-  function bisViewSource(view=bisListView){return view==='overall'?'KeystoneLoot Gesamt-BiS':view==='raid'?'KeystoneLoot Raid-BiS':'Mythic+ / Herstellung'}
+  function bisViewSource(view=bisListView){return view==='overall'?'KeystoneLoot Gesamt-BiS':view==='raid'?'KeystoneLoot Raid-BiS':'KeystoneLoot Mythic+-BiS'}
+  function readStoredBisView(view,profile=activeProfile){
+    const key=bisViewCacheKey(view,profile);
+    if(bisListViewCache.has(key))return bisListViewCache.get(key);
+    try{
+      const saved=JSON.parse(localStorage.getItem(bisViewStoreKey(view,profile))||'null');
+      if(saved?.patch===root.meta.patch&&Array.isArray(saved.gear)&&saved.gear.length){
+        bisListViewCache.set(key,saved.gear);
+        return saved.gear;
+      }
+    }catch{}
+    return null;
+  }
+  function storeBisView(view,gear,payload={},profile=activeProfile){
+    const key=bisViewCacheKey(view,profile);
+    bisListViewCache.set(key,gear);
+    try{
+      localStorage.setItem(bisViewStoreKey(view,profile),JSON.stringify({
+        patch:root.meta.patch,
+        gear,
+        fetchedAt:payload?.fetchedAt||new Date().toISOString(),
+        source:payload?.source||bisViewSource(view),
+        sourceUrl:payload?.sourceUrl||''
+      }));
+    }catch{}
+    return gear;
+  }
   function equippedCandidatesForSlot(slot){
     if(['finger1','finger2'].includes(slot))return [getEquipped('finger1'),getEquipped('finger2')].filter(Boolean);
     if(['trinket1','trinket2'].includes(slot))return [getEquipped('trinket1'),getEquipped('trinket2')].filter(Boolean);
@@ -425,29 +454,40 @@ function updateProfile(){
     const bySlot=new Map(slots.map((slot,i)=>[slot,regular[i]]).filter(x=>x[1]));for(const e of explicit)bySlot.set(e.slot,e);
     return template.map(base=>{
       const e=bySlot.get(base.slot);if(!e)return null;const id=Number(e.itemId)||0;if(!id)return null;
-      const crafted=isCraftEntry(e),sourceType=view==='raid'?'Raid':crafted?'Hergestellt':'Gesamt';
-      return {...base,itemId:id,name:updateItemName(e,base),nameEn:updateItemName(e,base),wowheadUrl:`https://www.wowhead.com/de/item=${id}`,sourceType,source:view==='raid'?'KeystoneLoot Raid-BiS':'KeystoneLoot Gesamt-BiS',catalyst:false,directTierTarget:false,setSlot:false,invalidForRaidfree:false,embellishment:crafted?(base.embellishment||'—'):'—',note:view==='raid'?'Aktuelles Raid-BiS aus KeystoneLoot.':'Aktuelles Gesamt-BiS aus KeystoneLoot (alle relevanten Quellen).'};
+      const crafted=isCraftEntry(e);
+      const sourceType=view==='raid'?'Raid':view==='mythicplus'?(crafted?'Hergestellt':'Mythic+'):(crafted?'Hergestellt':'Gesamt');
+      const source=view==='raid'?'KeystoneLoot Raid-BiS':view==='mythicplus'?'KeystoneLoot Mythic+-BiS':'KeystoneLoot Gesamt-BiS';
+      const note=view==='raid'?'Aktuelles Raid-BiS aus KeystoneLoot.':view==='mythicplus'?'Aktuelles Mythic+-BiS aus KeystoneLoot.':'Aktuelles Gesamt-BiS aus KeystoneLoot (alle relevanten Quellen).';
+      return {...base,itemId:id,name:updateItemName(e,base),nameEn:updateItemName(e,base),wowheadUrl:`https://www.wowhead.com/de/item=${id}`,sourceType,source,catalyst:false,directTierTarget:false,setSlot:false,invalidForRaidfree:false,embellishment:crafted?(base.embellishment||'—'):'—',note};
     }).filter(Boolean)
   }
   function bisViewGear(){
-    if(bisListView==='mythicplus')return visibleTargetGear();
-    return bisListViewCache.get(bisViewCacheKey(bisListView))||[];
+    const cached=readStoredBisView(bisListView);
+    if(cached?.length)return cached;
+    return bisListView==='mythicplus'?visibleTargetGear():[];
   }
   async function fetchBisView(view,force=false){
-    if(view==='mythicplus')return visibleTargetGear();
-    const key=bisViewCacheKey(view);if(!force&&bisListViewCache.has(key))return bisListViewCache.get(key);
+    const key=bisViewCacheKey(view);
+    const stored=readStoredBisView(view);
+    if(!force&&stored?.length)return stored;
     const status=$('bisViewStatus');if(status){status.className='bis-view-status loading';status.textContent=`${bisViewLabel(view)}-BiS wird geladen …`;}
     try{
       const u=new URL('/api/bis-refresh',location.origin);u.searchParams.set('profile',activeProfile.key);u.searchParams.set('view',view);
       const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
       if(!r.ok||!d.ok||!Array.isArray(d.items))throw new Error(d?.detail||d?.error||`HTTP ${r.status}`);
       const gear=viewGearFromPayload(activeProfile,d,view);if(!gear.length)throw new Error('Die geladene BiS-Liste enthält keine auswertbaren Gegenstände.');
-      bisListViewCache.set(key,gear);return gear;
+      return storeBisView(view,gear,d);
     }catch(e){
-      // Raid kann zusätzlich auf den bereits integrierten Hintergrund-Snapshot zurückfallen.
+      // Bereits gespeicherte Ansicht weiter nutzbar halten, wenn KeystoneLoot vorübergehend nicht erreichbar ist.
+      const fallbackStored=readStoredBisView(view);
+      if(fallbackStored?.length)return fallbackStored;
+      if(view==='mythicplus'){
+        const fallback=visibleTargetGear();
+        if(fallback.length)return fallback;
+      }
       if(view==='raid'){
         const fallback=backgroundRaidTargets(activeProfile).map(r=>{const base=activeProfile.gear.find(x=>sameSlotGroup(x.slot,r.slot))||{};return{...base,...r,slotLabel:base.slotLabel||r.slot,sourceType:'Raid',source:r.source||'Raid-BiS',enchant:base.enchant||'—',embellishment:'—',note:'Raid-BiS aus dem integrierten Hintergrund-Snapshot.'}});
-        if(fallback.length){bisListViewCache.set(key,fallback);return fallback;}
+        if(fallback.length)return storeBisView(view,fallback,{source:'Integrierter Raid-BiS-Snapshot'});
       }
       throw e;
     }
@@ -456,33 +496,29 @@ function updateProfile(){
     document.querySelectorAll('[data-bis-view]').forEach(b=>b.classList.toggle('active',b.dataset.bisView===bisListView));
     const h=$('gearHeading'),st=$('bisViewStatus');
     if(h)h.textContent=bisListView==='overall'?'Gesamt-BiS-Zielausrüstung':bisListView==='raid'?'Raid-BiS-Zielausrüstung':'Mythic+ BiS-Zielausrüstung';
-    if(st){st.className='bis-view-status';st.textContent=bisListView==='overall'?'Ansicht: Gesamt · beste Ausrüstung über alle relevanten Quellen':bisListView==='raid'?'Ansicht: Raid · reine Raid-BiS-Liste':'Ansicht: Mythic+ · Dungeon- und Herstellungsziele';}
+    if(st){st.className='bis-view-status';st.textContent=bisListView==='overall'?'Ansicht: Gesamt · beste Ausrüstung über alle relevanten Quellen':bisListView==='raid'?'Ansicht: Raid · reine Raid-BiS-Liste':'Ansicht: Mythic+ · reine Mythic+- und Herstellungs-BiS-Liste';}
     const src=$('sourceFilter');if(src){src.innerHTML=bisListView==='mythicplus'?'<option value="all">Alle Quellen</option><option value="Mythic+">Nur Mythic+</option><option value="Hergestellt">Nur hergestellt</option>':'<option value="all">Alle Quellen</option>';src.value='all';}
   }
   async function setBisListView(view){
     if(!['overall','mythicplus','raid'].includes(view))view='mythicplus';
     bisListView=view;
     updateBisViewUi();
-    if(view!=='mythicplus'){
-      try{
-        await fetchBisView(view);
-      }catch(e){
-        const st=$('bisViewStatus');
-        if(st){
-          st.className='bis-view-status error';
-          st.textContent=`${bisViewLabel(view)}-BiS konnte nicht geladen werden: ${e.message}`;
-        }
-        renderGear();
-        return;
+    try{
+      await fetchBisView(view);
+    }catch(e){
+      const st=$('bisViewStatus');
+      if(st){
+        st.className='bis-view-status error';
+        st.textContent=`${bisViewLabel(view)}-BiS konnte nicht geladen werden: ${e.message}`;
       }
+      renderGear();
+      return;
     }
     updateBisViewUi();
     renderGear();
   }
 
-  // Die BiS-Umschaltung wird bewusst direkt hier gebunden.
-  // So bleibt Gesamt / M+ / Raid funktionsfähig, selbst wenn später
-  // beim Initialisieren eines anderen Dashboard-Bereichs ein Fehler auftritt.
+  // Die BiS-Umschaltung wird direkt hier gebunden und nicht vom restlichen Dashboard-Start abhängig gemacht.
   window.setBisListView=setBisListView;
   document.querySelectorAll('[data-bis-view]').forEach(btn=>{
     if(btn.dataset.bisViewBound==='1')return;
@@ -492,6 +528,7 @@ function updateProfile(){
       setBisListView(btn.dataset.bisView);
     });
   });
+
   function gearRows(){
     const q=normal($('search').value),source=$('sourceFilter').value,status=$('statusFilter').value,missing=$('missingOnly').checked;
     if(bisListView==='mythicplus'){
@@ -1759,7 +1796,7 @@ function updateProfile(){
     $('applyManualStats').closest('details').open=true;
     {const tert=[['leech','Lebensraub'],['avoidance','Vermeidung'],['speed','Geschwindigkeit']].filter(([k])=>Number.isFinite(statNumber(parsed.stats[k]))).map(([k,l])=>`${l} ${fmt(parsed.stats[k])} %`);$('statsPasteResult').textContent=`Erkannt: Krit ${parsed.stats.crit} %, Tempo ${parsed.stats.haste} %, Meisterschaft ${parsed.stats.mastery} %, Vielseitigkeit ${parsed.stats.versatility} %${tert.length?' · '+tert.join(' · '):''}. Prüfe Charakter, Spezialisierung und Werte; anschließend unten „Übernehmen“ klicken.`;}
   });
-  $('hideBisImport').addEventListener('click',hideBisImportHelper);$('connectBtn').addEventListener('click',()=>refreshCharacter(true));$('refreshBtn').addEventListener('click',()=>refreshCharacter(true));$('recentKeysRefresh').addEventListener('click',()=>refreshCharacter(true));if($('mplusDungeonRefresh'))$('mplusDungeonRefresh').addEventListener('click',()=>refreshCharacter(true));if($('expandAllSeasonRuns'))$('expandAllSeasonRuns').addEventListener('click',()=>setAllSeasonRunGroupsOpen(true));if($('collapseAllSeasonRuns'))$('collapseAllSeasonRuns').addEventListener('click',()=>setAllSeasonRunGroupsOpen(false));$('refreshHours').addEventListener('change',()=>{saveSettings();updateRefreshSummary();scheduleRefresh()});['search','sourceFilter','statusFilter','missingOnly'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderGear));document.querySelectorAll('[data-bis-view]').forEach(btn=>btn.addEventListener('click',()=>setBisListView(btn.dataset.bisView)));$('applyManualStats').addEventListener('click',applyManual);$('saveBlizzardApi').addEventListener('click',saveBlizzardApiConfig);$('clearBlizzardApi').addEventListener('click',clearBlizzardApiConfig);$('reloadStats').addEventListener('click',async()=>{if(!liveCharacter){setMessage('Bitte zuerst einen Charakter laden.','warning');return}setMessage('Alle Charakterwerte werden für den aktuell geladenen Charakter automatisch neu geprüft …','');const ok=await loadStats(true);setMessage(ok?(completeAllStats(characterStats)?'✓ Alle 7 Werte wurden automatisch neu geladen – inklusive Lebensraub, Vermeidung und Geschwindigkeit.':'✓ Hauptwerte wurden automatisch geladen; mindestens ein Tertiärwert fehlt weiterhin in der Quelle.'):`Automatische Charakterwerte konnten nicht vollständig gelesen werden.${window.__lastStatReadError?' Ursache: '+window.__lastStatReadError:''} Die manuelle Eingabe bleibt verfügbar.`,ok?'ok':'warning')});$('saveCharacterFavorite').addEventListener('click',saveCurrentChar);$('loadCharacterFavorite').addEventListener('click',loadCharFav);$('deleteCharacterFavorite').addEventListener('click',deleteCharFav);$('characterFavorites').addEventListener('change',()=>{});$('musicTabAmazon').addEventListener('click',()=>setMusicTab('amazon'));$('musicTabYoutube').addEventListener('click',()=>setMusicTab('youtube'));$('openAmazonMusic').addEventListener('click',openAmazonMusicPopup);$('saveAmazonMusic').addEventListener('click',()=>saveProviderMusic('amazon'));$('openYoutubeMusic').addEventListener('click',openYoutubeMusicPopup);$('saveYoutubeMusic').addEventListener('click',()=>saveProviderMusic('youtube'));$('playMusicFavorite').addEventListener('click',playMusicFav);$('deleteMusicFavorite').addEventListener('click',deleteMusicFav);['buffsEnabled','buffRaid','buffFlask','buffFood','buffHighestTarget','buffCustomCrit','buffCustomHaste','buffCustomMastery','buffCustomVersatility'].forEach(id=>$(id).addEventListener(id==='buffCustomCrit'||id==='buffCustomHaste'||id==='buffCustomMastery'||id==='buffCustomVersatility'?'input':'change',buffSettingsChanged));$('resetBuffSettings').addEventListener('click',resetBuffSettings);$('openSources').addEventListener('click',()=>dashboardSources().slice(0,7).forEach((s,i)=>setTimeout(()=>window.open(s.url,'_blank','noopener'),i*100)));
+  $('hideBisImport').addEventListener('click',hideBisImportHelper);$('connectBtn').addEventListener('click',()=>refreshCharacter(true));$('refreshBtn').addEventListener('click',()=>refreshCharacter(true));$('recentKeysRefresh').addEventListener('click',()=>refreshCharacter(true));if($('mplusDungeonRefresh'))$('mplusDungeonRefresh').addEventListener('click',()=>refreshCharacter(true));if($('expandAllSeasonRuns'))$('expandAllSeasonRuns').addEventListener('click',()=>setAllSeasonRunGroupsOpen(true));if($('collapseAllSeasonRuns'))$('collapseAllSeasonRuns').addEventListener('click',()=>setAllSeasonRunGroupsOpen(false));$('refreshHours').addEventListener('change',()=>{saveSettings();updateRefreshSummary();scheduleRefresh()});['search','sourceFilter','statusFilter','missingOnly'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderGear));/* BiS-Umschalter werden direkt bei setBisListView gebunden. */$('applyManualStats').addEventListener('click',applyManual);$('saveBlizzardApi').addEventListener('click',saveBlizzardApiConfig);$('clearBlizzardApi').addEventListener('click',clearBlizzardApiConfig);$('reloadStats').addEventListener('click',async()=>{if(!liveCharacter){setMessage('Bitte zuerst einen Charakter laden.','warning');return}setMessage('Alle Charakterwerte werden für den aktuell geladenen Charakter automatisch neu geprüft …','');const ok=await loadStats(true);setMessage(ok?(completeAllStats(characterStats)?'✓ Alle 7 Werte wurden automatisch neu geladen – inklusive Lebensraub, Vermeidung und Geschwindigkeit.':'✓ Hauptwerte wurden automatisch geladen; mindestens ein Tertiärwert fehlt weiterhin in der Quelle.'):`Automatische Charakterwerte konnten nicht vollständig gelesen werden.${window.__lastStatReadError?' Ursache: '+window.__lastStatReadError:''} Die manuelle Eingabe bleibt verfügbar.`,ok?'ok':'warning')});$('saveCharacterFavorite').addEventListener('click',saveCurrentChar);$('loadCharacterFavorite').addEventListener('click',loadCharFav);$('deleteCharacterFavorite').addEventListener('click',deleteCharFav);$('characterFavorites').addEventListener('change',()=>{});$('musicTabAmazon').addEventListener('click',()=>setMusicTab('amazon'));$('musicTabYoutube').addEventListener('click',()=>setMusicTab('youtube'));$('openAmazonMusic').addEventListener('click',openAmazonMusicPopup);$('saveAmazonMusic').addEventListener('click',()=>saveProviderMusic('amazon'));$('openYoutubeMusic').addEventListener('click',openYoutubeMusicPopup);$('saveYoutubeMusic').addEventListener('click',()=>saveProviderMusic('youtube'));$('playMusicFavorite').addEventListener('click',playMusicFav);$('deleteMusicFavorite').addEventListener('click',deleteMusicFav);['buffsEnabled','buffRaid','buffFlask','buffFood','buffHighestTarget','buffCustomCrit','buffCustomHaste','buffCustomMastery','buffCustomVersatility'].forEach(id=>$(id).addEventListener(id==='buffCustomCrit'||id==='buffCustomHaste'||id==='buffCustomMastery'||id==='buffCustomVersatility'?'input':'change',buffSettingsChanged));$('resetBuffSettings').addEventListener('click',resetBuffSettings);$('openSources').addEventListener('click',()=>dashboardSources().slice(0,7).forEach((s,i)=>setTimeout(()=>window.open(s.url,'_blank','noopener'),i*100)));
   $('amazonMusicInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openAmazonMusicPopup()}});$('youtubeMusicInput').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openYoutubeMusicPopup()}});
   cleanupLegacyMixedMplusCaches();cleanupRemovedRaidBisState();restoreOnlineBis();restoreBackgroundRaidBis();initProfileSelect();loadSettings();loadStoredBackgroundRaidBis(activeProfile);renderCharFavs();renderMusicFavs();updateProfile();refreshBlizzardApiStatus();if(getSettings().realm&&getSettings().character)refreshCharacter(false);window.addEventListener('load',()=>setTimeout(refreshWowhead,400));
 
