@@ -394,7 +394,16 @@ function updateProfile(){
     setTimeout(refreshWowhead,30);
   }
 
-  function visibleTargetGear(){return activeProfile.gear.filter(item=>!item.invalidForRaidfree&&!item.hiddenRaidTarget)}
+  function visibleTargetGear(){
+    const seen=new Set();
+    return activeProfile.gear.filter(item=>{
+      if(item.invalidForRaidfree||item.hiddenRaidTarget)return false;
+      const key=String(item.slot||'').toLowerCase();
+      if(key&&seen.has(key))return false;
+      if(key)seen.add(key);
+      return true;
+    });
+  }
 
   // Web-BiS-Ansichten: Gesamt, Mythic+ und Raid sind drei getrennte KeystoneLoot-Listen.
   // Jede Ansicht wird unabhängig geladen und lokal zwischengespeichert. Die kuratierte Profil-Liste
@@ -446,7 +455,15 @@ function updateProfile(){
   }
   function viewGearFromPayload(profile,payload,view){
     const entries=(payload?.items||[]).filter(x=>x&&Number(x.itemId));
-    const template=JSON.parse(JSON.stringify(profile?.gear||[]));if(!template.length)return[];
+    const rawTemplate=JSON.parse(JSON.stringify(profile?.gear||[]));
+    const template=[];const seenTemplateSlots=new Set();
+    for(const item of rawTemplate){
+      const key=String(item?.slot||'').toLowerCase();
+      if(key&&seenTemplateSlots.has(key))continue;
+      if(key)seenTemplateSlots.add(key);
+      template.push(item);
+    }
+    if(!template.length)return[];
     const explicit=entries.filter(x=>Number(x.tier)===3&&x.slot&&BIS_IMPORT_ORDER.includes(x.slot));
     const explicitSlots=new Set(explicit.map(x=>x.slot));let regular=entries.filter(x=>Number(x.tier)===3&&!x.slot);
     const slots=template.map(x=>x.slot).filter(slot=>!explicitSlots.has(slot));
