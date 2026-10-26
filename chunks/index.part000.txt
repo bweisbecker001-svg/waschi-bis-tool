@@ -455,9 +455,11 @@ select:focus{
   background-color:#111831!important;
 }
 
-/* Die Zielausrüstung bleibt als Datenquelle im DOM, ist aber nicht mehr sichtbar. */
+/* Tafel IV / BiS-Kammer ist eine sichtbare Hauptansicht.
+   Die frühere Cockpit-Regel, die #gearPanel komplett ausblendete, wurde entfernt,
+   damit BiS-Tabelle und Umschalter Gesamt / M+ / Raid erreichbar bleiben. */
 #gearPanel{
-  display:none!important;
+  display:block;
 }
 
 /* Der bereitgestellte Midnight-Hintergrund wird großflächig und stark weichgezeichnet
