@@ -460,12 +460,38 @@ function updateProfile(){
     const src=$('sourceFilter');if(src){src.innerHTML=bisListView==='mythicplus'?'<option value="all">Alle Quellen</option><option value="Mythic+">Nur Mythic+</option><option value="Hergestellt">Nur hergestellt</option>':'<option value="all">Alle Quellen</option>';src.value='all';}
   }
   async function setBisListView(view){
-    if(!['overall','mythicplus','raid'].includes(view))view='mythicplus';bisListView=view;updateBisViewUi();
+    if(!['overall','mythicplus','raid'].includes(view))view='mythicplus';
+    bisListView=view;
+    updateBisViewUi();
     if(view!=='mythicplus'){
-      try{await fetchBisView(view)}catch(e){const st=$('bisViewStatus');if(st){st.className='bis-view-status error';st.textContent=`${bisViewLabel(view)}-BiS konnte nicht geladen werden: ${e.message}`;}renderGear();return;}
+      try{
+        await fetchBisView(view);
+      }catch(e){
+        const st=$('bisViewStatus');
+        if(st){
+          st.className='bis-view-status error';
+          st.textContent=`${bisViewLabel(view)}-BiS konnte nicht geladen werden: ${e.message}`;
+        }
+        renderGear();
+        return;
+      }
     }
-    updateBisViewUi();renderGear();
+    updateBisViewUi();
+    renderGear();
   }
+
+  // Die BiS-Umschaltung wird bewusst direkt hier gebunden.
+  // So bleibt Gesamt / M+ / Raid funktionsfähig, selbst wenn später
+  // beim Initialisieren eines anderen Dashboard-Bereichs ein Fehler auftritt.
+  window.setBisListView=setBisListView;
+  document.querySelectorAll('[data-bis-view]').forEach(btn=>{
+    if(btn.dataset.bisViewBound==='1')return;
+    btn.dataset.bisViewBound='1';
+    btn.addEventListener('click',event=>{
+      event.preventDefault();
+      setBisListView(btn.dataset.bisView);
+    });
+  });
   function gearRows(){
     const q=normal($('search').value),source=$('sourceFilter').value,status=$('statusFilter').value,missing=$('missingOnly').checked;
     if(bisListView==='mythicplus'){
