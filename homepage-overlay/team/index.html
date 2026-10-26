@@ -1,0 +1,957 @@
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050708"><meta name="description" content="Die Waschi Gilde – Mitglieder und ihre World-of-Warcraft-Charaktere."><title>Waschi Gilde | Waschi.fun</title><link rel="stylesheet" href="/styles.css"><style>
+.unassigned-character-directory{grid-column:1/-1;margin-top:4px}
+.character-directory{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.character-entry{position:relative;overflow:hidden;border:1px solid rgba(139,100,40,.82);border-radius:8px;background:linear-gradient(180deg,rgba(7,10,13,.94),rgba(5,8,10,.90));box-shadow:0 16px 42px #0008;cursor:pointer;transition:transform .18s ease,border-color .18s ease}
+.character-entry:hover,.character-entry:focus-visible{transform:translateY(-2px);border-color:#c28c34;outline:none}
+.character-card-art{position:relative;height:265px;overflow:hidden;background:radial-gradient(circle at 50% 28%,rgba(211,154,50,.22),rgba(3,5,7,.96) 68%)}
+.character-card-art img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center 34%;transform:scale(1.08);filter:drop-shadow(0 16px 24px rgba(0,0,0,.55))}
+.character-card-art:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 58%,rgba(3,5,7,.88))}
+.character-card-fallback{position:absolute;inset:0;display:grid;place-items:center;color:#f0c45a;font:800 72px Georgia,serif;line-height:1;background:radial-gradient(circle at 50% 35%,rgba(211,154,50,.20),rgba(3,5,7,.96) 68%)}
+.character-entry-body{padding:20px 22px 22px}
+.character-entry-head{display:flex;align-items:center;gap:14px;padding-bottom:16px;border-bottom:1px solid rgba(211,154,50,.18)}
+.character-monogram{width:54px;height:54px;flex:0 0 54px;display:grid;place-items:center;border-radius:50%;border:2px solid #b98226;background:#0d1420;color:#f5c64f;font:800 24px Georgia,serif}
+.character-entry h3{margin:0;color:#f0c45a;font:800 28px Georgia,serif}
+.character-realm{display:block;margin-top:4px;color:#9f9586;font-size:12px}
+.character-live-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:16px}
+.character-live-facts div{padding:10px;border:1px solid #30373d;background:#080c10}
+.character-live-facts span{display:block;color:#8f877b;font-size:10px;text-transform:uppercase;letter-spacing:.08em}
+.character-live-facts strong{display:block;margin-top:4px;color:#e8ded0;font-size:12px}
+.character-links{display:grid;gap:9px;margin-top:16px}
+.character-source-link{display:flex;align-items:center;justify-content:center;gap:10px;min-height:44px;padding:10px 14px;border:1px solid #4b5560;border-radius:5px;background:#0a0e12;color:#e9e2d8;text-decoration:none;font-weight:800}
+.character-source-link.raider{justify-self:center;width:auto;min-height:0;padding:8px 6px;border:0;background:transparent}
+.character-source-link.raider:hover{opacity:.88}.character-source-link.raider img{width:140px;height:auto;display:block}
+.character-open-hint{margin-top:10px;text-align:center;color:#756d61;font-size:11px}
+@media(max-width:820px){.character-directory{grid-template-columns:1fr}}
+@media(max-width:520px){.character-live-facts{grid-template-columns:1fr}}
+</style></head><body><div class="site-bg"></div><header class="header"><div class="container navwrap"><a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span><strong>WASCHI</strong></a><button class="menu" aria-label="Menü">☰</button><nav class="nav"><a href="/">Startseite</a><a class="active" href="/team/" data-de="Waschi Gilde" data-en="Waschi Guild">Waschi Gilde</a><a href="/mythic/">M+ Team</a><a href="/addons/">Erweiterungen</a><a href="/bis/">BIS-Tools</a><a href="/streams/">Streams</a><a href="/community/">Community</a></nav><div class="rightnav"><div class="lang"><button class="active" data-lang="de">DE</button><button data-lang="en">EN</button></div></div></div></header><main class="container team-page">
+<section class="team-intro"><div class="submark">Waschi.fun</div><h1 data-de="Waschi Gilde" data-en="Waschi Guild">Waschi Gilde</h1><p data-de="Hier lernst du die Menschen hinter Waschi und ihre Charaktere kennen. Jedes Mitglied erhält eine eigene Profilseite mit persönlichen Infos, Hauptcharakteren und weiteren Twinks." data-en="Meet the people behind Waschi and their characters. Each member gets a dedicated profile page with personal information, main characters and additional alts.">Hier lernst du die Menschen hinter Waschi und ihre Charaktere kennen. Jedes Mitglied erhält eine eigene Profilseite mit persönlichen Infos, Hauptcharakteren und weiteren Twinks.</p></section>
+<section class="member-grid">
+<a class="member-card" href="/team/adrian-prayox/">
+  <div class="member-art"><img src="/assets/adrian-prayox-profile.webp" alt="Adrian / Prayox" style="width:100%;height:100%;object-fit:cover;object-position:50% 42%;display:block;"></div>
+  <div class="member-copy"><span class="member-kicker" data-de="Waschi Gilde" data-en="Waschi Guild">Waschi Gilde</span><h2>Adrian <small>/ Prayox</small></h2><p>World of Warcraft · Mythic+ · Blackhand</p><p><strong style="color:#e7b445">Gildenrang:</strong> Gildenmeister / Offizier</p><span class="member-link" data-de="Profil &amp; Charaktere ansehen →" data-en="View profile &amp; characters →">Profil &amp; Charaktere ansehen →</span></div>
+</a>
+<a class="member-card" href="/team/bernd-lentor/">
+  <div class="member-art member-art-bernd"><img src="/assets/bernd-lentor-profile.webp" alt="Bernd / Lentor" style="width:100%;height:100%;object-fit:cover;object-position:50% 18%;display:block;"></div>
+  <div class="member-copy"><span class="member-kicker" data-de="Waschi Gilde" data-en="Waschi Guild">Waschi Gilde</span><h2>Bernd <small>/ Lentor</small></h2><p>World of Warcraft · Mythic+ · Blackhand</p><p><strong style="color:#e7b445">Gildenrang:</strong> Gildenmeister / Offizier</p><span class="member-link" data-de="Profil &amp; Charaktere ansehen →" data-en="View profile &amp; characters →">Profil &amp; Charaktere ansehen →</span></div>
+</a>
+<a class="member-card" href="/team/tatjana-chathalon/">
+  <div class="member-art"><img src="/assets/tatjana-cathalon-profile.webp" alt="Tatjana / Câthalon" style="width:100%;height:100%;object-fit:cover;object-position:50% 35%;display:block;"></div>
+  <div class="member-copy"><span class="member-kicker" data-de="Waschi Gilde" data-en="Waschi Guild">Waschi Gilde</span><h2>Tatjana <small>/ Câthalon</small></h2><p>World of Warcraft · M+ · Nozdormu</p><p><strong style="color:#e7b445">Gildenrang:</strong> Gildenmeisterin / Offizierin</p><span class="member-link" data-de="Profil &amp; Charaktere ansehen →" data-en="View profile &amp; characters →">Profil &amp; Charaktere ansehen →</span></div>
+</a>
+<div class="rank-divider" style="grid-column:1/-1;display:flex;align-items:center;gap:14px;margin:8px 0 4px;color:#d8b15a;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:13px;">
+  <span style="height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(216,177,90,.75));"></span>
+  <span data-de="Gildenmitglieder" data-en="Guild Members">Gildenmitglieder</span>
+  <span style="height:1px;flex:1;background:linear-gradient(90deg,rgba(216,177,90,.75),transparent);"></span>
+</div>
+<a class="member-card" href="/team/steffan-evel-bullet/">
+  <div class="member-art"><div class="member-monogram">S</div></div>
+  <div class="member-copy"><span class="member-kicker" data-de="Waschi Gilde" data-en="Waschi Guild">Waschi Gilde</span><h2>Staffan <small>/ Evil_Bullet</small></h2><p>World of Warcraft · Streaming · Nethersturm</p><p><strong style="color:#e7b445">Gildenrang:</strong> Gildenmitglied</p><span class="member-link" data-de="Profil &amp; Charaktere ansehen →" data-en="View profile &amp; characters →">Profil &amp; Charaktere ansehen →</span></div>
+</a>
+<div class="rank-divider unassigned-divider" style="grid-column:1/-1;display:flex;align-items:center;gap:14px;margin:18px 0 4px;color:#d8b15a;font-weight:800;text-transform:uppercase;letter-spacing:.08em;font-size:13px;">
+  <span style="height:1px;flex:1;background:linear-gradient(90deg,transparent,rgba(216,177,90,.75));"></span>
+  <span data-de="Noch nicht zugeordnet" data-en="Not yet assigned">Noch nicht zugeordnet <small style="opacity:.72">(67)</small></span>
+  <span style="height:1px;flex:1;background:linear-gradient(90deg,rgba(216,177,90,.75),transparent);"></span>
+</div>
+<div class="character-directory unassigned-character-directory"><article class="character-entry unassigned-live-card" data-character="Acron" data-realm="nethersturm" data-detail="/charakter/?realm=nethersturm&name=Acron" role="link" tabindex="0" aria-label="Acron Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Acron – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">A</div><div><h3>Acron</h3><span class="character-realm">Nethersturm</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Krieger">Krieger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schutz">Schutz</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nethersturm/Acron" aria-label="Acron auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Afm" data-realm="anetheron" data-detail="/charakter/?realm=anetheron&name=Afm" role="link" tabindex="0" aria-label="Afm Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Afm – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">A</div><div><h3>Afm</h3><span class="character-realm">Anetheron</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verwüstung">Verwüstung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/anetheron/Afm" aria-label="Afm auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Alisha" data-realm="antonidas" data-detail="/charakter/?realm=antonidas&name=Alisha" role="link" tabindex="0" aria-label="Alisha Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Alisha – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">A</div><div><h3>Alisha</h3><span class="character-realm">Antonidas</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schurke">Schurke</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Täuschung">Täuschung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/antonidas/Alisha" aria-label="Alisha auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Arcanon" data-realm="todeswache" data-detail="/charakter/?realm=todeswache&name=Arcanon" role="link" tabindex="0" aria-label="Arcanon Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Arcanon – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">A</div><div><h3>Arcanon</h3><span class="character-realm">Todeswache</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Hexenmeister">Hexenmeister</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Dämonologie">Dämonologie</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/todeswache/Arcanon" aria-label="Arcanon auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Ásunâ" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=%C3%81sun%C3%A2" role="link" tabindex="0" aria-label="Ásunâ Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Ásunâ – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">Á</div><div><h3>Ásunâ</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verwüstung">Verwüstung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/%C3%81sun%C3%A2" aria-label="Ásunâ auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Aváelle" data-realm="antonidas" data-detail="/charakter/?realm=antonidas&name=Av%C3%A1elle" role="link" tabindex="0" aria-label="Aváelle Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Aváelle – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">A</div><div><h3>Aváelle</h3><span class="character-realm">Antonidas</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/antonidas/Av%C3%A1elle" aria-label="Aváelle auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Bohunt" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Bohunt" role="link" tabindex="0" aria-label="Bohunt Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Bohunt – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">B</div><div><h3>Bohunt</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Bohunt" aria-label="Bohunt auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Bokireg" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Bokireg" role="link" tabindex="0" aria-label="Bokireg Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Bokireg – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">B</div><div><h3>Bokireg</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Krieger">Krieger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Waffen">Waffen</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Bokireg" aria-label="Bokireg auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Borabo" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Borabo" role="link" tabindex="0" aria-label="Borabo Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Borabo – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">B</div><div><h3>Borabo</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Todesritter">Todesritter</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Frost">Frost</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Borabo" aria-label="Borabo auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Bösesmädchen" data-realm="shattrath" data-detail="/charakter/?realm=shattrath&name=B%C3%B6sesm%C3%A4dchen" role="link" tabindex="0" aria-label="Bösesmädchen Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Bösesmädchen – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">B</div><div><h3>Bösesmädchen</h3><span class="character-realm">Shattrath</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wiederherstellung">Wiederherstellung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/shattrath/B%C3%B6sesm%C3%A4dchen" aria-label="Bösesmädchen auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Bragol" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Bragol" role="link" tabindex="0" aria-label="Bragol Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Bragol – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">B</div><div><h3>Bragol</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Todesritter">Todesritter</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Blut">Blut</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Bragol" aria-label="Bragol auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Carriefisher" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=Carriefisher" role="link" tabindex="0" aria-label="Carriefisher Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Carriefisher – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Carriefisher</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verschlinger">Verschlinger</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/Carriefisher" aria-label="Carriefisher auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Câthalon" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=C%C3%A2thalon" role="link" tabindex="0" aria-label="Câthalon Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Câthalon – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Câthalon</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verstärkung">Verstärkung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/C%C3%A2thalon" aria-label="Câthalon auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Cathâlón" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=Cath%C3%A2l%C3%B3n" role="link" tabindex="0" aria-label="Cathâlón Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Cathâlón – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Cathâlón</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Rufer">Rufer</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Bewahrung">Bewahrung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/Cath%C3%A2l%C3%B3n" aria-label="Cathâlón auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Cheapsheep" data-realm="blackrock" data-detail="/charakter/?realm=blackrock&name=Cheapsheep" role="link" tabindex="0" aria-label="Cheapsheep Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Cheapsheep – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Cheapsheep</h3><span class="character-realm">Blackrock</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wiederherstellung">Wiederherstellung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackrock/Cheapsheep" aria-label="Cheapsheep auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Chicoachgg" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Chicoachgg" role="link" tabindex="0" aria-label="Chicoachgg Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Chicoachgg – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Chicoachgg</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Mönch">Mönch</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Nebelwirker">Nebelwirker</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Chicoachgg" aria-label="Chicoachgg auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Cleavelandz" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=Cleavelandz" role="link" tabindex="0" aria-label="Cleavelandz Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Cleavelandz – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Cleavelandz</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Krieger">Krieger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Waffen">Waffen</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/Cleavelandz" aria-label="Cleavelandz auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Corni" data-realm="todeswache" data-detail="/charakter/?realm=todeswache&name=Corni" role="link" tabindex="0" aria-label="Corni Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Corni – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">C</div><div><h3>Corni</h3><span class="character-realm">Todeswache</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Todesritter">Todesritter</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Blut">Blut</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/todeswache/Corni" aria-label="Corni auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Deadoxy" data-realm="ambossar" data-detail="/charakter/?realm=ambossar&name=Deadoxy" role="link" tabindex="0" aria-label="Deadoxy Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Deadoxy – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">D</div><div><h3>Deadoxy</h3><span class="character-realm">Ambossar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/ambossar/Deadoxy" aria-label="Deadoxy auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Decaybotx" data-realm="blackrock" data-detail="/charakter/?realm=blackrock&name=Decaybotx" role="link" tabindex="0" aria-label="Decaybotx Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Decaybotx – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">D</div><div><h3>Decaybotx</h3><span class="character-realm">Blackrock</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Todesritter">Todesritter</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Frost">Frost</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackrock/Decaybotx" aria-label="Decaybotx auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Fearry" data-realm="blackrock" data-detail="/charakter/?realm=blackrock&name=Fearry" role="link" tabindex="0" aria-label="Fearry Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Fearry – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">F</div><div><h3>Fearry</h3><span class="character-realm">Blackrock</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wiederherstellung">Wiederherstellung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackrock/Fearry" aria-label="Fearry auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Firalyn" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Firalyn" role="link" tabindex="0" aria-label="Firalyn Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Firalyn – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">F</div><div><h3>Firalyn</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Vergeltung">Vergeltung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Firalyn" aria-label="Firalyn auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Frontlfranz" data-realm="thrall" data-detail="/charakter/?realm=thrall&name=Frontlfranz" role="link" tabindex="0" aria-label="Frontlfranz Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Frontlfranz – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">F</div><div><h3>Frontlfranz</h3><span class="character-realm">Thrall</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/thrall/Frontlfranz" aria-label="Frontlfranz auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Garnof" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Garnof" role="link" tabindex="0" aria-label="Garnof Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Garnof – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">G</div><div><h3>Garnof</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Rachsucht">Rachsucht</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Garnof" aria-label="Garnof auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Ghostzone" data-realm="nethersturm" data-detail="/charakter/?realm=nethersturm&name=Ghostzone" role="link" tabindex="0" aria-label="Ghostzone Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Ghostzone – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">G</div><div><h3>Ghostzone</h3><span class="character-realm">Nethersturm</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Treffsicherheit">Treffsicherheit</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nethersturm/Ghostzone" aria-label="Ghostzone auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Gredolax" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Gredolax" role="link" tabindex="0" aria-label="Gredolax Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Gredolax – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">G</div><div><h3>Gredolax</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Gredolax" aria-label="Gredolax auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Hogan" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Hogan" role="link" tabindex="0" aria-label="Hogan Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Hogan – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">H</div><div><h3>Hogan</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Hogan" aria-label="Hogan auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Høtbøtx" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=H%C3%B8tb%C3%B8tx" role="link" tabindex="0" aria-label="Høtbøtx Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Høtbøtx – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">H</div><div><h3>Høtbøtx</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Druide">Druide</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wildheit">Wildheit</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/H%C3%B8tb%C3%B8tx" aria-label="Høtbøtx auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Iranja" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Iranja" role="link" tabindex="0" aria-label="Iranja Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Iranja – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">I</div><div><h3>Iranja</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Krieger">Krieger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schutz">Schutz</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Iranja" aria-label="Iranja auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Jønnå" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=J%C3%B8nn%C3%A5" role="link" tabindex="0" aria-label="Jønnå Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Jønnå – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">J</div><div><h3>Jønnå</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Magier">Magier</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Arkan">Arkan</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/J%C3%B8nn%C3%A5" aria-label="Jønnå auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Juzoh" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Juzoh" role="link" tabindex="0" aria-label="Juzoh Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Juzoh – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">J</div><div><h3>Juzoh</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Hexenmeister">Hexenmeister</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Dämonologie">Dämonologie</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Juzoh" aria-label="Juzoh auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Kainskind" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Kainskind" role="link" tabindex="0" aria-label="Kainskind Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Kainskind – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">K</div><div><h3>Kainskind</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verwüstung">Verwüstung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Kainskind" aria-label="Kainskind auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Kallitto" data-realm="thrall" data-detail="/charakter/?realm=thrall&name=Kallitto" role="link" tabindex="0" aria-label="Kallitto Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Kallitto – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">K</div><div><h3>Kallitto</h3><span class="character-realm">Thrall</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wiederherstellung">Wiederherstellung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/thrall/Kallitto" aria-label="Kallitto auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Kirarà" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=Kirar%C3%A0" role="link" tabindex="0" aria-label="Kirarà Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Kirarà – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">K</div><div><h3>Kirarà</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/Kirar%C3%A0" aria-label="Kirarà auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Krümelkuchen" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Kr%C3%BCmelkuchen" role="link" tabindex="0" aria-label="Krümelkuchen Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Krümelkuchen – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">K</div><div><h3>Krümelkuchen</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Kr%C3%BCmelkuchen" aria-label="Krümelkuchen auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Küschen" data-realm="kelthuzad" data-detail="/charakter/?realm=kelthuzad&name=K%C3%BCschen" role="link" tabindex="0" aria-label="Küschen Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Küschen – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">K</div><div><h3>Küschen</h3><span class="character-realm">Kelthuzad</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Krieger">Krieger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Furor">Furor</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/kelthuzad/K%C3%BCschen" aria-label="Küschen auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Kythor" data-realm="nethersturm" data-detail="/charakter/?realm=nethersturm&name=Kythor" role="link" tabindex="0" aria-label="Kythor Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Kythor – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">K</div><div><h3>Kythor</h3><span class="character-realm">Nethersturm</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schutz">Schutz</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nethersturm/Kythor" aria-label="Kythor auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Lackdosejary" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Lackdosejary" role="link" tabindex="0" aria-label="Lackdosejary Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Lackdosejary – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">L</div><div><h3>Lackdosejary</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schutz">Schutz</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Lackdosejary" aria-label="Lackdosejary auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Lafonio" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Lafonio" role="link" tabindex="0" aria-label="Lafonio Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Lafonio – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">L</div><div><h3>Lafonio</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Druide">Druide</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wiederherstellung">Wiederherstellung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Lafonio" aria-label="Lafonio auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Laklara" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Laklara" role="link" tabindex="0" aria-label="Laklara Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Laklara – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">L</div><div><h3>Laklara</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schutz">Schutz</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Laklara" aria-label="Laklara auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Lubion" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Lubion" role="link" tabindex="0" aria-label="Lubion Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Lubion – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">L</div><div><h3>Lubion</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Rachsucht">Rachsucht</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Lubion" aria-label="Lubion auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Mylady" data-realm="durotan" data-detail="/charakter/?realm=durotan&name=Mylady" role="link" tabindex="0" aria-label="Mylady Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Mylady – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">M</div><div><h3>Mylady</h3><span class="character-realm">Durotan</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="—">—</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/durotan/Mylady" aria-label="Mylady auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Mystikmonk" data-realm="blackrock" data-detail="/charakter/?realm=blackrock&name=Mystikmonk" role="link" tabindex="0" aria-label="Mystikmonk Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Mystikmonk – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">M</div><div><h3>Mystikmonk</h3><span class="character-realm">Blackrock</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Mönch">Mönch</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Windläufer">Windläufer</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackrock/Mystikmonk" aria-label="Mystikmonk auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Nasjátàr" data-realm="nozdormu" data-detail="/charakter/?realm=nozdormu&name=Nasj%C3%A1t%C3%A0r" role="link" tabindex="0" aria-label="Nasjátàr Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Nasjátàr – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">N</div><div><h3>Nasjátàr</h3><span class="character-realm">Nozdormu</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Druide">Druide</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Wächter">Wächter</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nozdormu/Nasj%C3%A1t%C3%A0r" aria-label="Nasjátàr auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Nastyangel" data-realm="todeswache" data-detail="/charakter/?realm=todeswache&name=Nastyangel" role="link" tabindex="0" aria-label="Nastyangel Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Nastyangel – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">N</div><div><h3>Nastyangel</h3><span class="character-realm">Todeswache</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schatten">Schatten</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/todeswache/Nastyangel" aria-label="Nastyangel auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Neralla" data-realm="antonidas" data-detail="/charakter/?realm=antonidas&name=Neralla" role="link" tabindex="0" aria-label="Neralla Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Neralla – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">N</div><div><h3>Neralla</h3><span class="character-realm">Antonidas</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Elementar">Elementar</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/antonidas/Neralla" aria-label="Neralla auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Poisonbotx" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Poisonbotx" role="link" tabindex="0" aria-label="Poisonbotx Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Poisonbotx – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">P</div><div><h3>Poisonbotx</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schurke">Schurke</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Täuschung">Täuschung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Poisonbotx" aria-label="Poisonbotx auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Profi" data-realm="shattrath" data-detail="/charakter/?realm=shattrath&name=Profi" role="link" tabindex="0" aria-label="Profi Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Profi – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">P</div><div><h3>Profi</h3><span class="character-realm">Shattrath</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Hexenmeister">Hexenmeister</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Zerstörung">Zerstörung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/shattrath/Profi" aria-label="Profi auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Râspûtî" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=R%C3%A2sp%C3%BBt%C3%AE" role="link" tabindex="0" aria-label="Râspûtî Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Râspûtî – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">R</div><div><h3>Râspûtî</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schatten">Schatten</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/R%C3%A2sp%C3%BBt%C3%AE" aria-label="Râspûtî auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Rôcket" data-realm="nethersturm" data-detail="/charakter/?realm=nethersturm&name=R%C3%B4cket" role="link" tabindex="0" aria-label="Rôcket Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Rôcket – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">R</div><div><h3>Rôcket</h3><span class="character-realm">Nethersturm</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verstärkung">Verstärkung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nethersturm/R%C3%B4cket" aria-label="Rôcket auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Shamnsfun" data-realm="blackrock" data-detail="/charakter/?realm=blackrock&name=Shamnsfun" role="link" tabindex="0" aria-label="Shamnsfun Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Shamnsfun – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Shamnsfun</h3><span class="character-realm">Blackrock</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verstärkung">Verstärkung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackrock/Shamnsfun" aria-label="Shamnsfun auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Shedira" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Shedira" role="link" tabindex="0" aria-label="Shedira Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Shedira – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Shedira</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Magier">Magier</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Frost">Frost</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Shedira" aria-label="Shedira auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Shieldbotx" data-realm="silvermoon" data-detail="/charakter/?realm=silvermoon&name=Shieldbotx" role="link" tabindex="0" aria-label="Shieldbotx Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Shieldbotx – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Shieldbotx</h3><span class="character-realm">Silvermoon</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/silvermoon/Shieldbotx" aria-label="Shieldbotx auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Shootmex" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Shootmex" role="link" tabindex="0" aria-label="Shootmex Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Shootmex – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Shootmex</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Shootmex" aria-label="Shootmex auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Shubidu" data-realm="thrall" data-detail="/charakter/?realm=thrall&name=Shubidu" role="link" tabindex="0" aria-label="Shubidu Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Shubidu – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Shubidu</h3><span class="character-realm">Thrall</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/thrall/Shubidu" aria-label="Shubidu auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Sparrowlolz" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Sparrowlolz" role="link" tabindex="0" aria-label="Sparrowlolz Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Sparrowlolz – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Sparrowlolz</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Vergeltung">Vergeltung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Sparrowlolz" aria-label="Sparrowlolz auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Sturmgeweiht" data-realm="thrall" data-detail="/charakter/?realm=thrall&name=Sturmgeweiht" role="link" tabindex="0" aria-label="Sturmgeweiht Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Sturmgeweiht – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">S</div><div><h3>Sturmgeweiht</h3><span class="character-realm">Thrall</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/thrall/Sturmgeweiht" aria-label="Sturmgeweiht auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Talalafee" data-realm="amanthul" data-detail="/charakter/?realm=amanthul&name=Talalafee" role="link" tabindex="0" aria-label="Talalafee Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Talalafee – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">T</div><div><h3>Talalafee</h3><span class="character-realm">Amanthul</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Priester">Priester</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Heilig">Heilig</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/amanthul/Talalafee" aria-label="Talalafee auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Taneragan" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Taneragan" role="link" tabindex="0" aria-label="Taneragan Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Taneragan – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">T</div><div><h3>Taneragan</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Paladin">Paladin</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Schutz">Schutz</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Taneragan" aria-label="Taneragan auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Tanerath" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Tanerath" role="link" tabindex="0" aria-label="Tanerath Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Tanerath – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">T</div><div><h3>Tanerath</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Dämonenjäger">Dämonenjäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verwüstung">Verwüstung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Tanerath" aria-label="Tanerath auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Tanerdras" data-realm="blackmoore" data-detail="/charakter/?realm=blackmoore&name=Tanerdras" role="link" tabindex="0" aria-label="Tanerdras Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Tanerdras – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">T</div><div><h3>Tanerdras</h3><span class="character-realm">Blackmoore</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Magier">Magier</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Arkan">Arkan</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackmoore/Tanerdras" aria-label="Tanerdras auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Trake" data-realm="nethersturm" data-detail="/charakter/?realm=nethersturm&name=Trake" role="link" tabindex="0" aria-label="Trake Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Trake – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">T</div><div><h3>Trake</h3><span class="character-realm">Nethersturm</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Rufer">Rufer</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Verheerung">Verheerung</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nethersturm/Trake" aria-label="Trake auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Trapbotx" data-realm="eredar" data-detail="/charakter/?realm=eredar&name=Trapbotx" role="link" tabindex="0" aria-label="Trapbotx Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Trapbotx – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">T</div><div><h3>Trapbotx</h3><span class="character-realm">Eredar</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/eredar/Trapbotx" aria-label="Trapbotx auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Velyara" data-realm="antonidas" data-detail="/charakter/?realm=antonidas&name=Velyara" role="link" tabindex="0" aria-label="Velyara Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Velyara – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">V</div><div><h3>Velyara</h3><span class="character-realm">Antonidas</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Schamane">Schamane</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Elementar">Elementar</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/antonidas/Velyara" aria-label="Velyara auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Xelthuzar" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Xelthuzar" role="link" tabindex="0" aria-label="Xelthuzar Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Xelthuzar – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">X</div><div><h3>Xelthuzar</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Magier">Magier</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Arkan">Arkan</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Xelthuzar" aria-label="Xelthuzar auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Xerjin" data-realm="blackhand" data-detail="/charakter/?realm=blackhand&name=Xerjin" role="link" tabindex="0" aria-label="Xerjin Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Xerjin – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">X</div><div><h3>Xerjin</h3><span class="character-realm">Blackhand</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Krieger">Krieger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Waffen">Waffen</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/blackhand/Xerjin" aria-label="Xerjin auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+<article class="character-entry unassigned-live-card" data-character="Zêcks" data-realm="nethersturm" data-detail="/charakter/?realm=nethersturm&name=Z%C3%AAcks" role="link" tabindex="0" aria-label="Zêcks Charakterdetails öffnen">
+  <div class="character-card-art"><img data-char-image alt="Zêcks – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>
+  <div class="character-entry-body">
+    <div class="character-entry-head"><div class="character-monogram">Z</div><div><h3>Zêcks</h3><span class="character-realm">Nethersturm</span></div></div>
+    <div class="character-live-facts">
+      <div><span data-de="Klasse" data-en="Class">Klasse</span><strong data-char-class data-fallback="Jäger">Jäger</strong></div>
+      <div><span data-de="Skillung" data-en="Specialization">Skillung</span><strong data-char-spec data-fallback="Tierherrschaft">Tierherrschaft</strong></div>
+      <div><span data-de="M+ Wertung" data-en="M+ Rating">M+ Wertung</span><strong data-char-score>—</strong></div>
+    </div>
+    <div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="https://raider.io/characters/eu/nethersturm/Z%C3%AAcks" aria-label="Zêcks auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>
+    <div class="character-open-hint" data-de="Kachel anklicken für Charakterdetails" data-en="Click the card for character details">Kachel anklicken für Charakterdetails</div>
+  </div>
+</article>
+</div>
+<div class="member-card coming-soon">
+  <div class="member-art"><div class="member-monogram">+</div></div>
+  <div class="member-copy"><span class="member-kicker" data-de="Als Nächstes" data-en="Up Next">Als Nächstes</span><h2 data-de="Weitere Mitglieder" data-en="More Members">Weitere Mitglieder</h2><p data-de="Die nächsten Waschi-Profile werden nach und nach ergänzt." data-en="More Waschi profiles will be added gradually.">Die nächsten Waschi-Profile werden nach und nach ergänzt.</p></div>
+</div>
+</section>
+<div class="team-back"><a class="btn dark" href="/" data-de="← Zurück zur Startseite" data-en="← Back to Home">← Zurück zur Startseite</a></div>
+</main><script src="/app.js"></script><script>
+(function(){
+ const classDe={Warrior:'Krieger','Death Knight':'Todesritter','Demon Hunter':'Dämonenjäger',Druid:'Druide',Evoker:'Rufer',Hunter:'Jäger',Mage:'Magier',Monk:'Mönch',Paladin:'Paladin',Priest:'Priester',Rogue:'Schurke',Shaman:'Schamane',Warlock:'Hexenmeister'};
+ const specDe={Arms:'Waffen',Fury:'Furor',Protection:'Schutz',Blood:'Blut',Frost:'Frost',Unholy:'Unheilig',Havoc:'Verwüstung',Vengeance:'Rachsucht',Devourer:'Verschlinger',Balance:'Gleichgewicht',Feral:'Wildheit',Guardian:'Wächter',Restoration:'Wiederherstellung',Augmentation:'Verstärkung',Devastation:'Verheerung',Preservation:'Bewahrung','Beast Mastery':'Tierherrschaft',Marksmanship:'Treffsicherheit',Survival:'Überleben',Arcane:'Arkan',Fire:'Feuer',Brewmaster:'Braumeister',Mistweaver:'Nebelwirker',Windwalker:'Windläufer',Holy:'Heilig',Retribution:'Vergeltung',Discipline:'Disziplin',Shadow:'Schatten',Assassination:'Meucheln',Outlaw:'Gesetzlosigkeit',Subtlety:'Täuschung',Elemental:'Elementar',Enhancement:'Verstärkung',Affliction:'Gebrechen',Demonology:'Dämonologie',Destruction:'Zerstörung'};
+ function num(v){return v==null?'—':new Intl.NumberFormat('de-DE',{maximumFractionDigits:1}).format(v)}
+ function loc(el,de,en){if(!el)return;el.dataset.de=de||'—';el.dataset.en=en||de||'—';el.textContent=document.documentElement.lang==='en'?el.dataset.en:el.dataset.de}
+ function pic(card,d){const img=card.querySelector('[data-char-image]'),fb=card.querySelector('[data-char-fallback]'),src=[d.image,d.insetImage,d.avatar].filter(Boolean);let i=0;if(!src.length)return;img.hidden=false;fb.hidden=true;img.onerror=()=>{i++;if(i<src.length)img.src=src[i];else{img.hidden=true;fb.hidden=false}};img.src=src[0]}
+ async function load(card){
+   if(card.dataset.loaded)return;card.dataset.loaded='1';
+   try{
+     const q=new URLSearchParams({realm:card.dataset.realm,name:card.dataset.character});
+     const r=await fetch('/api/guild-character?'+q.toString(),{cache:'force-cache'});if(!r.ok)throw new Error();
+     const d=await r.json();if(d.error)throw new Error();
+     loc(card.querySelector('[data-char-class]'),classDe[d.className]||d.className,d.className);loc(card.querySelector('[data-char-spec]'),specDe[d.spec]||d.spec,d.spec);card.querySelector('[data-char-score]').textContent=num(d.mythicPlus&&d.mythicPlus.score);
+     if(typeof applyLang==='function')applyLang();
+   }catch(e){}
+ }
+ const cards=[...document.querySelectorAll('.unassigned-live-card')];cards.forEach(c=>{const fb=c.querySelector('[data-char-fallback]');const img=c.querySelector('[data-char-image]');if(img){img.removeAttribute('src');img.hidden=true}if(fb){fb.hidden=false;fb.textContent=(c.dataset.character||'?').charAt(0).toUpperCase()}});
+ if('IntersectionObserver' in window){
+   const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){load(e.target);io.unobserve(e.target)}}),{rootMargin:'500px 0px'});
+   cards.forEach(c=>io.observe(c));
+ }else cards.forEach(load);
+ cards.forEach(c=>{const go=()=>location.href=c.dataset.detail;c.addEventListener('click',e=>{if(e.target.closest('a'))return;go()});c.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.target.closest('a')){e.preventDefault();go()}})});
+})();
+</script></body></html>
