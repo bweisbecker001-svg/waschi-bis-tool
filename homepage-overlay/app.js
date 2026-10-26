@@ -42,14 +42,26 @@ function fallback(card,p){
   p.fb.style.font="800 64px Georgia,serif";
   p.fb.textContent=(card.dataset.character||"?").charAt(0).toUpperCase();
 }
-function setImage(card,p,d){
-  const src=[d.image,d.insetImage,d.avatar].filter(Boolean);
+function setImage(card,p,d,detailSrc){
+  const src=[detailSrc,d&&d.image,d&&d.insetImage,d&&d.avatar].filter(function(v,i,a){return v&&a.indexOf(v)===i});
   let i=0;
   if(!src.length){fallback(card,p);return}
-  p.fb.hidden=true;p.fb.style.display="none";p.img.hidden=false;p.img.loading="eager";
-  p.img.onload=function(){p.fb.hidden=true;p.fb.style.display="none";p.img.hidden=false};
+  p.fb.hidden=true;p.fb.style.display="none";
+  p.img.hidden=false;p.img.removeAttribute("hidden");p.img.style.display="block";p.img.loading="eager";p.img.decoding="async";
+  p.img.onload=function(){p.fb.hidden=true;p.fb.style.display="none";p.img.hidden=false;p.img.removeAttribute("hidden");p.img.style.display="block"};
   p.img.onerror=function(){i++;if(i<src.length)p.img.src=src[i];else fallback(card,p)};
   p.img.src=src[0];
+}
+async function detailImage(card,name,realm){
+  try{
+    const detail=card.dataset.detail||("/charakter/?realm="+encodeURIComponent(realm)+"&name="+encodeURIComponent(name));
+    const r=await realFetch(detail,{cache:"force-cache"});
+    if(!r.ok)return "";
+    const html=await r.text();
+    const doc=new DOMParser().parseFromString(html,"text/html");
+    const img=doc.querySelector(".char-detail-art img[src]");
+    return img?img.getAttribute("src")||"":"";
+  }catch(e){return ""}
 }
 async function load(card){
   if(card.dataset.waschiFixed==="1")return;
@@ -61,10 +73,13 @@ async function load(card){
   const p=parts(card);if(!p)return;
   try{
     const q=new URLSearchParams({realm:realm,name:name});
-    const r=await realFetch("/api/guild-character?"+q.toString(),{cache:"force-cache"});
-    if(!r.ok)throw new Error("character");
-    const d=await r.json();
-    setImage(card,p,d);
+    const pair=await Promise.allSettled([
+      realFetch("/api/guild-character?"+q.toString(),{cache:"force-cache"}).then(async function(r){if(!r.ok)throw new Error("character");return r.json()}),
+      detailImage(card,name,realm)
+    ]);
+    const d=pair[0].status==="fulfilled"?pair[0].value:{};
+    const detailSrc=pair[1].status==="fulfilled"?pair[1].value:"";
+    setImage(card,p,d,detailSrc);
     const c=card.querySelector("[data-char-class]"),s=card.querySelector("[data-char-spec]"),m=card.querySelector("[data-char-score]");
     if(c&&d.className)c.textContent=classDe[d.className]||d.className;
     if(s&&d.spec)s.textContent=specDe[d.spec]||d.spec;
