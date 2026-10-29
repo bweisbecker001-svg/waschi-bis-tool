@@ -52,6 +52,78 @@ def fetch_json_request(req, timeout=25):
         return json.loads(r.read().decode('utf-8')), dict(r.headers), r.status
 
 
+
+def _visible_text(raw):
+    text = str(raw or '')
+    text = re.sub(r'(?is)<script[^>]*>.*?</script>', ' ', text)
+    text = re.sub(r'(?is)<style[^>]*>.*?</style>', ' ', text)
+    text = re.sub(r'(?s)<[^>]+>', ' ', text)
+    replacements = {'&nbsp;':' ', '&#160;':' ', '&amp;':'&', '&quot;':'"', '&#39;':"'", '&lt;':'<', '&gt;':'>'}
+    for a,b in replacements.items():
+        text=text.replace(a,b)
+    return re.sub(r'\s+', ' ', text).strip()
+
+
+def _find_percent_near_label(text, label_pattern):
+    num=r'(\d{1,3}(?:[\.,]\d{1,3})?)\s*%'
+    patterns=[rf'{num}\s*[:\-–—]?\s*(?:{label_pattern})\b', rf'\b(?:{label_pattern})\s*[:\-–—]?\s*{num}']
+    vals=[]
+    for pat in patterns:
+        for m in re.finditer(pat,text,re.I):
+            try:
+                v=float(m.group(1).replace(',','.'))
+                if 0 <= v <= 200: vals.append(v)
+            except (TypeError,ValueError):
+                pass
+    if not vals:
+        return None
+    return vals[0]
+
+
+def _parse_public_armory_stats(raw):
+    text=_visible_text(raw)
+    labels={
+        'crit':r'(?:Kritische\s+Trefferchance|Kritische\s+Trefferwertung|Kritischer\s+Trefferwert|Kritischer\s+Treffer|Critical\s+Strike(?:\s+Chance)?)',
+        'haste':r'(?:Tempo|Haste)',
+        'mastery':r'(?:Meisterschaft|Mastery)',
+        'versatility':r'(?:Vielseitigkeit|Versatility)'
+    }
+    out={k:_find_percent_near_label(text,v) for k,v in labels.items()}
+    return out if all(isinstance(out[k],(int,float)) for k in labels) else None
+
+
+def fetch_public_armory_stats(region, realm, name):
+    region=str(region or 'eu').lower().strip()
+    locale='de-de' if region=='eu' else 'en-us'
+    realm_slug=re.sub(r"[’'\s]+",'-',str(realm or '').strip().lower())
+    name_slug=str(name or '').strip().lower()
+    page=f'https://worldofwarcraft.blizzard.com/{locale}/character/{urllib.parse.quote(region)}/{urllib.parse.quote(realm_slug)}/{urllib.parse.quote(name_slug)}'
+    for url,source in ((page,'Blizzard Charakterseite'),('https://r.jina.ai/'+page,'Blizzard Charakterseite · Reader')):
+        try:
+            raw,_,_=fetch(url,timeout=12)
+            parsed=_parse_public_armory_stats(raw.decode('utf-8','replace'))
+            if parsed:
+                return parsed, source, page
+        except Exception:
+            pass
+    return None, '', page
+
+
+def reconcile_display_stats(api_stats, armory_stats):
+    result=dict(api_stats or {})
+    replaced={}
+    if not armory_stats:
+        return result,replaced
+    for key in ('crit','haste','mastery','versatility'):
+        av=armory_stats.get(key)
+        bv=result.get(key)
+        if isinstance(av,(int,float)):
+            result[key]=float(av)
+            if not isinstance(bv,(int,float)) or abs(float(av)-float(bv))>=0.05:
+                replaced[key]={'api':bv,'armory':float(av),'delta':None if not isinstance(bv,(int,float)) else round(float(av)-float(bv),3)}
+    return result,replaced
+
+
 def _read_blizzard_config_file(path):
     try:
         data = json.loads(Path(path).read_text(encoding='utf-8'))
@@ -1158,11 +1230,19 @@ def api_character_stats():
         return _json({'ok': False, 'setupRequired': True, 'error': 'Blizzard API serverseitig noch nicht eingerichtet', 'detail': 'Setze BLIZZARD_CLIENT_ID und BLIZZARD_CLIENT_SECRET in der Hosting-Umgebung.'})
     try:
         stats, api_url, mode, correction, equipment_url, equipment_details = fetch_blizzard_character_stats(region, realm, name, character_class, spec)
+        api_stats = dict(stats)
+        armory_stats, armory_source, armory_url = fetch_public_armory_stats(region, realm, name)
+        stats, reconciled = reconcile_display_stats(stats, armory_stats)
         applied = {k:v for k,v in correction.get('appliedRatings',{}).items() if float(v or 0)>0}
         applied_pct = {k:v for k,v in correction.get('appliedPercent',{}).items() if float(v or 0)>0}
         addon_note = ' · inkl. fehlender Verzauberungs-/Edelsteinboni' if applied else ' · Verzauberungen/Edelsteine geprüft'
         sources = {k:'Automatisch · Blizzard API · Character Statistics + Equipment' for k in stats}
-        return _json({'ok': True, 'stats': stats, 'statSources': sources, 'method':'Blizzard API · Character Statistics + Equipment'+addon_note, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details})
+        for k in reconciled:
+            sources[k]='Automatisch · Blizzard Charakterseite · Ingame-Abgleich'
+        method='Blizzard API · Character Statistics + Equipment'+addon_note
+        if reconciled:
+            method += ' · Hauptwerte mit Blizzard-Charakterseite abgeglichen'
+        return _json({'ok': True, 'stats': stats, 'statSources': sources, 'method':method, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':3 if reconciled else 2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'armoryEndpoint':armory_url, 'armorySource':armory_source, 'apiRawStats':api_stats, 'armoryStats':armory_stats, 'reconciledStats':reconciled, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details})
     except urllib.error.HTTPError as e:
         detail=f'HTTP {e.code}'
         if e.code==404: detail += ' · Charakter/Realm nicht gefunden oder Profil noch nicht aktualisiert'

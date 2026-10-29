@@ -100,6 +100,7 @@ K+tuogl9MZDWMaO3xmvHF/S8dGR1lQbXp1ftdyzG2Lb66DmmcePjHbJQF/lh89Az79KXddCGPGQpeyPQ
           <button data-open-tab="media" type="button"><b>♫</b><span>Quellen</span></button>
           <button data-open-tab="mythicplus" type="button"><b>✥</b><span>M+</span></button>
         </div>
+        <a class="wc-gold-button" href="/downloads/Waschi_WoW_BiS_Tool.zip" download style="display:block;margin:0 12px 12px;padding:9px 13px;text-align:center;text-decoration:none;">TOOL HERUNTERLADEN ↓</a>
       </section>
     </aside>
   </div>
@@ -126,7 +127,7 @@ K+tuogl9MZDWMaO3xmvHF/S8dGR1lQbXp1ftdyzG2Lb66DmmcePjHbJQF/lh89Az79KXddCGPGQpeyPQ
 <article class="card"><span>Wertepriorität</span><strong id="statHeadlineMini">—</strong><small id="statDescriptionMini">—</small></article>
 <article class="card"><span>Ausrüstungsregeln</span><strong>Mythic+ + Herstellung</strong><small>Raid-BiS wird nur im Hintergrund erkannt und niemals als Ziel empfohlen.</small></article>
 <article class="card"><span>Charakterabgleich</span><strong>Raider.IO</strong><small>Profil, Itemlevel, M+-Wertung und Ausrüstung werden automatisch geladen.</small></article>
-<article class="card"><span>Automatische Aktualisierung</span><strong id="refreshSummary">alle 6 Stunden</strong><small>Zusätzlich jederzeit manuell.</small></article>
+<article class="card"><span>Automatische Aktualisierung</span><strong id="refreshSummary">alle 15 Minuten</strong><small>Zusätzlich jederzeit manuell.</small></article>
 </section>
 <section class="panel quest-tab-content" data-quest-tab="character" id="characterPanel">
 <div class="panel-head"><div><span class="section-kicker">CHARAKTER</span><h2>Raider.IO laden</h2></div><div class="live">● Live-Daten</div></div>
@@ -134,7 +135,7 @@ K+tuogl9MZDWMaO3xmvHF/S8dGR1lQbXp1ftdyzG2Lb66DmmcePjHbJQF/lh89Az79KXddCGPGQpeyPQ
 <label>Region<select id="region"><option value="eu">EU</option><option value="us">US</option><option value="kr">KR</option><option value="tw">TW</option></select></label>
 <label>Realm<input id="realm" placeholder="z. B. Todeswache"/></label>
 <label>Charakter<input id="character" placeholder="Charaktername"/></label>
-<label>Aktualisierung<select id="refreshHours"><option value="1">1 Stunde</option><option value="3">3 Stunden</option><option selected="" value="6">6 Stunden</option><option value="12">12 Stunden</option><option value="24">24 Stunden</option></select></label>
+<label>Aktualisierung<select id="refreshHours"><option value="0.0833333333">5 Minuten</option><option value="0.1666666667">10 Minuten</option><option selected="" value="0.25">15 Minuten</option><option value="0.5">30 Minuten</option><option value="1">1 Stunde</option><option value="3">3 Stunden</option><option value="6">6 Stunden</option><option value="12">12 Stunden</option><option value="24">24 Stunden</option></select></label>
 <button class="btn primary" id="connectBtn">Verbinden &amp; BiS prüfen</button>
 <button class="btn" id="refreshBtn">Jetzt aktualisieren</button>
 </div>
