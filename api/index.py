@@ -89,7 +89,10 @@ def _parse_public_armory_stats(raw):
         'versatility':r'(?:Vielseitigkeit|Versatility)'
     }
     out={k:_find_percent_near_label(text,v) for k,v in labels.items()}
-    return out if all(isinstance(out[k],(int,float)) for k in labels) else None
+    # Die öffentliche Charakterseite liefert einzelne Sekundärwerte teilweise
+    # asynchron bzw. nicht in jeder Ansicht vollständig. Ein fehlender Wert darf
+    # deshalb nicht mehr den Abgleich aller anderen, vorhandenen Werte verwerfen.
+    return out if any(isinstance(v,(int,float)) for v in out.values()) else None
 
 
 def fetch_public_armory_stats(region, realm, name):
@@ -118,6 +121,10 @@ def reconcile_display_stats(api_stats, armory_stats):
         av=armory_stats.get(key)
         bv=result.get(key)
         if isinstance(av,(int,float)):
+            # Für die Anzeige ist der Prozentwert der offiziellen Charakterseite
+            # maßgeblich: Er entspricht der Paper-Doll-Anzeige im Spiel und enthält
+            # auch klassen-/spezialisierungsabhängige Modifikatoren, die sich aus
+            # dem reinen Rating nicht zuverlässig rekonstruieren lassen.
             result[key]=float(av)
             if not isinstance(bv,(int,float)) or abs(float(av)-float(bv))>=0.05:
                 replaced[key]={'api':bv,'armory':float(av),'delta':None if not isinstance(bv,(int,float)) else round(float(av)-float(bv),3)}
