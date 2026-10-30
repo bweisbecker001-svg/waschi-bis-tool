@@ -27,6 +27,24 @@ function enhanceDownloads(){
     if(bis&&bis.nextSibling)grid.insertBefore(a,bis.nextSibling);else grid.appendChild(a);
   }
 }
+function configureExternalLinks(){
+  document.querySelectorAll('a[href]').forEach(function(a){
+    const href=a.getAttribute('href')||'';
+    if(!href||href.charAt(0)==='#'||/^(mailto:|tel:|javascript:)/i.test(href))return;
+    let url;
+    try{url=new URL(href,window.location.href)}catch(e){return}
+    if(url.protocol!=='http:'&&url.protocol!=='https:')return;
+    const host=url.hostname.toLowerCase();
+    const internal=host===window.location.hostname.toLowerCase()||host==='waschi.fun'||host.endsWith('.waschi.fun');
+    if(!internal){
+      a.target='_blank';
+      const rel=new Set((a.getAttribute('rel')||'').split(/\s+/).filter(Boolean));
+      rel.add('noopener');rel.add('noreferrer');
+      a.setAttribute('rel',Array.from(rel).join(' '));
+      a.dataset.waschiExternal='1';
+    }
+  });
+}
 ensureDownloadsCss();
 window.fetch=function(input,init){
   const u=typeof input==="string"?input:(input&&input.url)||"";
@@ -116,8 +134,8 @@ function scan(){
   if(!document.querySelector(".member-profile-page"))return;
   document.querySelectorAll(".member-profile-page .character-entry[data-character]").forEach(load);
 }
-function boot(){enhanceDownloads();scan()}
+function boot(){enhanceDownloads();configureExternalLinks();scan()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
-new MutationObserver(function(){enhanceDownloads();scan()}).observe(document.documentElement,{childList:true,subtree:true});
+new MutationObserver(function(){enhanceDownloads();configureExternalLinks();scan()}).observe(document.documentElement,{childList:true,subtree:true});
 const s=document.createElement("script");s.src=upstream;s.async=true;document.head.appendChild(s);
 })();
