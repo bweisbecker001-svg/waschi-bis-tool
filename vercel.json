@@ -1,6 +1,10 @@
 {
   "rewrites": [
     {
+      "source": "/downloads/Waschi_WoW_BiS_Tool.zip",
+      "destination": "/api/index.py?route=download-bis-tool"
+    },
+    {
       "source": "/api/health",
       "destination": "/api/index.py?route=health"
     },
