@@ -2,6 +2,32 @@
 const upstream="https://waschi-ekdq613p6-bernd-9907.vercel.app/app.js";
 const realFetch=window.fetch.bind(window);
 const reqCache=new Map();
+function ensureDownloadsCss(){
+  if(document.querySelector('link[data-waschi-download-css]'))return;
+  const link=document.createElement('link');
+  link.rel='stylesheet';link.href='/downloads.css';link.dataset.waschiDownloadCss='1';
+  document.head.appendChild(link);
+}
+function enhanceDownloads(){
+  ensureDownloadsCss();
+  const nav=document.querySelector('.nav');
+  if(nav&&!nav.querySelector('a[href="/download/"]')){
+    const a=document.createElement('a');
+    a.href='/download/';a.className='download-nav';
+    a.innerHTML='<span class="ico">⇩</span><span>Download</span>';
+    const before=nav.querySelector('a[href="/streams/"]');
+    nav.insertBefore(a,before||null);
+  }
+  const grid=document.querySelector('.quick-grid');
+  if(grid&&!grid.querySelector('.quick.downloads')){
+    const a=document.createElement('a');
+    a.className='quick downloads';a.href='/download/';
+    a.innerHTML='<div class="quick-bg"></div><div class="quick-content"><div class="quick-icon">⇩</div><div><strong>Download</strong><small>Tools & Dateien</small></div></div>';
+    const bis=grid.querySelector('.quick.bis');
+    if(bis&&bis.nextSibling)grid.insertBefore(a,bis.nextSibling);else grid.appendChild(a);
+  }
+}
+ensureDownloadsCss();
 window.fetch=function(input,init){
   const u=typeof input==="string"?input:(input&&input.url)||"";
   if(u.indexOf("/api/characters")===0 && document.querySelector(".member-profile-page")){
@@ -90,7 +116,8 @@ function scan(){
   if(!document.querySelector(".member-profile-page"))return;
   document.querySelectorAll(".member-profile-page .character-entry[data-character]").forEach(load);
 }
-if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",scan);else scan();
-new MutationObserver(scan).observe(document.documentElement,{childList:true,subtree:true});
+function boot(){enhanceDownloads();scan()}
+if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
+new MutationObserver(function(){enhanceDownloads();scan()}).observe(document.documentElement,{childList:true,subtree:true});
 const s=document.createElement("script");s.src=upstream;s.async=true;document.head.appendChild(s);
 })();
