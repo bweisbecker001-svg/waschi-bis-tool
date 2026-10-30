@@ -136,8 +136,31 @@ function scan(){
   if(!document.querySelector(".member-profile-page"))return;
   document.querySelectorAll(".member-profile-page .character-entry[data-character]").forEach(load);
 }
-function boot(){enhanceDownloads();configureExternalLinks();scan()}
+function forceHeaderLogoSize(){
+  const logo=document.querySelector(".brand-logo");
+  if(!logo)return;
+  logo.style.setProperty("width","150px","important");
+  logo.style.setProperty("height","150px","important");
+  logo.style.setProperty("min-width","150px","important");
+  logo.style.setProperty("flex","0 0 150px","important");
+  logo.style.setProperty("background-size","contain","important");
+  logo.style.setProperty("background-position","center center","important");
+  logo.style.setProperty("background-repeat","no-repeat","important");
+  logo.style.setProperty("transform","none","important");
+  logo.style.setProperty("display","block","important");
+  const brand=logo.closest(".brand");
+  if(brand){
+    brand.style.setProperty("overflow","visible","important");
+    brand.style.setProperty("align-items","center","important");
+  }
+  const navwrap=logo.closest(".navwrap");
+  if(navwrap){
+    navwrap.style.setProperty("min-height","165px","important");
+    navwrap.style.setProperty("overflow","visible","important");
+  }
+}
+function boot(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
-new MutationObserver(function(){enhanceDownloads();configureExternalLinks();scan()}).observe(document.documentElement,{childList:true,subtree:true});
+new MutationObserver(function(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan()}).observe(document.documentElement,{childList:true,subtree:true});
 const s=document.createElement("script");s.src=upstream;s.async=true;document.head.appendChild(s);
 })();
