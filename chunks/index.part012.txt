@@ -1189,10 +1189,6 @@ function updateProfile(){
 
   function renderStatComparison(){
     if(!liveCharacter){$('statsLive').classList.add('hidden');$('statSource').textContent='Noch kein Charakter geladen';renderTertiaryTargets();return}
-    const verifiedNow=applyVerifiedIngameStats(characterStats,characterStats?.statSources||{});
-    if(verifiedNow.verified){
-      characterStats={...(characterStats||{}),...verifiedNow.stats,statSources:verifiedNow.statSources,sourceLabel:'Verifiziert · Ingame-Werte · präzise Referenz',confidence:'hoch',verifiedBy:3};
-    }
     $('statsLive').classList.remove('hidden');renderBuffSummary();renderTertiaryTargets();
     const buff=calculateBuffBonuses(),eff=effectiveStats();
     $('statSource').textContent=(characterStats?.sourceLabel||'Charakterwerte nicht automatisch verfügbar')+(buff.settings.enabled?' · Buffprofil aktiv':' · Buffprofil aus')+(planningProfileActive()?` · Achtung: Armory-Werte stammen aus ${deutsch(liveCharacter.active_spec_name||'der aktuellen Spezialisierung')}`:'');
