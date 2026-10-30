@@ -916,7 +916,7 @@ def _parse_murlok_bis_markdown(text):
             'wowheadUrl': url,
         })
     if not items:
-        raise RuntimeError('Keine Murlok-BiS-Gegenstaende erkannt')
+        raise RuntimeError('Keine Murlok-BiS-Gegenstaende erkannt: ' + section[:1400].replace('\\n',' | '))
     return items, sample_size
 
 
