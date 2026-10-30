@@ -28,7 +28,7 @@ GLOBAL_CONFIG_DISABLED = GLOBAL_CONFIG_DIR / 'credentials_disabled'
 BLIZZARD_TOKEN = {'access_token': '', 'expires_at': 0.0, 'client_id': ''}
 BLIZZARD_TOKEN_LOCK = threading.Lock()
 USER_AGENT = 'Mozilla/5.0 (Waschi.fun WoW BiS Dashboard Web API)'
-RIO_FIELDS = 'gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs,mythic_plus_dungeon_run_counts'
+RIO_FIELDS = 'gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs'
 
 EQUIPMENT_CACHE = {}
 ITEM_DATA_CACHE = {}
@@ -1272,6 +1272,21 @@ def api_raiderio():
     try:
         data, _, _ = fetch_json('https://raider.io/api/v1/characters/profile?'+params)
         return _json(data)
+    except urllib.error.HTTPError as e:
+        detail = ''
+        try:
+            detail = e.read().decode('utf-8', errors='replace').strip()
+        except Exception:
+            pass
+        if e.code == 400:
+            return _json({'error':'Raider.IO hat die Anfrage abgelehnt','detail':detail or str(e)},400)
+        if e.code == 404:
+            return _json({'error':'Charakter wurde bei Raider.IO nicht gefunden','detail':detail or str(e)},404)
+        if e.code == 429:
+            return _json({'error':'Raider.IO Rate-Limit erreicht. Bitte kurz erneut versuchen.','detail':detail or str(e)},429)
+        return _json({'error':'Raider.IO konnte nicht geladen werden','detail':detail or str(e)},502)
+    except urllib.error.URLError as e:
+        return _json({'error':'Raider.IO ist derzeit nicht erreichbar','detail':str(e)},502)
     except Exception as e:
         return _json({'error':'Raider.IO konnte nicht geladen werden','detail':str(e)},502)
 
