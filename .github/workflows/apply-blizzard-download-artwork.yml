@@ -67,3 +67,5 @@ jobs:
           git add -A
           git commit -m "Replace Blizzard download artwork"
           git push origin HEAD:main
+
+# trigger
