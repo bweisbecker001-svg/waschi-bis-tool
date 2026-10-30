@@ -1315,22 +1315,6 @@ function updateProfile(){
   function manualKey(){return liveCharacter?`wow-bis-manual:${normal($('region').value)}:${normal($('realm').value)}:${normal($('character').value)}`:null}
   function applyManual(){statsLoadSerial++;statsReadStatus='idle';const r=id=>{const n=parseFloat($(id).value);return Number.isFinite(n)&&n>=0?n:null};const vals={crit:r('manualCrit'),haste:r('manualHaste'),mastery:r('manualMastery'),versatility:r('manualVersatility'),leech:r('manualLeech'),avoidance:r('manualAvoidance'),speed:r('manualSpeed')};const statSources={};for(const k of ['crit','haste','mastery','versatility','leech','avoidance','speed'])if(Number.isFinite(statNumber(vals[k])))statSources[k]='Manuell';characterStats={...vals,statSources,sourceLabel:'Manuell eingetragene Werte'};if(manualKey())localStorage.setItem(manualKey(),JSON.stringify(characterStats));renderStatComparison()}
   function statNumber(v){return (typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(Number(v))?Number(v):NaN}
-  const VERIFIED_INGAME_STATS=new Map([
-    ['eu|todeswache|satansbraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}],
-    ['eu|todeswache|satansbtraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}]
-  ]);
-  function verifiedIngameStats(){
-    const region=normal($('region')?.value||liveCharacter?.region||'eu');
-    const realm=cleanRealmSlug($('realm')?.value||liveCharacter?.realm||'');
-    const name=normal($('character')?.value||liveCharacter?.name||'');
-    return VERIFIED_INGAME_STATS.get([region,realm,name].join('|'))||null;
-  }
-  function applyVerifiedIngameStats(stats,statSources={}){
-    const verified=verifiedIngameStats();if(!verified)return{stats,statSources,verified:false};
-    const merged={...(stats||{}),...verified},sources={...(statSources||{})};
-    for(const k of ['crit','haste','mastery','versatility','leech','avoidance','speed'])sources[k]='Verifiziert · Ingame-Wert';
-    return{stats:merged,statSources:sources,verified:true};
-  }
   function completeStats(v){return Boolean(v&&['crit','haste','mastery','versatility'].every(k=>Number.isFinite(statNumber(v[k]))&&statNumber(v[k])>=0))}
   function completeTertiaryStats(v){return Boolean(v&&['leech','avoidance','speed'].every(k=>Number.isFinite(statNumber(v[k]))&&statNumber(v[k])>=0))}
   function completeAllStats(v){return completeStats(v)&&completeTertiaryStats(v)}
@@ -1633,14 +1617,6 @@ function updateProfile(){
     const blizzardPages=blizzardCharacterUrls().map(x=>({...x,identity:{...x.identity}}));
     const isCurrent=()=>thisLoad===statsLoadSerial&&expectedIdentity===loadedCharacterIdentity&&Boolean(liveCharacter);
     window.__lastStatReadError='';
-    const verifiedAtLoad=applyVerifiedIngameStats(null,{});
-    if(verifiedAtLoad.verified&&isCurrent()){
-      try{const key=manualKey();if(key)localStorage.removeItem(key)}catch{}
-      characterStats={...verifiedAtLoad.stats,statSources:verifiedAtLoad.statSources,sourceLabel:'Verifiziert · Ingame-Werte · präzise Referenz',confidence:'hoch',verifiedBy:3,characterIdentity:expectedIdentity};
-      statsReadStatus='success';
-      renderStatComparison();
-      return true;
-    }
     statsReadStatus='loading';renderStatComparison();
     let local='';
     const serverErrors=[];
@@ -1654,8 +1630,7 @@ function updateProfile(){
         if(d.ok&&completeStats(d.stats)){
           if(!isCurrent())return false;
           const verify=d.verifiedBy>1?`${d.verifiedBy} Quellen verifiziert`:(d.confidence==='hoch'?'direkter Armory-Block':'eine Quelle');
-          const corrected=applyVerifiedIngameStats(d.stats,d.statSources||{});
-          characterStats={...corrected.stats,statSources:corrected.statSources,sourceLabel:corrected.verified?'Verifiziert · Ingame-Werte · präzise Referenz':`Automatisch · ${d.method||d.source||'Charakterwerte'} · ${verify} · ${id.source}`,confidence:corrected.verified?'hoch':(d.confidence||'mittel'),verifiedBy:corrected.verified?3:(d.verifiedBy||1),equipmentEnhancements:d.equipmentEnhancements||null,equipmentDetails:d.equipmentDetails||null,characterIdentity:expectedIdentity};
+          characterStats={...d.stats,statSources:d.statSources||{},sourceLabel:`Automatisch · ${d.method||d.source||'Charakterwerte'} · ${verify} · ${id.source}`,confidence:d.confidence||'mittel',verifiedBy:d.verifiedBy||1,equipmentEnhancements:d.equipmentEnhancements||null,equipmentDetails:d.equipmentDetails||null,characterIdentity:expectedIdentity};
           statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true;
         }
         serverErrors.push(`${id.source} (${id.realm}): ${d?.detail||d?.error||'Antwort enthält keine vollständigen Werte'}`);
@@ -1667,15 +1642,9 @@ function updateProfile(){
     if(!isCurrent())return false;
     if(browser&&completeStats(browser.stats)){
       const fallbackSources=Object.fromEntries(['crit','haste','mastery','versatility','leech','avoidance','speed'].filter(k=>Number.isFinite(statNumber(browser.stats?.[k]))).map(k=>[k,'Automatisch · Armory-Fallback']));
-      const corrected=applyVerifiedIngameStats(browser.stats,fallbackSources);
-      characterStats={...corrected.stats,statSources:corrected.statSources,sourceLabel:corrected.verified?'Verifiziert · Ingame-Werte · präzise Referenz':browser.sourceLabel,characterIdentity:expectedIdentity};statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true
+      characterStats={...browser.stats,statSources:fallbackSources,sourceLabel:browser.sourceLabel,confidence:'niedrig',verifiedBy:1,characterIdentity:expectedIdentity};statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true
     }
     if(window.__browserStatErrors?.length)window.__lastStatReadError=[window.__lastStatReadError,...window.__browserStatErrors].filter(Boolean).join('\n');
-    const verifiedFallback=applyVerifiedIngameStats(null,{});
-    if(verifiedFallback.verified&&isCurrent()){
-      characterStats={...verifiedFallback.stats,statSources:verifiedFallback.statSources,sourceLabel:'Verifiziert · Ingame-Werte · präzise Referenz',confidence:'hoch',verifiedBy:3,characterIdentity:expectedIdentity};
-      statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true;
-    }
     statsReadStatus='failed';
     if(characterStats&&isCurrent()){renderStatComparison();return false}
     if(manualKey()){
