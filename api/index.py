@@ -897,10 +897,19 @@ def _parse_murlok_bis_markdown(text):
         item_match = re.search(r'(?:item=|/item/)(\d+)', url, re.I)
         if not item_match:
             continue
-        label = re.sub(r'\s+', ' ', link.group(1)).strip()
-        item_id = int(item_match.group(1))
+        raw_label = re.sub(r'\s+', ' ', link.group(1)).strip()
+        parts = [part.strip() for part in raw_label.split('*') if part.strip()]
         count = 0
-        count_match = re.search(r'(?:\*\s*)?(\d+)\s*
+        if parts and parts[-1].isdigit():
+            count = int(parts.pop())
+        parts = [part for part in parts if part.lower() not in ('set', 'craft')]
+        label = ' '.join(parts).strip()
+        if count == 0:
+            maybe = label.rsplit(' ', 1)
+            if len(maybe) == 2 and maybe[1].isdigit():
+                label = maybe[0].strip()
+                count = int(maybe[1])
+        item_id = int(item_match.group(1))
         if not label:
             label = f'Gegenstand #{item_id}'
         items.append({
