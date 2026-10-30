@@ -790,7 +790,7 @@ function updateProfile(){
   // bleibt nur noch als Ausfallsicherung für Mythic+ erhalten.
   let bisListView='mythicplus';
   const bisListViewCache=new Map();
-  const BIS_VIEW_STORE='wow-bis-view-cache-v5:';
+  const BIS_VIEW_STORE='wow-bis-view-cache-v6:';
   function bisViewCacheKey(view,profile=activeProfile){return `${profile?.key||'unknown'}:${view}`}
   function bisViewStoreKey(view,profile=activeProfile){return BIS_VIEW_STORE+bisViewCacheKey(view,profile)}
   function bisViewLabel(view=bisListView){return view==='overall'?'Gesamt':view==='raid'?'Raid':'M+'}
@@ -877,7 +877,7 @@ function updateProfile(){
   }
   async function fetchMurlokMeta(profile=activeProfile){
     try{
-      const u=new URL('/api/murlok-meta',location.origin);u.searchParams.set('profile',profile.key);
+      const base=webApiBase();const u=new URL('/api/murlok-meta',base||location.origin);u.searchParams.set('profile',profile.key);
       const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
       if(!r.ok||!d.ok||!Array.isArray(d.items))throw new Error(d?.detail||d?.error||`HTTP ${r.status}`);
       return d;
@@ -940,7 +940,7 @@ function updateProfile(){
     if(!force&&stored?.length)return stored;
     const status=$('bisViewStatus');if(status){status.className='bis-view-status loading';status.textContent=`${bisViewLabel(view)}-BiS wird geladen …`;}
     try{
-      const u=new URL('/api/bis-refresh',location.origin);u.searchParams.set('profile',activeProfile.key);u.searchParams.set('view',view);
+      const base=webApiBase();const u=new URL('/api/bis-refresh',base||location.origin);u.searchParams.set('profile',activeProfile.key);u.searchParams.set('view',view);
       const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
       if(!r.ok||!d.ok||!Array.isArray(d.items))throw new Error(d?.detail||d?.error||`HTTP ${r.status}`);
       let gear=viewGearFromPayload(activeProfile,d,view);if(!gear.length)throw new Error('Die geladene BiS-Liste enthält keine auswertbaren Gegenstände.');
@@ -1514,8 +1514,13 @@ function updateProfile(){
     return isCurrent()?result:null;
   }
 
+  function webApiBase(){
+    if(location.protocol==='file:')return 'http://127.0.0.1:8765';
+    if(location.hostname==='waschi.fun'||location.hostname==='www.waschi.fun'||location.hostname==='waschie.vercel.app')return 'https://waschi-bis-tool.vercel.app';
+    return '';
+  }
   let localHelperBaseCache;
-  function localHelperCandidates(){ return ['']; }
+  function localHelperCandidates(){ const base=webApiBase(); return base?[base,'']:['']; }
   async function resolveLocalHelperBase(force=false){
     if(!force&&localHelperBaseCache!==undefined){
       if(localHelperBaseCache!==null)return localHelperBaseCache;
@@ -2071,7 +2076,7 @@ function updateProfile(){
   async function fetchOnlineBis(profile){
     const cfg=profile.bisUpdate;if(!cfg)throw new Error('Für dieses Profil ist keine Online-Quelle hinterlegt');
     const diagnostics=[];
-    const local=location.protocol==='file:'?'http://127.0.0.1:8765/api/bis-refresh':'/api/bis-refresh';
+    const local=location.protocol==='file:'?'http://127.0.0.1:8765/api/bis-refresh':`${webApiBase()}/api/bis-refresh`;
     try{
       const u=new URL(local,location.href);u.searchParams.set('profile',profile.key);
       const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
