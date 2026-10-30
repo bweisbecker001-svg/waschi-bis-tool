@@ -1,6 +1,8 @@
 name: Rebuild Discord image
 
 on:
+  push:
+    branches: [main]
   workflow_dispatch:
 
 permissions:
