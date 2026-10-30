@@ -41,10 +41,6 @@
       "destination": "/api/index.py?route=raiderio"
     },
     {
-      "source": "/api/murlok-meta",
-      "destination": "/api/index.py?route=murlok-meta"
-    },
-    {
       "source": "/api/bis-refresh",
       "destination": "/api/index.py?route=bis-refresh"
     }
