@@ -27,6 +27,9 @@ GLOBAL_BLIZZARD_CONFIG = GLOBAL_CONFIG_DIR / 'blizzard_api_config.json'
 GLOBAL_CONFIG_DISABLED = GLOBAL_CONFIG_DIR / 'credentials_disabled'
 BLIZZARD_TOKEN = {'access_token': '', 'expires_at': 0.0, 'client_id': ''}
 BLIZZARD_TOKEN_LOCK = threading.Lock()
+WARCRAFTLOGS_TOKEN = {'access_token': '', 'expires_at': 0.0, 'client_id': ''}
+WARCRAFTLOGS_TOKEN_LOCK = threading.Lock()
+WARCRAFTLOGS_CACHE = {}
 USER_AGENT = 'Mozilla/5.0 (Waschi.fun WoW BiS Dashboard Web API)'
 RIO_FIELDS = 'gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs'
 
@@ -1109,6 +1112,152 @@ def _image_host_allowed(host):
 
 
 
+def warcraftlogs_configured():
+    return bool(os.environ.get('WARCRAFTLOGS_CLIENT_ID','').strip() and os.environ.get('WARCRAFTLOGS_CLIENT_SECRET','').strip())
+
+
+def warcraftlogs_access_token(force=False):
+    client_id = os.environ.get('WARCRAFTLOGS_CLIENT_ID','').strip()
+    client_secret = os.environ.get('WARCRAFTLOGS_CLIENT_SECRET','').strip()
+    if not client_id or not client_secret:
+        raise RuntimeError('Warcraft Logs API ist serverseitig noch nicht eingerichtet')
+    now = time.time()
+    with WARCRAFTLOGS_TOKEN_LOCK:
+        if (not force and WARCRAFTLOGS_TOKEN.get('access_token') and
+                WARCRAFTLOGS_TOKEN.get('client_id') == client_id and
+                float(WARCRAFTLOGS_TOKEN.get('expires_at') or 0) > now + 60):
+            return WARCRAFTLOGS_TOKEN['access_token']
+        form = urllib.parse.urlencode({'grant_type':'client_credentials'}).encode('ascii')
+        basic = base64.b64encode(f'{client_id}:{client_secret}'.encode('utf-8')).decode('ascii')
+        req = urllib.request.Request(
+            'https://www.warcraftlogs.com/oauth/token',
+            data=form,
+            method='POST',
+            headers={
+                'Authorization':'Basic '+basic,
+                'Content-Type':'application/x-www-form-urlencoded',
+                'Accept':'application/json',
+                'User-Agent':USER_AGENT,
+            })
+        data, _, _ = fetch_json_request(req, timeout=20)
+        token = str(data.get('access_token') or '')
+        if not token:
+            raise RuntimeError('Warcraft Logs hat kein Access Token geliefert')
+        expires = max(120, int(data.get('expires_in') or 0))
+        WARCRAFTLOGS_TOKEN.update({'access_token':token,'expires_at':now+expires,'client_id':client_id})
+        return token
+
+
+def warcraftlogs_graphql(query, variables=None):
+    token = warcraftlogs_access_token()
+    payload = json.dumps({'query':query,'variables':variables or {}}, ensure_ascii=False).encode('utf-8')
+    req = urllib.request.Request(
+        'https://www.warcraftlogs.com/api/v2/client',
+        data=payload,
+        method='POST',
+        headers={
+            'Authorization':'Bearer '+token,
+            'Content-Type':'application/json',
+            'Accept':'application/json',
+            'User-Agent':USER_AGENT,
+        })
+    data, _, _ = fetch_json_request(req, timeout=30)
+    if data.get('errors'):
+        raise RuntimeError('; '.join(str(x.get('message') or x) for x in data.get('errors') or []))
+    return data.get('data') or {}
+
+
+def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=8):
+    cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
+    cached = _cache_get(WARCRAFTLOGS_CACHE, cache_key, 900)
+    if cached is not None:
+        return cached
+    query = '''
+    query CharacterMPlus($name:String!,$serverSlug:String!,$serverRegion:String!,$page:Int!){
+      characterData{
+        character(name:$name,serverSlug:$serverSlug,serverRegion:$serverRegion){
+          id name
+          recentReports(limit:100,page:$page){
+            current_page last_page has_more_pages
+            data{
+              code title startTime endTime
+              zone{id name}
+              fights{
+                id name startTime endTime kill
+                keystoneLevel keystoneBonus keystoneTime rating
+                countReached countRequired
+                gameZone{id name}
+              }
+            }
+          }
+        }
+      }
+    }'''
+    runs = []
+    report_count = 0
+    pages = 0
+    character_id = None
+    for page in range(1, max(1, int(max_pages)) + 1):
+        data = warcraftlogs_graphql(query, {
+            'name': str(name),
+            'serverSlug': re.sub(r"[’'\s]+", '-', str(realm or '').strip().lower()),
+            'serverRegion': str(region).upper(),
+            'page': page,
+        })
+        character = ((data.get('characterData') or {}).get('character') or {})
+        if not character:
+            break
+        character_id = character.get('id')
+        reports = character.get('recentReports') or {}
+        pages += 1
+        rows = reports.get('data') or []
+        report_count += len(rows)
+        for report in rows:
+            code = str(report.get('code') or '')
+            report_start = float(report.get('startTime') or 0)
+            for fight in report.get('fights') or []:
+                level = int(fight.get('keystoneLevel') or 0)
+                if level <= 0:
+                    continue
+                start_rel = float(fight.get('startTime') or 0)
+                end_rel = float(fight.get('endTime') or 0)
+                completed_ms = report_start + max(end_rel, start_rel)
+                bonus = int(fight.get('keystoneBonus') or 0)
+                run_id = f'wcl:{code}:{fight.get("id")}'
+                runs.append({
+                    'source':'Warcraft Logs',
+                    'id':run_id,
+                    'run_id':run_id,
+                    'dungeon': (fight.get('gameZone') or {}).get('name') or fight.get('name') or (report.get('zone') or {}).get('name') or 'Mythic+',
+                    'short_name':'WCL',
+                    'mythic_level':level,
+                    'completed_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(completed_ms / 1000.0)) if completed_ms > 0 else '',
+                    'clear_time_ms': int(fight.get('keystoneTime') or max(0, end_rel-start_rel)),
+                    'par_time_ms':0,
+                    'num_keystone_upgrades':bonus,
+                    'score':float(fight.get('rating') or 0),
+                    'url':f'https://www.warcraftlogs.com/reports/{urllib.parse.quote(code)}#fight={fight.get("id")}' if code else '',
+                    'wcl_report_code':code,
+                    'wcl_fight_id':fight.get('id'),
+                    'kill':bool(fight.get('kill')),
+                    'count_reached':fight.get('countReached'),
+                    'count_required':fight.get('countRequired'),
+                })
+        if not reports.get('has_more_pages'):
+            break
+    dedup = {run['id']:run for run in runs}
+    result = {
+        'ok':True,
+        'configured':True,
+        'characterId':character_id,
+        'reportCount':report_count,
+        'pagesRead':pages,
+        'runs':sorted(dedup.values(), key=lambda r: str(r.get('completed_at') or ''), reverse=True),
+        'source':'Warcraft Logs API v2',
+    }
+    return _cache_put(WARCRAFTLOGS_CACHE, cache_key, result)
+
+
 from flask import Flask, request, jsonify, Response, send_file
 app = Flask(__name__)
 
@@ -1263,7 +1412,6 @@ def api_character_stats():
     except Exception as e:
         return _json({'ok':False,'error':'Blizzard Character Statistics konnten nicht geladen werden','detail':str(e)},502)
 
-@app.get('/api/raiderio')
 def _raiderio_all_known_runs(data):
     """Combine every season-run list exposed by Raider.IO's public character API."""
     if not isinstance(data, dict):
@@ -1300,6 +1448,30 @@ def _raiderio_all_known_runs(data):
     return out
 
 
+@app.get('/api/warcraftlogs-status')
+def api_warcraftlogs_status():
+    return _json({'ok':True,'configured':warcraftlogs_configured(),'source':'Server-Umgebungsvariablen' if warcraftlogs_configured() else ''})
+
+@app.get('/api/warcraftlogs')
+def api_warcraftlogs():
+    region, realm, name = _q('region','eu'), _q('realm'), _q('name')
+    if not realm or not name:
+        return _json({'ok':False,'error':'Realm oder Charaktername fehlt'},400)
+    if not warcraftlogs_configured():
+        return _json({'ok':False,'configured':False,'setupRequired':True,'error':'Warcraft Logs API serverseitig noch nicht eingerichtet'},503)
+    try:
+        return _json(fetch_warcraftlogs_mplus_runs(region, realm, name))
+    except urllib.error.HTTPError as e:
+        detail=''
+        try:
+            detail=e.read().decode('utf-8',errors='replace').strip()
+        except Exception:
+            pass
+        return _json({'ok':False,'configured':True,'error':'Warcraft Logs konnte nicht geladen werden','detail':detail or str(e)},502)
+    except Exception as e:
+        return _json({'ok':False,'configured':True,'error':'Warcraft Logs konnte nicht geladen werden','detail':str(e)},502)
+
+@app.get('/api/raiderio')
 def api_raiderio():
     region, realm, name = _q('region','eu'), _q('realm'), _q('name')
     if not realm or not name:
@@ -1406,6 +1578,8 @@ def vercel_dispatch():
         'render-image': api_render_image,
         'character-stats': api_character_stats,
         'raiderio': api_raiderio,
+        'warcraftlogs-status': api_warcraftlogs_status,
+        'warcraftlogs': api_warcraftlogs,
         'bis-refresh': api_bis_refresh,
         'download-bis-tool': api_download_bis_tool,
     }
