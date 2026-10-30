@@ -784,7 +784,7 @@ function updateProfile(){
   // bleibt nur noch als Ausfallsicherung für Mythic+ erhalten.
   let bisListView='mythicplus';
   const bisListViewCache=new Map();
-  const BIS_VIEW_STORE='wow-bis-view-cache-v2:';
+  const BIS_VIEW_STORE='wow-bis-view-cache-v3:';
   function bisViewCacheKey(view,profile=activeProfile){return `${profile?.key||'unknown'}:${view}`}
   function bisViewStoreKey(view,profile=activeProfile){return BIS_VIEW_STORE+bisViewCacheKey(view,profile)}
   function bisViewLabel(view=bisListView){return view==='overall'?'Gesamt':view==='raid'?'Raid':'M+'}
@@ -820,11 +820,26 @@ function updateProfile(){
     if(['trinket1','trinket2'].includes(slot))return [getEquipped('trinket1'),getEquipped('trinket2')].filter(Boolean);
     return [getEquipped(slot)].filter(Boolean);
   }
+  function allEquippedItems(){
+    const items=getItems();if(!items)return[];
+    if(Array.isArray(items))return items.filter(Boolean);
+    const out=[];for(const v of Object.values(items||{}))if(v&&typeof v==='object')out.push(v);
+    return out;
+  }
+  function viewItemMatchesEquipped(item,eq){
+    if(!item||!eq)return false;
+    const id=Number(item.itemId)||0,n=normal(item.name||'');
+    return Boolean((id&&eqId(eq)===id)||(n&&normal(eqName(eq))===n));
+  }
   function viewTargetStatus(item){
     if(!liveCharacter||!profileClassMatches())return{key:'unknown',label:'Nicht geprüft'};
+    // KeystoneLoot und Raider.IO können austauschbare Plätze unterschiedlich nummerieren
+    // (Ring 1/2, Schmuck 1/2, Main-/Offhand). Zuerst deshalb die echte Item-ID in der
+    // gesamten angelegten Ausrüstung suchen; die Slotprüfung bleibt als zusätzlicher Fallback.
+    const all=allEquippedItems();
+    if(all.some(eq=>viewItemMatchesEquipped(item,eq)))return{key:'match',label:'BiS angelegt'};
     const eqs=equippedCandidatesForSlot(item.slot);if(!eqs.length)return{key:'missing',label:'Nicht ermittelt'};
-    const id=Number(item.itemId)||0,n=normal(item.name||'');
-    if(eqs.some(eq=>(id&&eqId(eq)===id)||(n&&normal(eqName(eq))===n)))return{key:'match',label:'BiS angelegt'};
+    if(eqs.some(eq=>viewItemMatchesEquipped(item,eq)))return{key:'match',label:'BiS angelegt'};
     return{key:'alternative',label:'Anderer Gegenstand'};
   }
   function viewGearFromPayload(profile,payload,view){
