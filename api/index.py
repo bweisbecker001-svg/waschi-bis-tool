@@ -1167,11 +1167,40 @@ def warcraftlogs_graphql(query, variables=None):
     return data.get('data') or {}
 
 
-def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=8):
+def warcraftlogs_current_mplus_zone():
+    query = '''
+    query CurrentMythicPlusZone {
+      worldData {
+        zones {
+          id name frozen
+        }
+      }
+    }'''
+    data = warcraftlogs_graphql(query)
+    zones = ((data.get('worldData') or {}).get('zones') or [])
+    candidates = []
+    for zone in zones:
+        name = str(zone.get('name') or '')
+        if 'mythic+' not in name.lower():
+            continue
+        candidates.append(zone)
+    if not candidates:
+        return None
+    active = [z for z in candidates if not bool(z.get('frozen'))]
+    pool = active or candidates
+    return max(pool, key=lambda z: int(z.get('id') or 0))
+
+
+def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=50):
     cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
     cached = _cache_get(WARCRAFTLOGS_CACHE, cache_key, 900)
     if cached is not None:
         return cached
+
+    season_zone = warcraftlogs_current_mplus_zone()
+    season_zone_id = int((season_zone or {}).get('id') or 0)
+    season_zone_name = str((season_zone or {}).get('name') or 'Mythic+')
+
     query = '''
     query CharacterMPlus($name:String!,$serverSlug:String!,$serverRegion:String!,$page:Int!){
       characterData{
@@ -1193,10 +1222,13 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=8):
         }
       }
     }'''
+
     runs = []
     report_count = 0
+    season_report_count = 0
     pages = 0
     character_id = None
+
     for page in range(1, max(1, int(max_pages)) + 1):
         data = warcraftlogs_graphql(query, {
             'name': str(name),
@@ -1207,28 +1239,38 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=8):
         character = ((data.get('characterData') or {}).get('character') or {})
         if not character:
             break
+
         character_id = character.get('id')
         reports = character.get('recentReports') or {}
         pages += 1
         rows = reports.get('data') or []
         report_count += len(rows)
+
         for report in rows:
+            report_zone = report.get('zone') or {}
+            if season_zone_id and int(report_zone.get('id') or 0) != season_zone_id:
+                continue
+
+            season_report_count += 1
             code = str(report.get('code') or '')
             report_start = float(report.get('startTime') or 0)
+
             for fight in report.get('fights') or []:
                 level = int(fight.get('keystoneLevel') or 0)
                 if level <= 0:
                     continue
+
                 start_rel = float(fight.get('startTime') or 0)
                 end_rel = float(fight.get('endTime') or 0)
                 completed_ms = report_start + max(end_rel, start_rel)
                 bonus = int(fight.get('keystoneBonus') or 0)
                 run_id = f'wcl:{code}:{fight.get("id")}'
+
                 runs.append({
                     'source':'Warcraft Logs',
                     'id':run_id,
                     'run_id':run_id,
-                    'dungeon': (fight.get('gameZone') or {}).get('name') or fight.get('name') or (report.get('zone') or {}).get('name') or 'Mythic+',
+                    'dungeon': (fight.get('gameZone') or {}).get('name') or fight.get('name') or season_zone_name,
                     'short_name':'WCL',
                     'mythic_level':level,
                     'completed_at': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime(completed_ms / 1000.0)) if completed_ms > 0 else '',
@@ -1243,16 +1285,28 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=8):
                     'count_reached':fight.get('countReached'),
                     'count_required':fight.get('countRequired'),
                 })
+
         if not reports.get('has_more_pages'):
             break
+
     dedup = {run['id']:run for run in runs}
+    season_runs = sorted(dedup.values(), key=lambda r: str(r.get('completed_at') or ''), reverse=True)
+    timed = sum(1 for r in season_runs if int(r.get('num_keystone_upgrades') or 0) > 0)
+    total = len(season_runs)
+
     result = {
         'ok':True,
         'configured':True,
         'characterId':character_id,
         'reportCount':report_count,
+        'seasonReportCount':season_report_count,
         'pagesRead':pages,
-        'runs':sorted(dedup.values(), key=lambda r: str(r.get('completed_at') or ''), reverse=True),
+        'seasonZoneId':season_zone_id,
+        'seasonZoneName':season_zone_name,
+        'runs':season_runs,
+        'runCount':total,
+        'timedCount':timed,
+        'outtimeCount':max(0,total-timed),
         'source':'Warcraft Logs API v2',
     }
     return _cache_put(WARCRAFTLOGS_CACHE, cache_key, result)
