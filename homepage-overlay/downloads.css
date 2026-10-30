@@ -69,5 +69,19 @@
 @media(max-width:900px){.battle-net-preview img{min-height:280px}}
 
 
-/* Header Waschi logo +50% */
-.brand-logo{transform:scale(1.5);transform-origin:left center;margin-right:10px}
+/* Header Waschi logo +50% - fully visible and sharper */
+.brand-logo{
+  transform:none !important;
+  width:66px !important;
+  height:66px !important;
+  min-width:66px !important;
+  flex:0 0 66px !important;
+  margin-right:12px !important;
+  background-size:contain !important;
+  background-position:center center !important;
+  background-repeat:no-repeat !important;
+  image-rendering:auto;
+}
+.brand{overflow:visible !important;align-items:center}
+.header,.navwrap{overflow:visible !important}
+
