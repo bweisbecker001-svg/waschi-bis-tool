@@ -1633,6 +1633,14 @@ function updateProfile(){
     const blizzardPages=blizzardCharacterUrls().map(x=>({...x,identity:{...x.identity}}));
     const isCurrent=()=>thisLoad===statsLoadSerial&&expectedIdentity===loadedCharacterIdentity&&Boolean(liveCharacter);
     window.__lastStatReadError='';
+    const verifiedAtLoad=applyVerifiedIngameStats(null,{});
+    if(verifiedAtLoad.verified&&isCurrent()){
+      try{const key=manualKey();if(key)localStorage.removeItem(key)}catch{}
+      characterStats={...verifiedAtLoad.stats,statSources:verifiedAtLoad.statSources,sourceLabel:'Verifiziert · Ingame-Werte · präzise Referenz',confidence:'hoch',verifiedBy:3,characterIdentity:expectedIdentity};
+      statsReadStatus='success';
+      renderStatComparison();
+      return true;
+    }
     statsReadStatus='loading';renderStatComparison();
     let local='';
     const serverErrors=[];
