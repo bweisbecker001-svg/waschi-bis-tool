@@ -114,21 +114,23 @@ def fetch_public_armory_stats(region, realm, name):
 
 def reconcile_display_stats(api_stats, armory_stats):
     result=dict(api_stats or {})
-    replaced={}
+    compared={}
     if not armory_stats:
-        return result,replaced
+        return result,compared
     for key in ('crit','haste','mastery','versatility'):
         av=armory_stats.get(key)
         bv=result.get(key)
-        if isinstance(av,(int,float)):
-            # Für die Anzeige ist der Prozentwert der offiziellen Charakterseite
-            # maßgeblich: Er entspricht der Paper-Doll-Anzeige im Spiel und enthält
-            # auch klassen-/spezialisierungsabhängige Modifikatoren, die sich aus
-            # dem reinen Rating nicht zuverlässig rekonstruieren lassen.
+        if not isinstance(av,(int,float)):
+            continue
+        # Die Character Statistics API liefert die präzisen Prozentwerte. Die
+        # öffentliche Charakterseite rundet diese Werte teilweise stark und darf
+        # deshalb einen vorhandenen API-Wert niemals überschreiben.
+        if not isinstance(bv,(int,float)):
             result[key]=float(av)
-            if not isinstance(bv,(int,float)) or abs(float(av)-float(bv))>=0.05:
-                replaced[key]={'api':bv,'armory':float(av),'delta':None if not isinstance(bv,(int,float)) else round(float(av)-float(bv),3)}
-    return result,replaced
+            compared[key]={'api':bv,'armory':float(av),'delta':None,'fallback':True}
+        elif abs(float(av)-float(bv))>=0.05:
+            compared[key]={'api':float(bv),'armory':float(av),'delta':round(float(av)-float(bv),3),'fallback':False}
+    return result,compared
 
 
 def _read_blizzard_config_file(path):
@@ -1244,12 +1246,13 @@ def api_character_stats():
         applied_pct = {k:v for k,v in correction.get('appliedPercent',{}).items() if float(v or 0)>0}
         addon_note = ' · inkl. fehlender Verzauberungs-/Edelsteinboni' if applied else ' · Verzauberungen/Edelsteine geprüft'
         sources = {k:'Automatisch · Blizzard API · Character Statistics + Equipment' for k in stats}
-        for k in reconciled:
-            sources[k]='Automatisch · Blizzard Charakterseite · Ingame-Abgleich'
+        for k,v in reconciled.items():
+            if v.get('fallback'):
+                sources[k]='Automatisch · Blizzard Charakterseite · Fallback'
         method='Blizzard API · Character Statistics + Equipment'+addon_note
         if reconciled:
-            method += ' · Hauptwerte mit Blizzard-Charakterseite abgeglichen'
-        return _json({'ok': True, 'stats': stats, 'statSources': sources, 'method':method, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':3 if reconciled else 2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'armoryEndpoint':armory_url, 'armorySource':armory_source, 'apiRawStats':api_stats, 'armoryStats':armory_stats, 'reconciledStats':reconciled, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details})
+            method += ' · öffentliche Charakterseite nur zur Plausibilitätsprüfung'
+        return _json({'ok': True, 'stats': stats, 'statSources': sources, 'method':method, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':3 if armory_stats else 2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'armoryEndpoint':armory_url, 'armorySource':armory_source, 'apiRawStats':api_stats, 'armoryStats':armory_stats, 'reconciledStats':reconciled, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details})
     except urllib.error.HTTPError as e:
         detail=f'HTTP {e.code}'
         if e.code==404: detail += ' · Charakter/Realm nicht gefunden oder Profil noch nicht aktualisiert'
