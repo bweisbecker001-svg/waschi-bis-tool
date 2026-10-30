@@ -870,16 +870,76 @@ MURLOK_SLOT_MAP = {
 
 def _parse_murlok_bis_markdown(text):
     text = str(text or '')
-    m = re.search(r'Based on\s+(\d+)\s+Characters', text, re.I)
-    sample_size = int(m.group(1)) if m else 0
-    section = re.search(r'(?is)##\s+Best-in-Slot Gear.*?(?=\n##\s+Embellishments|\Z)', text)
-    if not section:
+    sample_match = re.search(r'Based on\s+(\d+)\s+Characters', text, re.I)
+    sample_size = int(sample_match.group(1)) if sample_match else 0
+    sec_start = text.lower().find('## best-in-slot gear')
+    if sec_start < 0:
         raise RuntimeError('Murlok-BiS-Bereich nicht gefunden')
+    sec_end = text.lower().find('\n## embellishments', sec_start)
+    section = text[sec_start:sec_end if sec_end >= 0 else len(text)]
     current_slot = ''
     items = []
-    for raw_line in section.group(0).splitlines():
+    for raw_line in section.splitlines():
         line = raw_line.strip()
-        hm = re.match(r'###\s+(.+?)\s*    m = re.search(r'KeystoneLoot:v3,([A-Za-z0-9+/=_-]+)', str(import_string))
+        if line.startswith('### '):
+            current_slot = MURLOK_SLOT_MAP.get(line[4:].strip().lower(), '')
+            continue
+        if not current_slot or 'wowhead.com' not in line.lower():
+            continue
+        link = re.search(r'\[([^\]]+?)\]\((https?://[^)]*wowhead\.com/[^)]*)\)', line, re.I)
+        if not link:
+            continue
+        url = link.group(2)
+        item_match = re.search(r'(?:item=|/item/)(\d+)', url, re.I)
+        if not item_match:
+            continue
+        label = re.sub(r'\s+', ' ', link.group(1)).strip()
+        item_id = int(item_match.group(1))
+        count = 0
+        count_match = re.search(r'\s(\d+)\s*$', label)
+        if count_match:
+            count = int(count_match.group(1))
+            label = label[:count_match.start()].strip()
+        label = re.sub(r'\s+(?:Set|Craft)\s*$', '', label, flags=re.I).strip()
+        if not label:
+            label = f'Gegenstand #{item_id}'
+        items.append({
+            'slot': current_slot,
+            'itemId': item_id,
+            'name': label,
+            'usageCount': count,
+            'sampleSize': sample_size,
+            'usagePct': round((count / sample_size * 100.0), 1) if count and sample_size else None,
+            'wowheadUrl': url,
+        })
+    if not items:
+        raise RuntimeError('Keine Murlok-BiS-Gegenstaende erkannt')
+    return items, sample_size
+
+
+def fetch_murlok_meta(profile):
+    page = _murlok_profile_url(profile)
+    if not page:
+        raise RuntimeError('Fuer dieses Profil ist keine Murlok-M+-Quelle hinterlegt')
+    errors = []
+    for url in ('https://r.jina.ai/' + page, page):
+        try:
+            raw, _, _ = fetch(url, timeout=20)
+            items, sample_size = _parse_murlok_bis_markdown(raw.decode('utf-8', 'replace'))
+            return {
+                'items': items,
+                'sampleSize': sample_size,
+                'sourceUrl': page,
+                'source': 'Murlok.io · Top-Spieler-Meta',
+                'fetchedAt': time.strftime('%Y-%m-%dT%H:%M:%SZ', time.gmtime()),
+            }
+        except Exception as exc:
+            errors.append(str(exc))
+    raise RuntimeError('Murlok konnte nicht ausgewertet werden: ' + ' · '.join(errors[-2:]))
+
+
+def decode_keystone(import_string, spec_id):
+    m = re.search(r'KeystoneLoot:v3,([A-Za-z0-9+/=_-]+)', str(import_string))
     if not m:
         raise RuntimeError('KeystoneLoot-v3-Importstring fehlt')
     token = m.group(1).replace('-', '+').replace('_', '/')
