@@ -1733,7 +1733,7 @@ function updateProfile(){
     if(requestSerial!==characterLoadSerial)return;
     if(warcraftLogs&&Array.isArray(warcraftLogs.runs)){
       fetchedCharacter.warcraft_logs_runs=warcraftLogs.runs;
-      fetchedCharacter.warcraft_logs_meta={reportCount:warcraftLogs.reportCount||0,pagesRead:warcraftLogs.pagesRead||0,source:warcraftLogs.source||'Warcraft Logs API v2'};
+      fetchedCharacter.warcraft_logs_meta={reportCount:warcraftLogs.reportCount||0,seasonReportCount:warcraftLogs.seasonReportCount||0,pagesRead:warcraftLogs.pagesRead||0,seasonZoneId:warcraftLogs.seasonZoneId||0,seasonZoneName:warcraftLogs.seasonZoneName||'',runCount:warcraftLogs.runCount??warcraftLogs.runs.length,timedCount:warcraftLogs.timedCount??0,outtimeCount:warcraftLogs.outtimeCount??0,source:warcraftLogs.source||'Warcraft Logs API v2'};
     }else{
       fetchedCharacter.warcraft_logs_runs=[];
       fetchedCharacter.warcraft_logs_meta=null;
@@ -1812,16 +1812,32 @@ function updateProfile(){
     merged.sort((a,b)=>new Date(b.completed_at||0)-new Date(a.completed_at||0));
     const kept=merged.slice(0,5);saveRecentKeysCache(kept);return{runs:kept,freshCount:fresh.length};
   }
-  function allKnownDungeonRuns(){return updateSeasonRunArchive()}
+  function allKnownDungeonRuns(){
+    const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs.map(cleanRecentRun):[];
+    if(wcl.length){
+      const seen=new Set(),rows=[];
+      for(const r of wcl){const id=runIdentity(r);if(!id||seen.has(id))continue;seen.add(id);rows.push(r)}
+      rows.sort((a,b)=>new Date(b.completed_at||0)-new Date(a.completed_at||0));
+      return rows;
+    }
+    return updateSeasonRunArchive();
+  }
   function characterDungeonRunCounts(){
     const raw=Array.isArray(liveCharacter?.mythic_plus_dungeon_run_counts)?liveCharacter.mythic_plus_dungeon_run_counts:[];
     return raw.map(x=>({zone_id:Number(x?.zone_id||0)||0,dungeon:String(x?.dungeon||x?.name||x?.short_name||'Unbekannter Dungeon'),short_name:String(x?.short_name||''),total:Math.max(0,Number(x?.season_runs_total??x?.total??0)||0),timed:Math.max(0,Number(x?.season_runs_timed??x?.timed??0)||0)})).filter(x=>x.dungeon!=='Unbekannter Dungeon'&&x.total>0);
   }
   function authoritativeRunTotals(){
+    const meta=liveCharacter?.warcraft_logs_meta;
+    const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs:[];
+    if(meta&&wcl.length){
+      const total=Number(meta.runCount??wcl.length)||0;
+      const timed=Number(meta.timedCount??wcl.filter(r=>Number(r?.num_keystone_upgrades||0)>0).length)||0;
+      return{source:'Warcraft Logs',counts:[],total,timed,outtime:Math.max(0,Number(meta.outtimeCount??(total-timed))||0)};
+    }
     const counts=characterDungeonRunCounts();
     if(!counts.length)return null;
     const total=counts.reduce((n,x)=>n+x.total,0),timed=counts.reduce((n,x)=>n+Math.min(x.total,x.timed),0);
-    return{counts,total,timed,outtime:Math.max(0,total-timed)};
+    return{source:'Raider.IO',counts,total,timed,outtime:Math.max(0,total-timed)};
   }
   function dungeonIdentity(r){return r?.map_challenge_mode_id?`map:${r.map_challenge_mode_id}`:`name:${normal(r?.dungeon||r?.short_name||'')}`}
   function runIsTimed(r){const clear=Number(r?.clear_time_ms||0),par=Number(r?.par_time_ms||0),up=Number(r?.num_keystone_upgrades||0);return Boolean(up>0||(clear>0&&par>0&&clear<=par))}
@@ -1924,12 +1940,12 @@ function updateProfile(){
     if(count)count.textContent=`${totalRuns} Run${totalRuns===1?'':'s'}`;
     if(totalEl)totalEl.textContent=String(totalRuns);if(timedEl)timedEl.textContent=String(timedRuns);if(outtimeEl)outtimeEl.textContent=String(outRuns);
     renderDungeonPreferences(groups);
-    if(info){const exactNote=exactTotals?` Die Gesamtzahlen stammen direkt aus dem Raider.IO-Profil von ${liveCharacter.name}; ${detailRuns} davon sind mit vollständigen Laufdetails lokal verfügbar.`:'';info.className='api-message mplus-board-note'+(totalRuns?' ok':' warning');info.textContent=totalRuns?`✓ ${totalRuns} Mythic+-Runs für den aktuell geladenen Charakter ${liveCharacter.name}: ${timedRuns} intime · ${outRuns} outtime/abgeschlossen.${exactNote}`:'Raider.IO meldet für diesen Charakter aktuell keine Mythic+-Runs der laufenden Saison.'}
+    if(info){const exactNote=exactTotals?.source==='Warcraft Logs'?` Die Saisonanzahl stammt direkt aus Warcraft Logs (${escapeHtml(liveCharacter?.warcraft_logs_meta?.seasonZoneName||'aktuelle M+-Saison')}).`:exactTotals?.source==='Raider.IO'?` Warcraft Logs ist nicht verbunden; die Zahl ist daher nur eine Raider.IO-Näherung.`:` Warcraft Logs ist nicht verbunden; eine vollständige Saisonanzahl kann nicht bestätigt werden.`;info.className='api-message mplus-board-note'+(totalRuns?' ok':' warning');info.textContent=totalRuns?`✓ ${totalRuns} Mythic+-Runs für den aktuell geladenen Charakter ${liveCharacter.name}: ${timedRuns} intime · ${outRuns} outtime/abgeschlossen.${exactNote}`:'Für diesen Charakter wurden aktuell keine M+-Runs der laufenden Saison erkannt.'}
     if(!totalRuns){host.innerHTML='<div class="muted">Keine Mythic+-Runs der aktuellen Saison erfasst.</div>';return groups}
     host.innerHTML=groups.map(g=>{
-      const highest=Math.max(...g.runs.map(r=>Number(r.mythic_level||0))),exactCount=characterDungeonRunCounts().find(c=>(c.zone_id&&g.runs.some(r=>Number(r.zone_id||0)===c.zone_id))||normal(c.dungeon)===normal(g.dungeon)||normal(c.short_name)===normal(g.short_name)),groupTotal=exactCount?.total??g.runs.length,timed=exactCount?.timed??g.runs.filter(runIsTimed).length,outtime=Math.max(0,groupTotal-timed);
+      const highest=Math.max(...g.runs.map(r=>Number(r.mythic_level||0))),wclActive=Array.isArray(liveCharacter?.warcraft_logs_runs)&&liveCharacter.warcraft_logs_runs.length>0,exactCount=wclActive?null:characterDungeonRunCounts().find(c=>(c.zone_id&&g.runs.some(r=>Number(r.zone_id||0)===c.zone_id))||normal(c.dungeon)===normal(g.dungeon)||normal(c.short_name)===normal(g.short_name)),groupTotal=exactCount?.total??g.runs.length,timed=exactCount?.timed??g.runs.filter(runIsTimed).length,outtime=Math.max(0,groupTotal-timed);
       const rows=g.runs.map((r,i)=>{const url=runRioUrl(r),score=Number(r.score)>0?fmt(r.score):'—',cls=runResultClass(r);return`<tr><td class="mplus-run-index">${i+1}</td><td>${escapeHtml(formatRunDate(r.completed_at))}</td><td><span class="key-level">+${escapeHtml(r.mythic_level||'?')}</span></td><td><span class="key-result ${cls}">${escapeHtml(runResult(r))}</span></td><td><span class="mplus-score">${escapeHtml(score)}</span></td><td>${escapeHtml(formatRunDuration(r.clear_time_ms))}</td><td>${url?`<a class="btn key-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">Run öffnen ↗</a>`:'—'}</td></tr>`}).join('');
-      return`<details class="mplus-run-group"><summary><span class="mplus-run-group-title"><strong>${escapeHtml(g.dungeon)}</strong>${g.short_name?`<span class="small">${escapeHtml(g.short_name)}</span>`:''}</span><span class="mplus-run-count">${groupTotal} Run${groupTotal===1?'':'s'}</span><span class="mplus-run-meta">Höchster +${highest}</span><span class="mplus-run-meta">${timed} intime · ${outtime} outtime</span></summary><div class="table-wrap"><table class="dungeon-progress-table mplus-run-table"><thead><tr><th>#</th><th>Datum</th><th>Key</th><th>Ergebnis</th><th>Score</th><th>Dauer</th><th>Raider.IO</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
+      return`<details class="mplus-run-group"><summary><span class="mplus-run-group-title"><strong>${escapeHtml(g.dungeon)}</strong>${g.short_name?`<span class="small">${escapeHtml(g.short_name)}</span>`:''}</span><span class="mplus-run-count">${groupTotal} Run${groupTotal===1?'':'s'}</span><span class="mplus-run-meta">Höchster +${highest}</span><span class="mplus-run-meta">${timed} intime · ${outtime} outtime</span></summary><div class="table-wrap"><table class="dungeon-progress-table mplus-run-table"><thead><tr><th>#</th><th>Datum</th><th>Key</th><th>Ergebnis</th><th>Score</th><th>Dauer</th><th>Quelle</th></tr></thead><tbody>${rows}</tbody></table></div></details>`;
     }).join('');
     return groups;
   }
