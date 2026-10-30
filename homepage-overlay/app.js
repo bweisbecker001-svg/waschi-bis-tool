@@ -155,8 +155,10 @@ function forceHeaderLogoSize(){
   }
   const navwrap=logo.closest(".navwrap");
   if(navwrap){
-    navwrap.style.setProperty("min-height","165px","important");
+    navwrap.style.removeProperty("min-height");
     navwrap.style.setProperty("overflow","visible","important");
+    navwrap.style.setProperty("padding-top","0","important");
+    navwrap.style.setProperty("padding-bottom","0","important");
   }
 }
 function boot(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan()}
