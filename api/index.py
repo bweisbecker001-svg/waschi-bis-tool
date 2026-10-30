@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import io
 import base64
 import json
 import mimetypes
@@ -13,6 +14,7 @@ import urllib.parse
 import urllib.request
 import webbrowser
 import zlib
+import zipfile
 from pathlib import Path
 
 HOST = '127.0.0.1'
@@ -1273,6 +1275,43 @@ def api_raiderio():
     except Exception as e:
         return _json({'error':'Raider.IO konnte nicht geladen werden','detail':str(e)},502)
 
+@app.get('/downloads/Waschi_WoW_BiS_Tool.zip')
+@app.get('/api/download-bis-tool')
+def api_download_bis_tool():
+    """Erzeugt das Downloadpaket immer aus demselben Repository-Stand wie die Online-Version."""
+    try:
+        html_path = DASHBOARD if DASHBOARD.exists() else (ROOT / 'public' / 'index.html')
+        if html_path.exists():
+            html = html_path.read_text(encoding='utf-8')
+        else:
+            parts = sorted((ROOT / 'chunks').glob('index.part*.txt'))
+            if not parts:
+                return _json({'ok': False, 'error': 'BiS-Tool-Dateien wurden nicht gefunden'}, 404)
+            html = ''.join(p.read_text(encoding='utf-8') for p in parts)
+
+        payload = io.BytesIO()
+        commit = os.environ.get('VERCEL_GIT_COMMIT_SHA', 'aktueller-stand')
+        with zipfile.ZipFile(payload, 'w', compression=zipfile.ZIP_DEFLATED, compresslevel=9) as z:
+            z.writestr('Waschi_WoW_BiS_Tool/index.html', html)
+            for rel in ('api/index.py', 'requirements.txt', 'vercel.json', 'README_WEB.md', 'Dockerfile', '.env.example'):
+                p = ROOT / rel
+                if p.exists():
+                    z.write(p, 'Waschi_WoW_BiS_Tool/' + rel)
+            z.writestr('Waschi_WoW_BiS_Tool/VERSION.txt', f'Online- und Downloadstand: {commit}\n')
+        payload.seek(0)
+        return Response(
+            payload.getvalue(),
+            status=200,
+            content_type='application/zip',
+            headers={
+                'Content-Disposition': 'attachment; filename="Waschi_WoW_BiS_Tool.zip"',
+                'Cache-Control': 'public, max-age=300, must-revalidate'
+            }
+        )
+    except Exception as e:
+        return _json({'ok': False, 'error': 'Downloadpaket konnte nicht erstellt werden', 'detail': str(e)}, 500)
+
+
 @app.get('/api/bis-refresh')
 def api_bis_refresh():
     key = _q('profile')
@@ -1309,6 +1348,7 @@ def vercel_dispatch():
         'character-stats': api_character_stats,
         'raiderio': api_raiderio,
         'bis-refresh': api_bis_refresh,
+        'download-bis-tool': api_download_bis_tool,
     }
     fn = table.get(route)
     return fn() if fn else _json({'ok':False,'error':'Unbekannter API-Endpunkt'},404)
