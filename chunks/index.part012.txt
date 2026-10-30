@@ -1679,7 +1679,7 @@ function updateProfile(){
   function refreshIntervalLabel(h){if(h<1)return `alle ${Math.max(1,Math.round(h*60))} Minuten`;return h===1?'jede Stunde':`alle ${h} Stunden`}
   function updateRefreshSummary(){const h=Number($('refreshHours').value||0.25);$('refreshSummary').textContent=refreshIntervalLabel(h)}
   function scheduleRefresh(){if(refreshTimer)clearInterval(refreshTimer);const ms=Math.max(300000,Number($('refreshHours').value||0.25)*3600000);refreshTimer=setInterval(()=>refreshCharacter(false),ms)}
-  const RIO_CHARACTER_FIELDS='gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs,mythic_plus_dungeon_run_counts';
+  const RIO_CHARACTER_FIELDS='gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs';
   async function fetchRioDirect(s){const u=new URL('https://raider.io/api/v1/characters/profile');u.searchParams.set('region',s.region);u.searchParams.set('realm',s.realm);u.searchParams.set('name',s.character);u.searchParams.set('fields',RIO_CHARACTER_FIELDS);const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.json()}
   function hasRioDungeonHistory(d){return Boolean(d&&(['mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_dungeon_run_counts'].some(k=>Array.isArray(d[k]))))}
   function mergeRioCharacter(base,extra){if(!base)return extra;if(!extra)return base;const merged={...extra,...base};for(const k of ['mythic_plus_recent_runs','mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_scores_by_season','mythic_plus_dungeon_run_counts'])if(Array.isArray(extra[k]))merged[k]=extra[k];if(base.gear)merged.gear=base.gear;return merged}
@@ -1688,6 +1688,19 @@ function updateProfile(){
     try{const u=new URL(local,location.href);u.searchParams.set('region',s.region);u.searchParams.set('realm',s.realm);u.searchParams.set('name',s.character);const r=await fetch(u,{cache:'no-store'});if(r.ok)localData=await r.json()}catch{}
     if(localData&&hasRioDungeonHistory(localData))return localData;
     try{return mergeRioCharacter(localData,await fetchRioDirect(s))}catch(e){if(localData)return localData;throw e}
+  }
+  async function fetchWarcraftLogs(s){
+    const local=location.protocol==='file:'?'http://127.0.0.1:8765/api/warcraftlogs':'/api/warcraftlogs';
+    try{
+      const u=new URL(local,location.href);
+      u.searchParams.set('region',s.region);
+      u.searchParams.set('realm',s.realm);
+      u.searchParams.set('name',s.character);
+      const r=await fetch(u,{cache:'no-store'});
+      if(!r.ok)return null;
+      const d=await r.json();
+      return d&&d.ok?d:null;
+    }catch{return null}
   }
   async function refreshCharacter(showErrors=true){
     const s=saveSettings();
@@ -1715,6 +1728,16 @@ function updateProfile(){
       return
     }
     if(requestSerial!==characterLoadSerial)return;
+
+    const warcraftLogs=await fetchWarcraftLogs(s);
+    if(requestSerial!==characterLoadSerial)return;
+    if(warcraftLogs&&Array.isArray(warcraftLogs.runs)){
+      fetchedCharacter.warcraft_logs_runs=warcraftLogs.runs;
+      fetchedCharacter.warcraft_logs_meta={reportCount:warcraftLogs.reportCount||0,pagesRead:warcraftLogs.pagesRead||0,source:warcraftLogs.source||'Warcraft Logs API v2'};
+    }else{
+      fetchedCharacter.warcraft_logs_runs=[];
+      fetchedCharacter.warcraft_logs_meta=null;
+    }
 
     liveCharacter=fetchedCharacter;
     loadedCharacterIdentity=resolvedCharacterIdentity(fetchedCharacter,s)||requestedIdentity;
@@ -1755,7 +1778,7 @@ function updateProfile(){
   function recentKeysStoreKey(){return scopedRunStorageKey(RECENT_KEYS_STORE)}
   function seasonRunArchiveKey(){return scopedRunStorageKey(SEASON_RUN_ARCHIVE_STORE)}
   function runIdentity(r){return String(r?.url||r?.run_url||r?.id||r?.run_id||[r?.completed_at,r?.dungeon,r?.short_name,r?.mythic_level,r?.clear_time_ms].join('|'))}
-  function cleanRecentRun(r){const d=(r?.dungeon&&typeof r.dungeon==='object')?r.dungeon:null;return{dungeon:d?.name||r?.dungeon||r?.short_name||'Unbekannter Dungeon',short_name:d?.short_name||r?.short_name||'',mythic_level:Number(r?.mythic_level??r?.level??0)||0,completed_at:r?.completed_at||'',clear_time_ms:Number(r?.clear_time_ms??r?.clearTimeMs??0)||0,par_time_ms:Number(r?.par_time_ms??r?.keystone_time_ms??r?.parTimeMs??0)||0,num_keystone_upgrades:Number(r?.num_keystone_upgrades??r?.num_chests??r?.keystone_upgrades??0)||0,score:Number(r?.score??r?.run_score??0)||0,url:r?.url||r?.run_url||'',id:r?.id??r?.run_id??r?.keystone_run_id??null,map_challenge_mode_id:Number(r?.map_challenge_mode_id??d?.map_challenge_mode_id??0)||0,zone_id:Number(r?.zone_id??d?.zone_id??0)||0,icon_url:r?.icon_url||d?.icon_url||''}}
+  function cleanRecentRun(r){const d=(r?.dungeon&&typeof r.dungeon==='object')?r.dungeon:null;return{source:r?.source||'Raider.IO',dungeon:d?.name||r?.dungeon||r?.short_name||'Unbekannter Dungeon',short_name:d?.short_name||r?.short_name||'',mythic_level:Number(r?.mythic_level??r?.level??0)||0,completed_at:r?.completed_at||'',clear_time_ms:Number(r?.clear_time_ms??r?.clearTimeMs??0)||0,par_time_ms:Number(r?.par_time_ms??r?.keystone_time_ms??r?.parTimeMs??0)||0,num_keystone_upgrades:Number(r?.num_keystone_upgrades??r?.num_chests??r?.keystone_upgrades??0)||0,score:Number(r?.score??r?.run_score??0)||0,url:r?.url||r?.run_url||'',id:r?.id??r?.run_id??r?.keystone_run_id??null,map_challenge_mode_id:Number(r?.map_challenge_mode_id??d?.map_challenge_mode_id??0)||0,zone_id:Number(r?.zone_id??d?.zone_id??0)||0,icon_url:r?.icon_url||d?.icon_url||''}}
   function readScopedRunStore(key){
     try{
       const raw=JSON.parse(localStorage.getItem(key)||'null');
@@ -1771,7 +1794,7 @@ function updateProfile(){
   function saveRecentKeysCache(a){writeScopedRunStore(recentKeysStoreKey(),a,5)}
   function getSeasonRunArchive(){return readScopedRunStore(seasonRunArchiveKey())}
   function saveSeasonRunArchive(a){writeScopedRunStore(seasonRunArchiveKey(),a,2500)}
-  function liveSeasonRunArrays(){return['mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_recent_runs']}
+  function liveSeasonRunArrays(){return['mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_recent_runs','warcraft_logs_runs']}
   function updateSeasonRunArchive(){
     if(!liveCharacter||!activeRunOwnerIdentity())return[];
     const seen=new Set(),merged=[];
@@ -1840,8 +1863,8 @@ function updateProfile(){
     if(count)count.textContent=String(rows.length);
     if(highestScore)highestScore.textContent=maxScore>0?fmt(maxScore):'—';
     if(highestKey)highestKey.textContent=maxKey>0?`+${maxKey}`:'—';
-    if(source)source.textContent=`Raider.IO · ${rows.length} erfolgreiche Dungeon${rows.length===1?'':'s'}`;
-    if(info){info.className='api-message mplus-board-note'+(rows.length?' ok':' warning');info.textContent=rows.length?`✓ ${rows.length} erfolgreiche Dungeon-Bestleistung${rows.length===1?'':'en'} für ${liveCharacter.name} erkannt. Pro Dungeon wird nur der höchste intime Key berücksichtigt; sortiert wird nach Raider.IO-Punktzahl von hoch nach niedrig.`:'Raider.IO meldet für diesen Charakter aktuell keine erfolgreich innerhalb des Zeitlimits abgeschlossenen Dungeon-Runs der laufenden Saison.'}
+    if(source){const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs.length:0;source.textContent=`Raider.IO${wcl?` + Warcraft Logs (${wcl} geloggte Runs)`:''} · ${rows.length} erfolgreiche Dungeon${rows.length===1?'':'s'}`;}
+    if(info){const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs.length:0;info.className='api-message mplus-board-note'+(rows.length?' ok':' warning');info.textContent=rows.length?`✓ ${rows.length} erfolgreiche Dungeon-Bestleistung${rows.length===1?'':'en'} für ${liveCharacter.name} erkannt. Raider.IO wird durch ${wcl} geloggte Warcraft-Logs-M+-Run${wcl===1?'':'s'} ergänzt. Pro Dungeon wird der höchste intime Key berücksichtigt.`:'Für diesen Charakter wurden aktuell keine erfolgreich innerhalb des Zeitlimits abgeschlossenen M+-Runs aus Raider.IO oder Warcraft Logs erkannt.'}
     if(!rows.length){body.innerHTML='<tr><td colspan="8" class="muted">Keine erfolgreichen Mythic+-Dungeon-Abschlüsse im Zeitlimit gemeldet.</td></tr>';return rows}
     body.innerHTML=rows.map((r,i)=>{const url=runRioUrl(r),score=Number(r.score)>0?fmt(r.score):'—';return`<tr><td><span class="mplus-rank">${i+1}</span></td><td><strong>${escapeHtml(r.dungeon)}</strong>${r.short_name?`<div class="small">${escapeHtml(r.short_name)}</div>`:''}</td><td><span class="dungeon-max-key">+${escapeHtml(r.mythic_level)}</span></td><td><span class="mplus-score">${escapeHtml(score)}</span></td><td><span class="key-result timed">${escapeHtml(runResult(r))}</span></td><td>${escapeHtml(formatRunDate(r.completed_at))}</td><td>${escapeHtml(formatRunDuration(r.clear_time_ms))}</td><td>${url?`<a class="btn key-link" href="${escapeHtml(url)}" target="_blank" rel="noopener">Run öffnen ↗</a>`:'—'}</td></tr>`}).join('');
     return rows;
