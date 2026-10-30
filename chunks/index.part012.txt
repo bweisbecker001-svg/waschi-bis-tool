@@ -790,7 +790,7 @@ function updateProfile(){
   // bleibt nur noch als Ausfallsicherung für Mythic+ erhalten.
   let bisListView='mythicplus';
   const bisListViewCache=new Map();
-  const BIS_VIEW_STORE='wow-bis-view-cache-v6:';
+  const BIS_VIEW_STORE='wow-bis-view-cache-v7:';
   function bisViewCacheKey(view,profile=activeProfile){return `${profile?.key||'unknown'}:${view}`}
   function bisViewStoreKey(view,profile=activeProfile){return BIS_VIEW_STORE+bisViewCacheKey(view,profile)}
   function bisViewLabel(view=bisListView){return view==='overall'?'Gesamt':view==='raid'?'Raid':'M+'}
@@ -877,10 +877,31 @@ function updateProfile(){
   }
   async function fetchMurlokMeta(profile=activeProfile){
     try{
-      const base=webApiBase();const u=new URL('/api/murlok-meta',base||location.origin);u.searchParams.set('profile',profile.key);
-      const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
-      if(!r.ok||!d.ok||!Array.isArray(d.items))throw new Error(d?.detail||d?.error||`HTTP ${r.status}`);
-      return d;
+      const direct=String(profile?.murlokTargetSource||'').trim();
+      const src=(profile?.sources||[]).find(x=>/murlok/i.test(String(x?.label||''))&&x?.url);
+      const page=direct||String(src?.url||'').trim();
+      if(!page)throw new Error('Keine Murlok-M+-Quelle für dieses Profil hinterlegt');
+      const r=await fetch('https://r.jina.ai/'+page,{cache:'no-store'});if(!r.ok)throw new Error(`Reader HTTP ${r.status}`);
+      const text=await r.text(),low=text.toLowerCase(),a=low.indexOf('## best-in-slot gear');
+      if(a<0)throw new Error('Murlok-BiS-Bereich nicht gefunden');
+      const b=low.indexOf('\n## embellishments',a),section=text.slice(a,b>=0?b:text.length);
+      const sm=text.match(/Based on\s+(\d+)\s+Characters/i),sampleSize=sm?Number(sm[1]):0;
+      const slots={head:'head',neck:'neck',shoulders:'shoulder',shoulder:'shoulder',back:'back',chest:'chest',wrist:'wrist',wrists:'wrist',hands:'hands',waist:'waist',legs:'legs',feet:'feet',rings:'finger1',ring:'finger1',trinkets:'trinket1',trinket:'trinket1','main hand':'mainhand','off hand':'offhand',weapon:'mainhand'};
+      const items=[];let slot='';
+      for(const raw of section.split(/\r?\n/)){
+        const line=raw.trim();
+        if(line.startsWith('### ')){slot=slots[line.slice(4).trim().toLowerCase()]||'';continue}
+        if(!slot||!line.toLowerCase().includes('wowhead.com'))continue;
+        const clean=line.replace(/!\[[^\]]*\]\([^)]*\)/g,'');
+        const lm=clean.match(/\[([^\]]+?)\]\((https?:\/\/[^)]*wowhead\.com\/[^)]*)\)/i);if(!lm)continue;
+        const im=lm[2].match(/(?:item=|\/item\/)(\d+)/i);if(!im)continue;
+        const parts=lm[1].replace(/\s+/g,' ').trim().split('*').map(x=>x.trim()).filter(Boolean);
+        let usageCount=0;if(parts.length&&/^\d+$/.test(parts[parts.length-1]))usageCount=Number(parts.pop());
+        const name=parts.filter(x=>!/^(set|craft)$/i.test(x)).join(' ').trim()||`Gegenstand #${im[1]}`;
+        items.push({slot,itemId:Number(im[1]),name,usageCount,sampleSize,usagePct:usageCount&&sampleSize?Math.round(usageCount/sampleSize*1000)/10:null,wowheadUrl:lm[2]});
+      }
+      if(!items.length)throw new Error('Keine Murlok-BiS-Gegenstände erkannt');
+      return{ok:true,items,sampleSize,source:'Murlok.io · Top-Spieler-Meta',sourceUrl:page,fetchedAt:new Date().toISOString()};
     }catch(e){
       console.warn('Murlok-Meta konnte nicht geladen werden:',e);
       return null;
@@ -1514,11 +1535,7 @@ function updateProfile(){
     return isCurrent()?result:null;
   }
 
-  function webApiBase(){
-    if(location.protocol==='file:')return 'http://127.0.0.1:8765';
-    if(location.hostname==='waschi.fun'||location.hostname==='www.waschi.fun'||location.hostname==='waschie.vercel.app')return 'https://waschi-bis-tool.vercel.app';
-    return '';
-  }
+  function webApiBase(){return '';}
   let localHelperBaseCache;
   function localHelperCandidates(){ const base=webApiBase(); return base?[base,'']:['']; }
   async function resolveLocalHelperBase(force=false){
