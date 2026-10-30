@@ -790,7 +790,7 @@ function updateProfile(){
   // bleibt nur noch als Ausfallsicherung für Mythic+ erhalten.
   let bisListView='mythicplus';
   const bisListViewCache=new Map();
-  const BIS_VIEW_STORE='wow-bis-view-cache-v4:';
+  const BIS_VIEW_STORE='wow-bis-view-cache-v5:';
   function bisViewCacheKey(view,profile=activeProfile){return `${profile?.key||'unknown'}:${view}`}
   function bisViewStoreKey(view,profile=activeProfile){return BIS_VIEW_STORE+bisViewCacheKey(view,profile)}
   function bisViewLabel(view=bisListView){return view==='overall'?'Gesamt':view==='raid'?'Raid':'M+'}
@@ -875,6 +875,60 @@ function updateProfile(){
       return {...base,itemId:id,name:updateItemName(e,base),nameEn:updateItemName(e,base),wowheadUrl:`https://www.wowhead.com/de/item=${id}`,sourceType,source,catalyst:false,directTierTarget:false,setSlot:false,invalidForRaidfree:false,embellishment:crafted?(base.embellishment||'—'):'—',note};
     }).filter(Boolean)
   }
+  async function fetchMurlokMeta(profile=activeProfile){
+    try{
+      const u=new URL('/api/murlok-meta',location.origin);u.searchParams.set('profile',profile.key);
+      const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
+      if(!r.ok||!d.ok||!Array.isArray(d.items))throw new Error(d?.detail||d?.error||`HTTP ${r.status}`);
+      return d;
+    }catch(e){
+      console.warn('Murlok-Meta konnte nicht geladen werden:',e);
+      return null;
+    }
+  }
+  function murlokMetaLabel(item){
+    const p=Number(item?.usagePct),n=Number(item?.usageCount),sample=Number(item?.sampleSize);
+    if(Number.isFinite(p)&&p>=40)return 'Top-Spieler-Meta';
+    if(Number.isFinite(p)&&p>=15)return 'Starke Meta-Alternative';
+    if(n>=2)return 'Top-Spieler-Alternative';
+    return 'Murlok-Meta';
+  }
+  function mergeMurlokMetaGear(gear,meta,view,profile=activeProfile){
+    if(!Array.isArray(meta?.items)||!meta.items.length)return gear;
+    const out=[...(gear||[])],seen=new Set(out.map(x=>Number(x.itemId)).filter(Boolean));
+    const perSlot=new Map();
+    for(const entry of meta.items){
+      const id=Number(entry?.itemId)||0;if(!id)continue;
+      const acq=knownAcquisition(entry,null,false);
+      if(view==='raid'&&acq.sourceType!=='Raid')continue;
+      const group=['finger1','finger2'].includes(entry.slot)?'finger':['trinket1','trinket2'].includes(entry.slot)?'trinket':entry.slot;
+      const arr=perSlot.get(group)||[];
+      arr.push({...entry,acq});
+      perSlot.set(group,arr);
+    }
+    for(const arr of perSlot.values()){
+      arr.sort((a,b)=>(Number(b.usageCount)||0)-(Number(a.usageCount)||0));
+      for(const entry of arr.slice(0,3)){
+        const id=Number(entry.itemId)||0,label=murlokMetaLabel(entry);
+        const usage=Number(entry.usageCount)>0&&Number(entry.sampleSize)>0?`${entry.usageCount}/${entry.sampleSize} Top-Spieler · ${Number(entry.usagePct).toLocaleString('de-DE',{maximumFractionDigits:1})} %`:'von Murlok-Top-Spielern getragen';
+        const existing=out.find(x=>Number(x.itemId)===id);
+        if(existing){
+          existing.metaLabel=label;existing.metaUsage=usage;
+          existing.note=`${existing.note||''}${existing.note?' · ':''}${label}: ${usage}.`;
+          continue;
+        }
+        if(seen.has(id))continue;
+        const wantedSlot=entry.slot;
+        let base=(profile.gear||[]).find(x=>sameSlotGroup(x.slot,wantedSlot))||(profile.gear||[]).find(x=>x.slot===wantedSlot)||{};
+        const slot=['finger1','finger2'].includes(wantedSlot)?'finger1':['trinket1','trinket2'].includes(wantedSlot)?'trinket1':wantedSlot;
+        const slotLabel=['finger1','finger2'].includes(wantedSlot)?'Ringe':['trinket1','trinket2'].includes(wantedSlot)?'Schmuck':(base.slotLabel||wantedSlot);
+        out.push({...base,slot,slotLabel,itemId:id,name:entry.name||`Gegenstand #${id}`,nameEn:entry.name||`Item #${id}`,wowheadUrl:entry.wowheadUrl||`https://www.wowhead.com/de/item=${id}`,sourceType:entry.acq.sourceType||'Unbekannt',source:entry.acq.source||'Quelle nicht aufgelöst',catalyst:false,directTierTarget:false,setSlot:false,invalidForRaidfree:false,embellishment:'—',metaLabel:label,metaUsage:usage,note:`${label}: ${usage}. Quelle der Meta-Auswertung: Murlok.io.`});
+        seen.add(id);
+      }
+    }
+    return out;
+  }
+
   function bisViewGear(){
     const cached=readStoredBisView(bisListView);
     if(cached?.length)return cached;
@@ -889,7 +943,11 @@ function updateProfile(){
       const u=new URL('/api/bis-refresh',location.origin);u.searchParams.set('profile',activeProfile.key);u.searchParams.set('view',view);
       const r=await fetch(u,{cache:'no-store'});let d={};try{d=await r.json()}catch{}
       if(!r.ok||!d.ok||!Array.isArray(d.items))throw new Error(d?.detail||d?.error||`HTTP ${r.status}`);
-      const gear=viewGearFromPayload(activeProfile,d,view);if(!gear.length)throw new Error('Die geladene BiS-Liste enthält keine auswertbaren Gegenstände.');
+      let gear=viewGearFromPayload(activeProfile,d,view);if(!gear.length)throw new Error('Die geladene BiS-Liste enthält keine auswertbaren Gegenstände.');
+      if(view==='raid'||view==='overall'){
+        const meta=await fetchMurlokMeta(activeProfile);
+        if(meta)gear=mergeMurlokMetaGear(gear,meta,view,activeProfile);
+      }
       return storeBisView(view,gear,d);
     }catch(e){
       // Bereits gespeicherte Ansicht weiter nutzbar halten, wenn KeystoneLoot vorübergehend nicht erreichbar ist.
@@ -956,7 +1014,7 @@ function updateProfile(){
       $('gearBody').innerHTML=rows.map(item=>{const c=comparisonCache.get(item.slot)||{},st=c.status||{key:'unknown',label:'Nicht geprüft'},pc=personalCraft(item),base=item.catalyst?catalystBaseFromItem(item):null,sourceType=pc?'Hergestellt':(base?.sourceType||item.sourceType),source=pc?'Persönlich hergestellt':displaySourceForItem(item);return `<tr class="${st.key==='match'||st.key==='raidbis'?'bis-equipped':st.key==='personal'?'personal-bis':''}"><td><span class="slot-badge">${escapeHtml(item.slotLabel)}</span></td><td>${targetHtml(item)}</td><td><span class="source-badge ${sourceType==='Hergestellt'?'crafted':''}">${escapeHtml(sourceType)}</span><div class="small">${escapeHtml(source)}</div></td><td class="small">${escapeHtml(item.enchant)}</td><td class="small">${item.embellishment!=='—'?`<div>${escapeHtml(item.embellishment)}</div>`:''}${item.catalyst?'<div class="tier-note">♻ Matrixkatalysator</div>':''}<div>${escapeHtml(item.note||'')}</div></td><td><span class="status ${st.key}">${escapeHtml(st.label)}</span></td></tr>`}).join('')||'<tr><td colspan="6">Keine Treffer.</td></tr>';
       renderMissing();renderCatalystBases();setTimeout(refreshWowhead,30);return;
     }
-    $('gearBody').innerHTML=rows.map(item=>{const st=viewTargetStatus(item),url=item.wowheadUrl||`https://www.wowhead.com/de/item=${Number(item.itemId)||0}`;return `<tr class="${st.key==='match'?'bis-equipped':''}"><td><span class="slot-badge">${escapeHtml(item.slotLabel||item.slot)}</span></td><td><a class="item-name" href="${escapeHtml(url)}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(item.name||`Gegenstand #${item.itemId}`)}</a></td><td><span class="source-badge ${item.sourceType==='Hergestellt'?'crafted':''}">${escapeHtml(item.sourceType||bisViewLabel())}</span><div class="small">${escapeHtml(item.source||bisViewSource())}</div></td><td class="small">${escapeHtml(item.enchant||'—')}</td><td class="small">${escapeHtml(item.note||'')}</td><td><span class="status ${st.key}">${escapeHtml(st.label)}</span></td></tr>`}).join('')||'<tr><td colspan="6">Keine Treffer.</td></tr>';
+    $('gearBody').innerHTML=rows.map(item=>{const st=viewTargetStatus(item),url=item.wowheadUrl||`https://www.wowhead.com/de/item=${Number(item.itemId)||0}`,meta=item.metaLabel?`<span class="set-target-note">${escapeHtml(item.metaLabel)}${item.metaUsage?` · ${escapeHtml(item.metaUsage)}`:''}</span>`:'';return `<tr class="${st.key==='match'?'bis-equipped':''}"><td><span class="slot-badge">${escapeHtml(item.slotLabel||item.slot)}</span></td><td><a class="item-name" href="${escapeHtml(url)}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(item.name||`Gegenstand #${item.itemId}`)}</a>${meta}</td><td><span class="source-badge ${item.sourceType==='Hergestellt'?'crafted':''}">${escapeHtml(item.sourceType||bisViewLabel())}</span><div class="small">${escapeHtml(item.source||bisViewSource())}</div></td><td class="small">${escapeHtml(item.enchant||'—')}</td><td class="small">${escapeHtml(item.note||'')}</td><td><span class="status ${st.key}">${escapeHtml(st.label)}</span></td></tr>`}).join('')||'<tr><td colspan="6">Keine Treffer.</td></tr>';
     setTimeout(refreshWowhead,30)
   }
   function comparisonTargetHtml(c){
