@@ -1316,8 +1316,8 @@ function updateProfile(){
   function applyManual(){statsLoadSerial++;statsReadStatus='idle';const r=id=>{const n=parseFloat($(id).value);return Number.isFinite(n)&&n>=0?n:null};const vals={crit:r('manualCrit'),haste:r('manualHaste'),mastery:r('manualMastery'),versatility:r('manualVersatility'),leech:r('manualLeech'),avoidance:r('manualAvoidance'),speed:r('manualSpeed')};const statSources={};for(const k of ['crit','haste','mastery','versatility','leech','avoidance','speed'])if(Number.isFinite(statNumber(vals[k])))statSources[k]='Manuell';characterStats={...vals,statSources,sourceLabel:'Manuell eingetragene Werte'};if(manualKey())localStorage.setItem(manualKey(),JSON.stringify(characterStats));renderStatComparison()}
   function statNumber(v){return (typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(Number(v))?Number(v):NaN}
   const VERIFIED_INGAME_STATS=new Map([
-    ['eu|blackhand|satansbraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}],
-    ['eu|blackhand|satansbtraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}]
+    ['eu|todeswache|satansbraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}],
+    ['eu|todeswache|satansbtraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}]
   ]);
   function verifiedIngameStats(){
     const region=normal($('region')?.value||liveCharacter?.region||'eu');
