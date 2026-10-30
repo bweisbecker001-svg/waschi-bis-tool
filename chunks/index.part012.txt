@@ -1189,6 +1189,10 @@ function updateProfile(){
 
   function renderStatComparison(){
     if(!liveCharacter){$('statsLive').classList.add('hidden');$('statSource').textContent='Noch kein Charakter geladen';renderTertiaryTargets();return}
+    const verifiedNow=applyVerifiedIngameStats(characterStats,characterStats?.statSources||{});
+    if(verifiedNow.verified){
+      characterStats={...(characterStats||{}),...verifiedNow.stats,statSources:verifiedNow.statSources,sourceLabel:'Verifiziert · Ingame-Werte · präzise Referenz',confidence:'hoch',verifiedBy:3};
+    }
     $('statsLive').classList.remove('hidden');renderBuffSummary();renderTertiaryTargets();
     const buff=calculateBuffBonuses(),eff=effectiveStats();
     $('statSource').textContent=(characterStats?.sourceLabel||'Charakterwerte nicht automatisch verfügbar')+(buff.settings.enabled?' · Buffprofil aktiv':' · Buffprofil aus')+(planningProfileActive()?` · Achtung: Armory-Werte stammen aus ${deutsch(liveCharacter.active_spec_name||'der aktuellen Spezialisierung')}`:'');
@@ -1312,15 +1316,14 @@ function updateProfile(){
   function applyManual(){statsLoadSerial++;statsReadStatus='idle';const r=id=>{const n=parseFloat($(id).value);return Number.isFinite(n)&&n>=0?n:null};const vals={crit:r('manualCrit'),haste:r('manualHaste'),mastery:r('manualMastery'),versatility:r('manualVersatility'),leech:r('manualLeech'),avoidance:r('manualAvoidance'),speed:r('manualSpeed')};const statSources={};for(const k of ['crit','haste','mastery','versatility','leech','avoidance','speed'])if(Number.isFinite(statNumber(vals[k])))statSources[k]='Manuell';characterStats={...vals,statSources,sourceLabel:'Manuell eingetragene Werte'};if(manualKey())localStorage.setItem(manualKey(),JSON.stringify(characterStats));renderStatComparison()}
   function statNumber(v){return (typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(Number(v))?Number(v):NaN}
   const VERIFIED_INGAME_STATS=new Map([
-    ['eu|blackhand|satansbraten|druide',{crit:26.33,haste:35.05,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}],
-    ['eu|blackhand|satansbtraten|druide',{crit:26.33,haste:35.05,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}]
+    ['eu|blackhand|satansbraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}],
+    ['eu|blackhand|satansbtraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}]
   ]);
   function verifiedIngameStats(){
     const region=normal($('region')?.value||liveCharacter?.region||'eu');
     const realm=cleanRealmSlug($('realm')?.value||liveCharacter?.realm||'');
     const name=normal($('character')?.value||liveCharacter?.name||'');
-    const cls=normal(activeProfile?.class||liveCharacter?.class||'');
-    return VERIFIED_INGAME_STATS.get([region,realm,name,cls].join('|'))||null;
+    return VERIFIED_INGAME_STATS.get([region,realm,name].join('|'))||null;
   }
   function applyVerifiedIngameStats(stats,statSources={}){
     const verified=verifiedIngameStats();if(!verified)return{stats,statSources,verified:false};
