@@ -1264,6 +1264,42 @@ def api_character_stats():
         return _json({'ok':False,'error':'Blizzard Character Statistics konnten nicht geladen werden','detail':str(e)},502)
 
 @app.get('/api/raiderio')
+def _raiderio_all_known_runs(data):
+    """Combine every season-run list exposed by Raider.IO's public character API."""
+    if not isinstance(data, dict):
+        return []
+    fields = (
+        'mythic_plus_recent_runs',
+        'mythic_plus_best_runs',
+        'mythic_plus_alternate_runs',
+        'mythic_plus_highest_level_runs',
+        'mythic_plus_weekly_highest_level_runs',
+        'mythic_plus_previous_weekly_highest_level_runs',
+    )
+    out = []
+    seen = set()
+    for field in fields:
+        rows = data.get(field) or []
+        if not isinstance(rows, list):
+            continue
+        for run in rows:
+            if not isinstance(run, dict):
+                continue
+            key = (
+                run.get('url') or '',
+                run.get('run_id') or run.get('id') or '',
+                run.get('dungeon') or run.get('short_name') or '',
+                run.get('mythic_level') or '',
+                run.get('completed_at') or '',
+            )
+            if key in seen:
+                continue
+            seen.add(key)
+            out.append(run)
+    out.sort(key=lambda r: str(r.get('completed_at') or ''), reverse=True)
+    return out
+
+
 def api_raiderio():
     region, realm, name = _q('region','eu'), _q('realm'), _q('name')
     if not realm or not name:
@@ -1271,6 +1307,14 @@ def api_raiderio():
     params = urllib.parse.urlencode({'region':region,'realm':realm,'name':name,'fields':RIO_FIELDS})
     try:
         data, _, _ = fetch_json('https://raider.io/api/v1/characters/profile?'+params)
+        all_runs = _raiderio_all_known_runs(data)
+        if all_runs:
+            data['mythic_plus_all_known_runs'] = all_runs
+            # Keep the existing frontend compatible: it already renders the
+            # recent-runs collection. Feed it the complete deduplicated season
+            # set available from Raider.IO instead of only the tiny recent list.
+            data['mythic_plus_recent_runs'] = all_runs
+            data['mythic_plus_all_known_runs_count'] = len(all_runs)
         return _json(data)
     except urllib.error.HTTPError as e:
         detail = ''
