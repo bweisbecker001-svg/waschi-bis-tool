@@ -14,6 +14,9 @@ import urllib.request
 import webbrowser
 import zlib
 from pathlib import Path
+from flask import Flask, request, jsonify, Response, send_file
+
+app = Flask(__name__)
 
 HOST = '127.0.0.1'
 PORT = 8765
@@ -1195,12 +1198,25 @@ def _image_host_allowed(host):
 
 
 
-from flask import Flask, request, jsonify, Response, send_file
-app = Flask(__name__)
-
 
 def _json(data, status=200):
     return jsonify(data), status
+
+def _cors_response(response):
+    response.headers['Access-Control-Allow-Origin'] = 'https://waschi.fun'
+    response.headers['Vary'] = 'Origin'
+    return response
+
+
+@app.after_request
+def add_cors_headers(response):
+    origin = request.headers.get('Origin', '')
+    if origin in {'https://waschi.fun', 'https://www.waschi.fun'}:
+        response.headers['Access-Control-Allow-Origin'] = origin
+        response.headers['Vary'] = 'Origin'
+    return response
+
+
 
 
 def _q(name, default=''):
@@ -1682,9 +1698,6 @@ def _image_host_allowed(host):
 
 
 
-from flask import Flask, request, jsonify, Response, send_file
-app = Flask(__name__)
-
 
 def _json(data, status=200):
     return jsonify(data), status
@@ -2145,9 +2158,6 @@ def _image_host_allowed(host):
     return host == 'render.worldofwarcraft.com' or host.endswith('.worldofwarcraft.com') or host.endswith('.raider.io') or host.endswith('.raiderio.net')
 
 
-
-from flask import Flask, request, jsonify, Response, send_file
-app = Flask(__name__)
 
 
 def _json(data, status=200):
@@ -2646,9 +2656,6 @@ def _image_host_allowed(host):
     return host == 'render.worldofwarcraft.com' or host.endswith('.worldofwarcraft.com') or host.endswith('.raider.io') or host.endswith('.raiderio.net')
 
 
-
-from flask import Flask, request, jsonify, Response, send_file
-app = Flask(__name__)
 
 
 def _json(data, status=200):
