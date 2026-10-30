@@ -695,9 +695,15 @@ function updateProfile(){
   function targetHtml(item){
     const pc=personalCraft(item);
     if(pc)return `<a class="item-name" href="${pc.wowheadUrl}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(pc.name)}</a><span class="personal-target-note">★ Persönliches BiS · hergestellt</span><span class="general-target-note">Allgemeines Ziel: ${escapeHtml(item.name)}</span>`;
-    const baseHtml=item.catalyst?catalystBaseInlineHtml(item):'';
-    if(item.directTierTarget)return `<a class="item-name" href="${item.tierWowheadUrl||wowheadUrl(item)}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(item.tierName||item.name)}</a><span class="set-target-note">◆ Midnight-S2-Setteil · zählt für den 4er-Bonus</span>${baseHtml}<span class="tier-note">♻ Basisitem im Matrixkatalysator in dieses Setteil umwandeln.</span>`;
-    return `<a class="item-name" href="${wowheadUrl(item)}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(item.name)}</a>${item.catalyst&&item.tierName?`<span class="set-target-note">◆ Setplatz für den 4er-Bonus</span>${baseHtml}<span class="tier-note">→ Matrixkatalysator: ${escapeHtml(item.tierName)}</span>`:''}`
+    if(item.catalyst&&item.tierItemId){
+      const base=catalystBaseFromItem(item);
+      const tierUrl=item.tierWowheadUrl||`https://www.wowhead.com/de/item=${Number(item.tierItemId)||0}`;
+      if(base){
+        return `<span class="catalyst-farm-target"><strong>BiS-Basisitem zum Umwandeln:</strong></span><a class="item-name" href="${base.wowheadUrl}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(base.name)}</a><span class="base-source">Quelle: ${escapeHtml(base.source)}</span><span class="tier-note">♻ Matrixkatalysator → <a href="${tierUrl}" target="_blank" rel="noopener" data-wh-icon-size="small">${escapeHtml(item.tierName||item.name)}</a></span><span class="set-target-note">◆ Das umgewandelte Setteil zählt für den 4er-Bonus.</span>`;
+      }
+      return `<span class="catalyst-farm-target"><strong>BiS-Basisitem zum Umwandeln:</strong> noch nicht ermittelt</span><span class="tier-note">♻ Matrixkatalysator → <a href="${tierUrl}" target="_blank" rel="noopener" data-wh-icon-size="small">${escapeHtml(item.tierName||item.name)}</a></span>`;
+    }
+    return `<a class="item-name" href="${wowheadUrl(item)}" target="_blank" rel="noopener" data-wh-icon-size="medium">${escapeHtml(item.name)}</a>`
   }
   function currentHtml(eq){if(!eq)return'<span class="muted">Nicht ermittelt</span>';const icon=rioIcon(eq);return `<div style="display:flex;gap:8px;align-items:center">${icon?`<img src="${icon}" alt="" style="width:38px;height:38px;border-radius:5px">`:''}<div><a class="current-name" href="https://www.wowhead.com/de/item=${eqId(eq)}" target="_blank" rel="noopener">${escapeHtml(eqName(eq))}</a><div class="small">Gegenstandsstufe ${escapeHtml(eqIlvl(eq))}</div></div></div>`}
   function catalystBaseFromItem(item){
@@ -763,7 +769,7 @@ function updateProfile(){
       const tier=`<a class="item-name" href="${tierUrl}" target="_blank" rel="noopener" data-wh-icon-size="small">${escapeHtml(item.tierName||item.name)}</a><span class="catalyst-priority ${item.tierRequired===false?'optional':''}">${item.tierRequired===false?'5. Setplatz / optional':'Für 4er-Setplan'}</span>`;
       const baseHtml=base?`<a class="item-name" href="${base.wowheadUrl}" target="_blank" rel="noopener" data-wh-icon-size="small">${escapeHtml(base.name)}</a>`:'<span class="muted">Noch nicht aus KeystoneLoot übernommen</span>';
       const source=base?`<span class="source-badge mplus">Dungeon</span><div class="small">${escapeHtml(base.source)}</div>`:'<span class="small">BiS-Update / KeystoneLoot-Import ausführen</span>';
-      return `<tr><td><span class="slot-badge">${escapeHtml(item.slotLabel)}</span></td><td>${tier}</td><td>${baseHtml}</td><td>${source}</td><td class="catalyst-arrow">→ ♻ →</td></tr>`;
+      return `<tr><td><span class="slot-badge">${escapeHtml(item.slotLabel)}</span></td><td>${baseHtml}</td><td>${source}</td><td>${tier}</td><td class="catalyst-arrow">♻ Umwandeln</td></tr>`;
     }).join('');
     setTimeout(refreshWowhead,30);
   }
@@ -784,7 +790,7 @@ function updateProfile(){
   // bleibt nur noch als Ausfallsicherung für Mythic+ erhalten.
   let bisListView='mythicplus';
   const bisListViewCache=new Map();
-  const BIS_VIEW_STORE='wow-bis-view-cache-v3:';
+  const BIS_VIEW_STORE='wow-bis-view-cache-v4:';
   function bisViewCacheKey(view,profile=activeProfile){return `${profile?.key||'unknown'}:${view}`}
   function bisViewStoreKey(view,profile=activeProfile){return BIS_VIEW_STORE+bisViewCacheKey(view,profile)}
   function bisViewLabel(view=bisListView){return view==='overall'?'Gesamt':view==='raid'?'Raid':'M+'}
