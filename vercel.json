@@ -45,6 +45,14 @@
       "destination": "/api/index.py?route=raiderio"
     },
     {
+      "source": "/api/warcraftlogs",
+      "destination": "/api/index.py?route=warcraftlogs"
+    },
+    {
+      "source": "/api/warcraftlogs-status",
+      "destination": "/api/index.py?route=warcraftlogs-status"
+    },
+    {
       "source": "/api/bis-refresh",
       "destination": "/api/index.py?route=bis-refresh"
     }
