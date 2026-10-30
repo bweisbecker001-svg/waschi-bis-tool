@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="720" viewBox="0 0 1280 720" role="img" aria-labelledby="t d">
+<title id="t">Beispielansicht des Waschi WoW BiS-Tools</title><desc id="d">Dunkle goldene WoW-inspirierte Benutzeroberfläche mit Charakterwerten und BiS-Liste.</desc>
+<defs>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#071019"/><stop offset="1" stop-color="#030507"/></linearGradient>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f2c85f"/><stop offset="1" stop-color="#9d681b"/></linearGradient>
+ <radialGradient id="glow"><stop stop-color="#366d9f" stop-opacity=".45"/><stop offset="1" stop-color="#071019" stop-opacity="0"/></radialGradient>
+ <filter id="shadow"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-opacity=".7"/></filter>
+</defs>
+<rect width="1280" height="720" rx="24" fill="#020304"/>
+<rect x="18" y="18" width="1244" height="684" rx="18" fill="url(#bg)" stroke="#b27a25" stroke-width="3"/>
+<circle cx="930" cy="130" r="300" fill="url(#glow)"/>
+<rect x="38" y="38" width="250" height="644" rx="12" fill="#080d12" stroke="#473419"/>
+<text x="68" y="92" fill="#f0c45a" font-family="Georgia,serif" font-size="36" font-weight="700">WASCHI</text>
+<text x="68" y="124" fill="#7fc0f8" font-family="Arial,sans-serif" font-size="15" letter-spacing="2">WORLD OF WARCRAFT · BIS</text>
+<g font-family="Arial,sans-serif" font-size="18" fill="#d9d1c5">
+ <rect x="58" y="162" width="210" height="50" rx="7" fill="#121a21" stroke="#846024"/><text x="82" y="194">✦ Übersicht</text>
+ <rect x="58" y="222" width="210" height="50" rx="7" fill="#0a0e12" stroke="#30383f"/><text x="82" y="254">♟ Charakter</text>
+ <rect x="58" y="282" width="210" height="50" rx="7" fill="#0a0e12" stroke="#30383f"/><text x="82" y="314">⚔ BiS-Listen</text>
+ <rect x="58" y="342" width="210" height="50" rx="7" fill="#0a0e12" stroke="#30383f"/><text x="82" y="374">✥ Mythic+</text>
+</g>
+<rect x="316" y="38" width="926" height="104" rx="12" fill="#0a0f14" stroke="#5c431e"/>
+<text x="348" y="82" fill="#f0c45a" font-family="Georgia,serif" font-size="32" font-weight="700">Waschi WoW BiS-Tool</text>
+<text x="348" y="115" fill="#a9a094" font-family="Arial,sans-serif" font-size="16">Beispielansicht · Charakterabgleich · Gesamt / M+ / Raid</text>
+<g transform="translate(316 164)" font-family="Arial,sans-serif">
+ <g><rect width="210" height="112" rx="10" fill="#090e13" stroke="#4d5963"/><text x="20" y="34" fill="#9c9285" font-size="14">KRIT</text><text x="20" y="76" fill="#f0c45a" font-size="31" font-weight="700">25,98 %</text></g>
+ <g transform="translate(230)"><rect width="210" height="112" rx="10" fill="#090e13" stroke="#4d5963"/><text x="20" y="34" fill="#9c9285" font-size="14">TEMPO</text><text x="20" y="76" fill="#82c1fa" font-size="31" font-weight="700">34,67 %</text></g>
+ <g transform="translate(460)"><rect width="210" height="112" rx="10" fill="#090e13" stroke="#4d5963"/><text x="20" y="34" fill="#9c9285" font-size="14">MEISTERSCHAFT</text><text x="20" y="76" fill="#f0c45a" font-size="31" font-weight="700">20,79 %</text></g>
+ <g transform="translate(690)"><rect width="210" height="112" rx="10" fill="#090e13" stroke="#4d5963"/><text x="20" y="34" fill="#9c9285" font-size="14">VIELSEITIGKEIT</text><text x="20" y="76" fill="#82c1fa" font-size="31" font-weight="700">6,00 %</text></g>
+</g>
+<rect x="316" y="298" width="926" height="360" rx="12" fill="#070b0f" stroke="#5c431e"/>
+<text x="346" y="343" fill="#f0c45a" font-family="Georgia,serif" font-size="25" font-weight="700">Persönliche BiS-Liste</text>
+<g font-family="Arial,sans-serif" font-size="15">
+ <rect x="346" y="368" width="866" height="42" fill="#101820"/><text x="366" y="395" fill="#9dcdf6">PLATZ</text><text x="470" y="395" fill="#9dcdf6">GEGENSTAND</text><text x="840" y="395" fill="#9dcdf6">QUELLE</text><text x="1080" y="395" fill="#9dcdf6">STATUS</text>
+ <g fill="#dcd3c5">
+  <rect x="346" y="420" width="866" height="52" fill="#080d11"/><text x="372" y="452">Kopf</text><text x="470" y="452">Beispiel: Best-in-Slot Gegenstand</text><text x="840" y="452">Mythic+</text><text x="1080" y="452" fill="#8ed58e">Empfohlen</text>
+  <rect x="346" y="480" width="866" height="52" fill="#0b1116"/><text x="372" y="512">Hals</text><text x="470" y="512">Beispiel: Aufgewertetes Amulett</text><text x="840" y="512">Herstellung</text><text x="1080" y="512" fill="#f0c45a">BiS</text>
+  <rect x="346" y="540" width="866" height="52" fill="#080d11"/><text x="372" y="572">Brust</text><text x="470" y="572">Beispiel: Saison-Setteil</text><text x="840" y="572">Katalysator</text><text x="1080" y="572" fill="#8ed58e">Vorhanden</text>
+ </g>
+</g>
+<rect x="1018" y="615" width="194" height="30" rx="15" fill="url(#gold)"/><text x="1115" y="636" text-anchor="middle" fill="#171006" font-family="Arial,sans-serif" font-size="13" font-weight="800">BEISPIELANSICHT</text>
+</svg>
