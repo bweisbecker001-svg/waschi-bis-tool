@@ -36,12 +36,14 @@ function configureExternalLinks(){
     if(url.protocol!=='http:'&&url.protocol!=='https:')return;
     const host=url.hostname.toLowerCase();
     const internal=host===window.location.hostname.toLowerCase()||host==='waschi.fun'||host.endsWith('.waschi.fun');
-    if(!internal){
+    const bisToolLink=internal&&(url.pathname==='/bis'||url.pathname==='/bis/'||url.pathname.startsWith('/bis/'));
+    if(!internal||bisToolLink){
       a.target='_blank';
       const rel=new Set((a.getAttribute('rel')||'').split(/\s+/).filter(Boolean));
       rel.add('noopener');rel.add('noreferrer');
       a.setAttribute('rel',Array.from(rel).join(' '));
-      a.dataset.waschiExternal='1';
+      a.dataset.waschiExternal=!internal?'1':'0';
+      if(bisToolLink)a.dataset.waschiBisNewTab='1';
     }
   });
 }
