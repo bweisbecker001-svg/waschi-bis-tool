@@ -1374,11 +1374,14 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
     # Warcraft Logs kann denselben M+-Lauf in mehreren hochgeladenen Reports enthalten.
     # Fuer die Saisonanzahl zaehlen wir nur abgeschlossene Dungeonlaeufe und deduplizieren
     # quellenuebergreifend nach Dungeon, Key-Stufe, Abschlusszeit und Laufdauer.
-    completed_runs = [r for r in runs if bool(r.get('kill'))]
-    completed_runs.sort(key=lambda r: str(r.get('completed_at') or ''), reverse=True)
+    # Fuer "gelaufene Keys" zaehlt jede eindeutig dem Charakter zugeordnete
+    # Mythic+-Teilnahme. Das WCL-Feld kill ist fuer M+ nicht gleichbedeutend mit
+    # "Run hat stattgefunden" und darf daher nicht als Ausschlusskriterium dienen.
+    verified_runs = list(runs)
+    verified_runs.sort(key=lambda r: str(r.get('completed_at') or ''), reverse=True)
 
     season_runs = []
-    for run in completed_runs:
+    for run in verified_runs:
         dungeon = re.sub(r'[^a-z0-9]+', '', str(run.get('dungeon') or '').lower())
         level = int(run.get('mythic_level') or 0)
         clear_ms = int(run.get('clear_time_ms') or 0)
