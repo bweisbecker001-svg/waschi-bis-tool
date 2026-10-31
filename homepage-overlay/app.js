@@ -179,6 +179,7 @@ function applyHalloweenTheme(){
     style.id='waschi-halloween-style';
     style.textContent=`
 html.waschi-halloween body{background:#030104!important;overflow:hidden!important}
+html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!important}
 #waschi-halloween-fx{
   position:fixed;
   inset:0;
@@ -187,67 +188,87 @@ html.waschi-halloween body{background:#030104!important;overflow:hidden!importan
   overflow:hidden;
   background:#030104;
 }
-#waschi-halloween-fx .hw-takeover{
+#waschi-halloween-fx .hw-stage{
   position:absolute;
-  inset:0;
+  left:50%;
+  top:50%;
+  width:min(100vw,calc(100vh * 1672 / 941));
+  aspect-ratio:1672/941;
+  transform:translate(-50%,-50%);
   background-image:url("/halloween-2026.webp");
-  background-size:contain;
-  background-position:center center;
+  background-size:100% 100%;
+  background-position:center;
   background-repeat:no-repeat;
-  background-color:#030104;
-  image-rendering:auto;
-  opacity:1;
+  pointer-events:none;
 }
-
-html.waschi-halloween .header{
-  position:relative!important;
-  z-index:2147484000!important;
-  background:transparent!important;
-  border:0!important;
-  box-shadow:none!important;
-  backdrop-filter:none!important;
+#waschi-halloween-fx .hw-hotspot{
+  position:absolute;
+  top:24.55%;
+  height:6.1%;
+  pointer-events:auto;
+  display:block;
+  border-radius:8px;
+  cursor:pointer;
+  background:rgba(255,255,255,0);
 }
-html.waschi-halloween .header .brand,
-html.waschi-halloween .header .brand-logo,
-html.waschi-halloween .header .btn,
-html.waschi-halloween .header .header-actions{
-  visibility:hidden!important;
-  pointer-events:none!important;
+#waschi-halloween-fx .hw-hotspot:hover,
+#waschi-halloween-fx .hw-hotspot:focus-visible{
+  outline:2px solid rgba(255,130,45,.55);
+  outline-offset:-2px;
+  box-shadow:0 0 18px rgba(255,72,0,.35) inset,0 0 18px rgba(255,72,0,.18);
 }
-html.waschi-halloween .header .nav{
-  position:relative!important;
-  z-index:2147484100!important;
-  pointer-events:auto!important;
-  visibility:visible!important;
-}
-html.waschi-halloween .header .nav a{
-  visibility:visible!important;
-  pointer-events:auto!important;
-  opacity:1!important;
-  color:#ffb36a!important;
-  text-shadow:
-    0 1px 2px #000,
-    0 0 8px rgba(0,0,0,.95),
-    0 0 14px rgba(120,0,0,.85)!important;
-  font-weight:800!important;
-}
-html.waschi-halloween .header .nav a:hover,
-html.waschi-halloween .header .nav a.active{
-  color:#ffd2a0!important;
-  text-shadow:
-    0 1px 2px #000,
-    0 0 8px rgba(255,80,20,.8),
-    0 0 18px rgba(145,0,0,.9)!important;
-}
+#waschi-halloween-fx .hw-hotspot.home{left:13.0%;width:9.5%}
+#waschi-halloween-fx .hw-hotspot.guild{left:22.9%;width:9.7%}
+#waschi-halloween-fx .hw-hotspot.mplus{left:32.7%;width:8.2%}
+#waschi-halloween-fx .hw-hotspot.extensions{left:40.8%;width:10.6%}
+#waschi-halloween-fx .hw-hotspot.bis{left:51.2%;width:8.5%}
+#waschi-halloween-fx .hw-hotspot.download{left:59.7%;width:9.4%}
+#waschi-halloween-fx .hw-hotspot.streams{left:69.3%;width:8.2%}
+#waschi-halloween-fx .hw-hotspot.community{left:77.9%;width:9.8%}
 `;
     document.head.appendChild(style);
   }
 
   if(!document.getElementById('waschi-halloween-fx')&&document.body){
+    const navLinks=[...document.querySelectorAll('.header .nav a')];
+    const map={};
+    navLinks.forEach(a=>{
+      const t=(a.textContent||'').trim().toLowerCase();
+      if(t.includes('start'))map.home=a.href;
+      else if(t.includes('gilde'))map.guild=a.href;
+      else if(t.includes('m+'))map.mplus=a.href;
+      else if(t.includes('erweiter'))map.extensions=a.href;
+      else if(t.includes('bis'))map.bis=a.href;
+      else if(t.includes('download'))map.download=a.href;
+      else if(t.includes('stream'))map.streams=a.href;
+      else if(t.includes('community'))map.community=a.href;
+    });
+
     const fx=document.createElement('div');
     fx.id='waschi-halloween-fx';
-    fx.setAttribute('aria-hidden','true');
-    fx.innerHTML='<div class="hw-takeover"></div>';
+    fx.setAttribute('aria-hidden','false');
+    fx.innerHTML='<div class="hw-stage"></div>';
+
+    const stage=fx.querySelector('.hw-stage');
+    const defs=[
+      ['home','Startseite','/'],
+      ['guild','Waschi Gilde','#'],
+      ['mplus','M+ Team','#'],
+      ['extensions','Erweiterungen','#'],
+      ['bis','BiS-Tools','/bis/'],
+      ['download','Download','#'],
+      ['streams','Streams','#'],
+      ['community','Community','#']
+    ];
+    defs.forEach(([key,label,fallback])=>{
+      const a=document.createElement('a');
+      a.className='hw-hotspot '+key;
+      a.href=map[key]||fallback;
+      a.setAttribute('aria-label',label);
+      a.title=label;
+      stage.appendChild(a);
+    });
+
     document.body.appendChild(fx);
   }
 }
