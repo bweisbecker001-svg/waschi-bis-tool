@@ -612,6 +612,21 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
     }
     return[key];
   }
+  function profileHeroSlugs(profile){
+    const out=new Set();
+    const add=v=>{const x=String(v||'').trim().toLowerCase();if(x)out.add(x)};
+    add(profile?.heroSlug);
+    add(profile?.hero_talent_slug);
+    add(profile?.bisUpdate?.heroSlug);
+    for(const url of [profile?.murlokTargetSource,profile?.bisUpdate?.url]){
+      try{
+        const parts=new URL(url,location.href).pathname.split('/').filter(Boolean);
+        const mplusIndex=parts.findIndex(x=>x==='m+');
+        if(mplusIndex>0)add(parts[mplusIndex-1]);
+      }catch{}
+    }
+    return [...out];
+  }
   function currentRioHeroTalent(){
     if(!liveCharacter)return'';
     const candidates=profilesForLoadedCharacter().filter(p=>p.heroTalent);
@@ -632,6 +647,11 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
       liveCharacter.talents?.hero_talent,liveCharacter.talents?.heroTalent,
       liveCharacter.talents_categorized?.hero_talent,liveCharacter.talents_categorized?.heroTalent
     ].map(normal).filter(Boolean);
+    const rioSlug=String(liveCharacter.talentLoadout?.active_hero_tree?.slug||'').trim().toLowerCase();
+    if(rioSlug){
+      const slugMatch=candidates.find(p=>profileHeroSlugs(p).includes(rioSlug));
+      if(slugMatch)return slugMatch.heroTalent;
+    }
     const exact=candidates.find(p=>heroTalentAliases(p.heroTalent).some(a=>explicit.includes(a)));
     if(exact)return exact.heroTalent;
     const matched=candidates.find(p=>heroTalentAliases(p.heroTalent).some(a=>hay.includes(a)));
