@@ -596,6 +596,22 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
   function profilesForLoadedCharacter(){
     return liveCharacter?root.profiles.filter(profileMatchesLoadedCharacterBase):[];
   }
+  const HERO_TALENT_ALIASES={
+    'bergthan':['bergthan','mountain thane'],
+    'diaboliker':['diaboliker','diabolist'],
+    'hollenrufer':['höllenrufer','hollenrufer','hellcaller'],
+    'koloss':['koloss','colossus'],
+    'schlachter':['schlächter','schlachter','slayer']
+  };
+  function heroTalentAliases(name){
+    const key=normal(name).replace(/\s+/g,' ');
+    const compact=key.replace(/[^a-z0-9äöüß]+/g,'');
+    for(const [aliasKey,values] of Object.entries(HERO_TALENT_ALIASES)){
+      if(normal(aliasKey).replace(/[^a-z0-9äöüß]+/g,'')===compact)return values.map(normal);
+      if(values.some(v=>normal(v)===key))return values.map(normal);
+    }
+    return[key];
+  }
   function currentRioHeroTalent(){
     if(!liveCharacter)return'';
     const candidates=profilesForLoadedCharacter().filter(p=>p.heroTalent);
@@ -614,9 +630,9 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
       liveCharacter.talents?.hero_talent,liveCharacter.talents?.heroTalent,
       liveCharacter.talents_categorized?.hero_talent,liveCharacter.talents_categorized?.heroTalent
     ].map(normal).filter(Boolean);
-    const exact=candidates.find(p=>explicit.includes(normal(p.heroTalent)));
+    const exact=candidates.find(p=>heroTalentAliases(p.heroTalent).some(a=>explicit.includes(a)));
     if(exact)return exact.heroTalent;
-    const matched=candidates.find(p=>hay.includes(normal(p.heroTalent)));
+    const matched=candidates.find(p=>heroTalentAliases(p.heroTalent).some(a=>hay.includes(a)));
     return matched?.heroTalent||'';
   }
   function refreshProfileSelectOptions(){
