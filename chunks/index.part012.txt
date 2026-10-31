@@ -1670,6 +1670,47 @@ function updateProfile(){
     }catch(e){el.className='api-message error';el.textContent=`Zugang konnte nicht entfernt werden: ${e.message||e}`}
   }
 
+  function activeTalentRankByName(name){
+    const wanted=normal(name);
+    const roots=[liveCharacter?.talentLoadout,liveCharacter?.talents_categorized,liveCharacter?.talents].filter(Boolean);
+    let best=0;
+    const visit=v=>{
+      if(!v)return;
+      if(Array.isArray(v)){for(const x of v)visit(x);return}
+      if(typeof v!=='object')return;
+      const entries=Array.isArray(v?.node?.entries)?v.node.entries:[];
+      const selected=entries[Number(v?.entryIndex||0)]||entries[0];
+      const spellName=selected?.spell?.name||'';
+      if(normal(spellName)===wanted)best=Math.max(best,Number(v?.rank||0)||0);
+      for(const x of Object.values(v))visit(x);
+    };
+    for(const root of roots)visit(root);
+    return best;
+  }
+  function applyActiveTalentStatBonuses(stats,statSources={}){
+    const out={...(stats||{})},sources={...(statSources||{})};
+    const cls=normal(liveCharacter?.class||''),spec=normal(liveCharacter?.active_spec_name||'');
+    // Lycaras Lehren wirkt formabhaengig. Fuer die aktive Spezialisierung wird die
+    // Form verwendet, in der diese Spezialisierung regulär gespielt wird:
+    // Guardian=Bär/Vielseitigkeit, Feral=Katze/Krit, Balance=Moonkin/Meisterschaft,
+    // Restoration/keine Form=Tempo. Pro Rang gewährt das Talent 3 Prozentpunkte.
+    if(cls==='druid'||cls==='druide'){
+      const rank=activeTalentRankByName("Lycara's Teachings")||activeTalentRankByName('Lycaras Lehren');
+      if(rank>0){
+        const key=spec==='guardian'||spec==='wächter'||spec==='wachter'?'versatility':
+          spec==='feral'||spec==='wildheit'?'crit':
+          spec==='balance'||spec==='gleichgewicht'?'mastery':
+          spec==='restoration'||spec==='wiederherstellung'?'haste':'';
+        if(key&&Number.isFinite(statNumber(out[key]))){
+          const bonus=3*rank;
+          out[key]=Number(out[key])+bonus;
+          sources[key]=`${sources[key]||'Blizzard Character Statistics'} + Lycaras Lehren Rang ${rank} (+${bonus} %)`;
+        }
+      }
+    }
+    return{stats:out,statSources:sources};
+  }
+
   async function loadStats(force=false){
     if(!liveCharacter)return false;
     const thisLoad=++statsLoadSerial;
@@ -1694,7 +1735,8 @@ function updateProfile(){
         if(d.ok&&completeStats(d.stats)){
           if(!isCurrent())return false;
           const verify=d.verifiedBy>1?`${d.verifiedBy} Quellen verifiziert`:(d.confidence==='hoch'?'direkter Armory-Block':'eine Quelle');
-          characterStats={...d.stats,statSources:d.statSources||{},sourceLabel:`Automatisch · ${d.method||d.source||'Charakterwerte'} · ${verify} · ${id.source}`,confidence:d.confidence||'mittel',verifiedBy:d.verifiedBy||1,equipmentEnhancements:d.equipmentEnhancements||null,equipmentDetails:d.equipmentDetails||null,characterIdentity:expectedIdentity};
+          const adjusted=applyActiveTalentStatBonuses(d.stats,d.statSources||{});
+          characterStats={...adjusted.stats,statSources:adjusted.statSources,sourceLabel:`Automatisch · ${d.method||d.source||'Charakterwerte'} + aktive Talentboni · ${verify} · ${id.source}`,confidence:d.confidence||'mittel',verifiedBy:d.verifiedBy||1,equipmentEnhancements:d.equipmentEnhancements||null,equipmentDetails:d.equipmentDetails||null,characterIdentity:expectedIdentity};
           statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true;
         }
         serverErrors.push(`${id.source} (${id.realm}): ${d?.detail||d?.error||'Antwort enthält keine vollständigen Werte'}`);
@@ -1706,7 +1748,8 @@ function updateProfile(){
     if(!isCurrent())return false;
     if(browser&&completeStats(browser.stats)){
       const fallbackSources=Object.fromEntries(['crit','haste','mastery','versatility','leech','avoidance','speed'].filter(k=>Number.isFinite(statNumber(browser.stats?.[k]))).map(k=>[k,'Automatisch · Armory-Fallback']));
-      characterStats={...browser.stats,statSources:fallbackSources,sourceLabel:browser.sourceLabel,confidence:'niedrig',verifiedBy:1,characterIdentity:expectedIdentity};statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true
+      const adjusted=applyActiveTalentStatBonuses(browser.stats,fallbackSources);
+      characterStats={...adjusted.stats,statSources:adjusted.statSources,sourceLabel:`${browser.sourceLabel} + aktive Talentboni`,confidence:'niedrig',verifiedBy:1,characterIdentity:expectedIdentity};statsReadStatus='success';window.__lastStatReadError='';renderStatComparison();return true
     }
     if(window.__browserStatErrors?.length)window.__lastStatReadError=[window.__lastStatReadError,...window.__browserStatErrors].filter(Boolean).join('\n');
     statsReadStatus='failed';
