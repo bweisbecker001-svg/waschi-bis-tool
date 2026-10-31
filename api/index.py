@@ -1211,6 +1211,30 @@ def warcraftlogs_current_mplus_zone():
     return max(pool, key=lambda z: int(z.get('id') or 0))
 
 
+def warcraftlogs_character_zone_rankings(region, realm, name, zone_id):
+    query = '''
+    query CharacterZoneRankings($name:String!,$serverSlug:String!,$serverRegion:String!,$zoneID:Int!){
+      characterData{
+        character(name:$name,serverSlug:$serverSlug,serverRegion:$serverRegion){
+          id name
+          zoneRankings(zoneID:$zoneID)
+        }
+      }
+    }'''
+    data = warcraftlogs_graphql(query, {
+        'name': str(name),
+        'serverSlug': re.sub(r"[’'\s]+", '-', str(realm or '').strip().lower()),
+        'serverRegion': str(region).upper(),
+        'zoneID': int(zone_id),
+    })
+    character = ((data.get('characterData') or {}).get('character') or {})
+    return {
+        'characterId': character.get('id'),
+        'name': character.get('name'),
+        'zoneRankings': character.get('zoneRankings'),
+    }
+
+
 def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
     cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
     cached = _cache_get(WARCRAFTLOGS_CACHE, cache_key, 900)
@@ -1220,6 +1244,12 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
     season_zone = warcraftlogs_current_mplus_zone()
     season_zone_id = int((season_zone or {}).get('id') or 0)
     season_zone_name = str((season_zone or {}).get('name') or 'Mythic+')
+    rankings_snapshot = None
+    if season_zone_id:
+        try:
+            rankings_snapshot = warcraftlogs_character_zone_rankings(region, realm, name, season_zone_id)
+        except Exception:
+            rankings_snapshot = None
 
     query = '''
     query CharacterMPlus($name:String!,$serverSlug:String!,$serverRegion:String!,$page:Int!){
@@ -1431,6 +1461,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
         'source':'Warcraft Logs API v2 · Teilnahme je Fight verifiziert',
         'participationVerified':True,
         'diagnostics':diag,
+        'zoneRankings': rankings_snapshot.get('zoneRankings') if isinstance(rankings_snapshot, dict) else None,
     }
     return _cache_put(WARCRAFTLOGS_CACHE, cache_key, result)
 
