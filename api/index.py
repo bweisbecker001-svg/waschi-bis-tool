@@ -1290,6 +1290,8 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
             wanted_realm = _norm_actor(realm)
             actor_ids = set()
             master = report.get('masterData') or {}
+            name_matches = []
+            exact_realm_matches = []
             for actor in master.get('actors') or []:
                 if str(actor.get('type') or '').lower() != 'player':
                     continue
@@ -1299,11 +1301,20 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
                 if isinstance(actor_server_raw, dict):
                     actor_server_raw = actor_server_raw.get('slug') or actor_server_raw.get('name') or ''
                 actor_server = _norm_actor(actor_server_raw)
-                # Sicher vor char-uebergreifender Zuordnung: ohne eindeutigen Realm
-                # wird der Actor nicht akzeptiert. Gleichnamige Spieler anderer Realms
-                # duerfen niemals als der angefragte Charakter gelten.
-                if not actor_server or not wanted_realm or actor_server != wanted_realm:
-                    continue
+                name_matches.append((actor, actor_server))
+                if actor_server and wanted_realm and actor_server == wanted_realm:
+                    exact_realm_matches.append(actor)
+
+            # Bevorzugt immer den eindeutigen Realm-Treffer. Warcraft Logs laesst
+            # bei manchen aelteren/zusammengefuehrten Reports das Serverfeld des
+            # Actors leer. Da recentReports bereits fuer exakt Name+Realm+Region des
+            # angefragten Charakters geladen wird, darf in diesem Sonderfall genau
+            # ein einziger gleichnamiger Player-Actor als sichere Zuordnung gelten.
+            chosen = exact_realm_matches
+            if not chosen and len(name_matches) == 1 and not name_matches[0][1]:
+                chosen = [name_matches[0][0]]
+
+            for actor in chosen:
                 try:
                     actor_ids.add(int(actor.get('id')))
                 except (TypeError, ValueError):
