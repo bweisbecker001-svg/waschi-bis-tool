@@ -87,3 +87,10 @@
 
 
 
+
+
+/* CurseForge download card - artwork fits the existing tile */
+.curseforge-preview{padding:0;background:#0b0908;overflow:hidden}
+.curseforge-preview img{display:block;width:100%;height:100%;min-height:350px;max-width:none;object-fit:cover;object-position:center;filter:none}
+.curseforge-official{border-color:rgba(241,104,35,.75);background:rgba(241,104,35,.14);color:#ffad72}
+@media(max-width:900px){.curseforge-preview img{min-height:280px}}
