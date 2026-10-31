@@ -1275,8 +1275,14 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
                     continue
                 if _norm_actor(actor.get('name')) != wanted_name:
                     continue
-                actor_server = _norm_actor(actor.get('server'))
-                if actor_server and wanted_realm and actor_server != wanted_realm:
+                actor_server_raw = actor.get('server')
+                if isinstance(actor_server_raw, dict):
+                    actor_server_raw = actor_server_raw.get('slug') or actor_server_raw.get('name') or ''
+                actor_server = _norm_actor(actor_server_raw)
+                # Sicher vor char-uebergreifender Zuordnung: ohne eindeutigen Realm
+                # wird der Actor nicht akzeptiert. Gleichnamige Spieler anderer Realms
+                # duerfen niemals als der angefragte Charakter gelten.
+                if not actor_server or not wanted_realm or actor_server != wanted_realm:
                     continue
                 try:
                     actor_ids.add(int(actor.get('id')))
@@ -1369,6 +1375,11 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
         'ok':True,
         'configured':True,
         'characterId':character_id,
+        'identity':{
+            'region':str(region or '').lower(),
+            'realm':str(realm or ''),
+            'character':str(name or ''),
+        },
         'reportCount':report_count,
         'seasonReportCount':season_report_count,
         'pagesRead':pages,
