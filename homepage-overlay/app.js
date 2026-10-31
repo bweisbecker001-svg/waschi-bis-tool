@@ -232,19 +232,33 @@ radial-gradient(circle at 7% 63%,transparent 0 30px,rgba(120,30,145,.09) 31px 33
 radial-gradient(circle at 93% 70%,transparent 0 42px,rgba(255,60,0,.07) 43px 45px,transparent 46px);
 animation:hwRunes 5s ease-in-out infinite alternate}
 #waschi-halloween-fx .hw-whisper{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);color:rgba(255,175,125,.22);font:italic 700 clamp(16px,2vw,28px) Georgia,serif;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 10px rgba(120,0,0,.55);white-space:nowrap;animation:hwWhisper 4.5s ease-in-out infinite alternate}
-#waschi-halloween-fx .hw-web{position:absolute;width:210px;height:210px;opacity:.8;filter:drop-shadow(0 0 4px rgba(235,235,255,.18))}
-#waschi-halloween-fx .hw-web:before,#waschi-halloween-fx .hw-web:after{content:"";position:absolute;inset:0;border-radius:50%}
+#waschi-halloween-fx .hw-web{position:absolute;width:240px;height:220px;opacity:.88;filter:drop-shadow(0 0 4px rgba(245,245,255,.14));transform-origin:0 0}
+#waschi-halloween-fx .hw-web:before,#waschi-halloween-fx .hw-web:after{content:"";position:absolute;inset:0}
 #waschi-halloween-fx .hw-web:before{background:
-repeating-radial-gradient(circle at 0 0,transparent 0 20px,rgba(235,235,235,.28) 21px 22px,transparent 23px 41px);
--webkit-mask:conic-gradient(from 4deg at 0 0,#000 0 6deg,transparent 6deg 18deg,#000 18deg 20deg,transparent 20deg 35deg,#000 35deg 38deg,transparent 38deg 52deg,#000 52deg 54deg,transparent 54deg 69deg,#000 69deg 72deg,transparent 72deg 88deg,#000 88deg 90deg,transparent 90deg 106deg,#000 106deg 108deg,transparent 108deg 124deg,#000 124deg 127deg,transparent 127deg 145deg,#000 145deg 148deg,transparent 148deg 166deg,#000 166deg 169deg,transparent 169deg 186deg,#000 186deg 189deg,transparent 189deg 208deg,#000 208deg 211deg,transparent 211deg 232deg,#000 232deg 235deg,transparent 235deg 258deg,#000 258deg 261deg,transparent 261deg 286deg,#000 286deg 289deg,transparent 289deg 317deg,#000 317deg 320deg,transparent 320deg 360deg);
-mask:conic-gradient(from 4deg at 0 0,#000 0 6deg,transparent 6deg 18deg,#000 18deg 20deg,transparent 20deg 35deg,#000 35deg 38deg,transparent 38deg 52deg,#000 52deg 54deg,transparent 54deg 69deg,#000 69deg 72deg,transparent 72deg 88deg,#000 88deg 90deg,transparent 90deg 106deg,#000 106deg 108deg,transparent 108deg 124deg,#000 124deg 127deg,transparent 127deg 145deg,#000 145deg 148deg,transparent 148deg 166deg,#000 166deg 169deg,transparent 169deg 186deg,#000 186deg 189deg,transparent 189deg 208deg,#000 208deg 211deg,transparent 211deg 232deg,#000 232deg 235deg,transparent 235deg 258deg,#000 258deg 261deg,transparent 261deg 286deg,#000 286deg 289deg,transparent 289deg 317deg,#000 317deg 320deg,transparent 320deg 360deg)}
+radial-gradient(ellipse at 0 0,transparent 0 28px,rgba(235,235,235,.18) 29px 30px,transparent 31px 53px,rgba(235,235,235,.22) 54px 55px,transparent 56px 82px,rgba(235,235,235,.16) 83px 84px,transparent 85px 116px,rgba(235,235,235,.14) 117px 118px,transparent 119px),
+linear-gradient(12deg,transparent 49.65%,rgba(245,245,245,.34) 49.85% 50.05%,transparent 50.25%),
+linear-gradient(31deg,transparent 49.65%,rgba(235,235,235,.28) 49.85% 50.05%,transparent 50.25%),
+linear-gradient(52deg,transparent 49.65%,rgba(248,248,248,.32) 49.85% 50.05%,transparent 50.25%),
+linear-gradient(73deg,transparent 49.65%,rgba(232,232,232,.25) 49.85% 50.05%,transparent 50.25%),
+linear-gradient(93deg,transparent 49.65%,rgba(245,245,245,.29) 49.85% 50.05%,transparent 50.25%);
+transform:skewX(-2deg) scaleY(.92)}
 #waschi-halloween-fx .hw-web:after{background:
-linear-gradient(9deg,transparent 49.4%,rgba(245,245,245,.34) 49.8% 50.2%,transparent 50.6%),
-linear-gradient(27deg,transparent 49.4%,rgba(235,235,235,.28) 49.8% 50.2%,transparent 50.6%),
-linear-gradient(48deg,transparent 49.4%,rgba(245,245,245,.3) 49.8% 50.2%,transparent 50.6%),
-linear-gradient(68deg,transparent 49.4%,rgba(235,235,235,.26) 49.8% 50.2%,transparent 50.6%),
-linear-gradient(89deg,transparent 49.4%,rgba(245,245,245,.3) 49.8% 50.2%,transparent 50.6%);
-transform-origin:0 0;transform:rotate(2deg) scale(1.04,.97)}
+radial-gradient(ellipse at 9% 11%,transparent 0 46px,rgba(235,235,235,.2) 47px 48px,transparent 49px 74px,rgba(235,235,235,.16) 75px 76px,transparent 77px),
+radial-gradient(ellipse at 5% 8%,transparent 0 102px,rgba(235,235,235,.13) 103px 104px,transparent 105px),
+linear-gradient(18deg,transparent 49.7%,rgba(235,235,235,.18) 49.9% 50.05%,transparent 50.25%),
+linear-gradient(61deg,transparent 49.7%,rgba(235,235,235,.15) 49.9% 50.05%,transparent 50.25%);
+transform:translate(8px,7px) rotate(-3deg) scale(.97,1.03);filter:blur(.15px)}
+#waschi-halloween-fx .hw-web.tl{left:-8px;top:-6px;transform:rotate(-2deg)}
+#waschi-halloween-fx .hw-web.tl:after{box-shadow:18px 14px 0 -17px rgba(255,255,255,.55),42px 30px 0 -19px rgba(255,255,255,.45),66px 48px 0 -20px rgba(255,255,255,.35)}
+#waschi-halloween-fx .hw-web.tr{right:-8px;top:-6px;transform:scaleX(-1) rotate(-1deg);transform-origin:100% 0}
+#waschi-halloween-fx .hw-web.bl{left:-10px;bottom:-10px;transform:scaleY(-1) rotate(2deg);transform-origin:0 100%}
+#waschi-halloween-fx .hw-web.br{right:-10px;bottom:-10px;transform:scale(-1) rotate(-2deg);transform-origin:100% 100%}
+#waschi-halloween-fx .hw-web i{position:absolute;display:block;height:1px;background:linear-gradient(90deg,rgba(245,245,245,.34),rgba(245,245,245,.07));transform-origin:left center;opacity:.9}
+#waschi-halloween-fx .hw-web i.w1{left:17px;top:34px;width:132px;transform:rotate(14deg)}
+#waschi-halloween-fx .hw-web i.w2{left:9px;top:70px;width:148px;transform:rotate(28deg)}
+#waschi-halloween-fx .hw-web i.w3{left:5px;top:108px;width:158px;transform:rotate(42deg)}
+#waschi-halloween-fx .hw-web i.w4{left:34px;top:8px;width:120px;transform:rotate(67deg)}
+#waschi-halloween-fx .hw-web i.w5{left:72px;top:5px;width:115px;transform:rotate(81deg)}
 #waschi-halloween-fx .hw-web.tl{left:0;top:0;transform-origin:0 0}
 #waschi-halloween-fx .hw-web.tr{right:0;top:0;transform:scaleX(-1);transform-origin:100% 0}
 #waschi-halloween-fx .hw-web.bl{left:0;bottom:0;transform:scaleY(-1);transform-origin:0 100%}
@@ -303,7 +317,7 @@ transform-origin:0 0;transform:rotate(2deg) scale(1.04,.97)}
   }
   if(!document.getElementById('waschi-halloween-fx')&&document.body){
     const fx=document.createElement('div');fx.id='waschi-halloween-fx';fx.setAttribute('aria-hidden','true');
-    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><span class="hw-blood-stream s1"></span><span class="hw-blood-stream s2"></span><span class="hw-blood-stream s3"></span><span class="hw-blood-stream s4"></span><span class="hw-blood-stream s5"></span><div class="hw-runes"></div><div class="hw-web tl"></div><div class="hw-web tr"></div><div class="hw-web bl"></div><div class="hw-web br"></div><div class="hw-spider-line"></div><div class="hw-spider"></div><div class="hw-eye"><span class="hw-pupil"></span></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><span class="hw-bat-flight f1">⌁</span><span class="hw-bat-flight f2">⌁</span><span class="hw-bat-flight f3">⌁</span><span class="hw-bat-flight f4">⌁</span><div class="hw-waschi"><div class="hw-greenfire"></div><div class="hw-raccoon-tail"></div><div class="hw-raccoon-body"></div><div class="hw-raccoon-head"><span class="hw-mask"></span><span class="hw-snout"></span></div><div class="hw-hat"></div><div class="hw-paw"></div></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
+    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><span class="hw-blood-stream s1"></span><span class="hw-blood-stream s2"></span><span class="hw-blood-stream s3"></span><span class="hw-blood-stream s4"></span><span class="hw-blood-stream s5"></span><div class="hw-runes"></div><div class="hw-web tl"><i class="w1"></i><i class="w2"></i><i class="w3"></i><i class="w4"></i><i class="w5"></i></div><div class="hw-web tr"><i class="w1"></i><i class="w2"></i><i class="w3"></i></div><div class="hw-web bl"><i class="w1"></i><i class="w2"></i><i class="w4"></i></div><div class="hw-web br"><i class="w1"></i><i class="w3"></i><i class="w5"></i></div><div class="hw-spider-line"></div><div class="hw-spider"></div><div class="hw-eye"><span class="hw-pupil"></span></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><span class="hw-bat-flight f1">⌁</span><span class="hw-bat-flight f2">⌁</span><span class="hw-bat-flight f3">⌁</span><span class="hw-bat-flight f4">⌁</span><div class="hw-waschi"><div class="hw-greenfire"></div><div class="hw-raccoon-tail"></div><div class="hw-raccoon-body"></div><div class="hw-raccoon-head"><span class="hw-mask"></span><span class="hw-snout"></span></div><div class="hw-hat"></div><div class="hw-paw"></div></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
     document.body.appendChild(fx);
   }
 }
