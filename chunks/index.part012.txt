@@ -1690,7 +1690,7 @@ function updateProfile(){
     try{return mergeRioCharacter(localData,await fetchRioDirect(s))}catch(e){if(localData)return localData;throw e}
   }
   async function fetchWarcraftLogs(s){
-    const local=location.protocol==='file:'?'http://127.0.0.1:8765/api/warcraftlogs':'/api/warcraftlogs';
+    const local=location.protocol==='file:'?'http://127.0.0.1:8765/api/warcraftlogs':'https://waschi-bis-tool.vercel.app/api/warcraftlogs';
     try{
       const u=new URL(local,location.href);
       u.searchParams.set('region',s.region);
