@@ -587,11 +587,70 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
   function rioIcon(eq){const s=String(eq?.icon||eq?.item?.icon||'').toLowerCase().replace(/[^a-z0-9_]/g,'');return s?`https://wow.zamimg.com/images/wow/icons/large/${s}.jpg`:''}
   function refreshWowhead(){for(const fn of [window.WH?.Tooltips?.refreshLinks,window.$WH?.Tooltips?.refreshLinks])try{if(typeof fn==='function')fn()}catch{}}
 
-  function initProfileSelect(){const groups=new Map();for(const p of root.profiles){if(!groups.has(p.class))groups.set(p.class,[]);groups.get(p.class).push(p)}$('profileSelect').innerHTML=[...groups.entries()].map(([cls,ps])=>`<optgroup label="${escapeHtml(cls)}">${ps.map(p=>`<option value="${p.key}">${escapeHtml(p.label)}</option>`).join('')}</optgroup>`).join(''); }
-    function heroTalentSiblingProfiles(){
-    const heroProfiles=root.profiles.filter(p=>p.heroTalent&&normal(p.class)===normal(activeProfile.class)&&normal(p.spec)===normal(activeProfile.spec));
+  function profileMatchesLoadedCharacterBase(p){
+    if(!liveCharacter)return false;
+    const classOk=(p.supportedClasses||[]).some(x=>normal(x)===normal(liveCharacter.class));
+    const specOk=(p.supportedSpecs||[]).some(x=>normal(x)===normal(liveCharacter.active_spec_name));
+    return classOk&&specOk;
+  }
+  function profilesForLoadedCharacter(){
+    return liveCharacter?root.profiles.filter(profileMatchesLoadedCharacterBase):[];
+  }
+  const HERO_TALENT_ALIASES={
+    'bergthan':['bergthan','mountain thane'],
+    'diaboliker':['diaboliker','diabolist'],
+    'hollenrufer':['höllenrufer','hollenrufer','hellcaller'],
+    'koloss':['koloss','colossus'],
+    'schlachter':['schlächter','schlachter','slayer']
+  };
+  function heroTalentAliases(name){
+    const key=normal(name).replace(/\s+/g,' ');
+    const compact=key.replace(/[^a-z0-9äöüß]+/g,'');
+    for(const [aliasKey,values] of Object.entries(HERO_TALENT_ALIASES)){
+      if(normal(aliasKey).replace(/[^a-z0-9äöüß]+/g,'')===compact)return values.map(normal);
+      if(values.some(v=>normal(v)===key))return values.map(normal);
+    }
+    return[key];
+  }
+  function currentRioHeroTalent(){
+    if(!liveCharacter)return'';
+    const candidates=profilesForLoadedCharacter().filter(p=>p.heroTalent);
+    if(!candidates.length)return'';
+    const parts=[];
+    const visit=(v,key='')=>{
+      if(v==null)return;
+      if(typeof v==='string'||typeof v==='number'||typeof v==='boolean'){parts.push(String(key),String(v));return}
+      if(Array.isArray(v)){for(const x of v)visit(x,key);return}
+      if(typeof v==='object'){for(const [k,x] of Object.entries(v))visit(x,k)}
+    };
+    for(const source of [liveCharacter.talents,liveCharacter.talents_categorized,liveCharacter.talent_loadout,liveCharacter.loadout])visit(source);
+    const hay=normal(parts.join(' '));
+    const explicit=[
+      liveCharacter.hero_talent,liveCharacter.heroTalent,liveCharacter.hero_talent_name,
+      liveCharacter.talents?.hero_talent,liveCharacter.talents?.heroTalent,
+      liveCharacter.talents_categorized?.hero_talent,liveCharacter.talents_categorized?.heroTalent
+    ].map(normal).filter(Boolean);
+    const exact=candidates.find(p=>heroTalentAliases(p.heroTalent).some(a=>explicit.includes(a)));
+    if(exact)return exact.heroTalent;
+    const matched=candidates.find(p=>heroTalentAliases(p.heroTalent).some(a=>hay.includes(a)));
+    return matched?.heroTalent||'';
+  }
+  function refreshProfileSelectOptions(){
+    const select=$('profileSelect');if(!select)return;
+    const profiles=profilesForLoadedCharacter();
+    if(!liveCharacter){
+      select.innerHTML='<option value="">Bitte zuerst Charakter laden</option>';
+      select.disabled=true;
+      return;
+    }
+    select.disabled=false;
+    select.innerHTML=profiles.map(p=>`<option value="${p.key}">${escapeHtml(p.heroTalent||p.label)}</option>`).join('');
+    if(profiles.some(p=>p.key===activeProfile.key))select.value=activeProfile.key;
+  }
+  function initProfileSelect(){refreshProfileSelectOptions()}
+  function heroTalentSiblingProfiles(){
     const seen=new Set();
-    return heroProfiles.filter(p=>{const k=normal(p.heroTalent);if(!k||seen.has(k))return false;seen.add(k);return true});
+    return profilesForLoadedCharacter().filter(p=>p.heroTalent).filter(p=>{const k=normal(p.heroTalent);if(!k||seen.has(k))return false;seen.add(k);return true});
   }
   function renderHeroTalentSwitcher(){
     const panel=$('heroBuildSwitcherPanel'),buttons=$('heroBuildButtons'),current=$('heroBuildCurrent'),hint=$('heroBuildHint');
@@ -612,7 +671,7 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
     }));
   }
 function updateProfile(){
-    repairTierSetIntegrity(activeProfile);repairAcquisitionSources(activeProfile);repairTierSetIntegrity(activeProfile);renderHeroTalentSwitcher();syncKeystoneLinks(activeProfile);
+    refreshProfileSelectOptions();repairTierSetIntegrity(activeProfile);repairAcquisitionSources(activeProfile);repairTierSetIntegrity(activeProfile);renderHeroTalentSwitcher();syncKeystoneLinks(activeProfile);
     $('profileSelect').value=activeProfile.key;$('dashboardTitle').textContent=activeProfile.label;$('dashboardSubtitle').textContent=activeProfile.subtitle;$('profileFocus').textContent=activeProfile.focus+(activeProfile.gear.some(x=>x.invalidForRaidfree)?' · ⚠ Einige ältere Import-Einträge waren nicht raidfrei und werden nicht als gültiges BiS gewertet. Bitte BiS-Update ausführen, sobald eine aktuelle raidfreie Liste verfügbar ist.':'');
     $('patchLabel').textContent=`Patch ${root.meta.patch}`;$('seasonLabel').textContent=`${root.meta.expansion} · ${root.meta.season}`;$('dataDateLabel').textContent=`Datenstand ${new Intl.DateTimeFormat('de-DE').format(new Date(root.meta.dataDate+'T12:00:00'))}`;
     $('statHeadlineMini').textContent=activeProfile.statModel.headline;$('statDescriptionMini').textContent=activeProfile.statModel.description;$('gearHeading').textContent=`${activeProfile.label}: raidfreie BiS-Zielausrüstung`;
@@ -621,9 +680,18 @@ function updateProfile(){
   }
   function setProfile(key,automatic=false){const p=root.profiles.find(x=>x.key===key);if(!p)return;activeProfile=p;if(typeof bisListView!=='undefined')bisListView='mythicplus';loadStoredBackgroundRaidBis(activeProfile);comparisonCache=new Map();if(!automatic)profilePlanningLocked=true;if(liveCharacter)rebuildPersonalCraftOverrides();updateProfile();if(liveCharacter){renderCharacter();ensureBackgroundRaidBis(activeProfile,false).then(()=>{comparisonCache=new Map();renderCharacter();renderComparison();renderMissing()})}if(!automatic){const s=getSettings();s.profileKey=key;s.planningProfileLocked=true;saveSettingsObject(s)}}
   function profileClassMatches(p=activeProfile){if(!liveCharacter)return false;return (p.supportedClasses||[]).some(x=>normal(x)===normal(liveCharacter.class))}
-  function profileMatches(p=activeProfile){if(!liveCharacter)return false;return profileClassMatches(p)&&(p.supportedSpecs||[]).some(x=>normal(x)===normal(liveCharacter.active_spec_name))}
+  function profileMatches(p=activeProfile){return profileMatchesLoadedCharacterBase(p)}
   function planningProfileActive(p=activeProfile){return Boolean(liveCharacter&&profileClassMatches(p)&&!profileMatches(p))}
-  function findProfile(){return root.profiles.find(p=>profileMatches(p))||null}
+  function findProfile(){
+    const candidates=profilesForLoadedCharacter();
+    if(!candidates.length)return null;
+    const hero=currentRioHeroTalent();
+    if(hero){
+      const matched=candidates.find(p=>p.heroTalent&&normal(p.heroTalent)===normal(hero));
+      if(matched)return matched;
+    }
+    return candidates[0]||null;
+  }
 
   function getItems(){return liveCharacter?.gear?.items||null}
   function getEquipped(slot){const items=getItems();if(!items)return null;const aliases=(slotAliases[slot]||[slot]).map(normal);if(Array.isArray(items))return items.find(x=>aliases.includes(normal(x?.slot||x?.slot_type||x?.type)))||null;for(const [k,v] of Object.entries(items))if(aliases.includes(normal(k)))return v;for(const v of Object.values(items))if(v&&aliases.includes(normal(v.slot||v.slot_type)))return v;return null}
@@ -1189,10 +1257,6 @@ function updateProfile(){
 
   function renderStatComparison(){
     if(!liveCharacter){$('statsLive').classList.add('hidden');$('statSource').textContent='Noch kein Charakter geladen';renderTertiaryTargets();return}
-    const verifiedNow=applyVerifiedIngameStats(characterStats,characterStats?.statSources||{});
-    if(verifiedNow.verified){
-      characterStats={...(characterStats||{}),...verifiedNow.stats,statSources:verifiedNow.statSources,sourceLabel:'Verifiziert · Ingame-Werte · präzise Referenz',confidence:'hoch',verifiedBy:3};
-    }
     $('statsLive').classList.remove('hidden');renderBuffSummary();renderTertiaryTargets();
     const buff=calculateBuffBonuses(),eff=effectiveStats();
     $('statSource').textContent=(characterStats?.sourceLabel||'Charakterwerte nicht automatisch verfügbar')+(buff.settings.enabled?' · Buffprofil aktiv':' · Buffprofil aus')+(planningProfileActive()?` · Achtung: Armory-Werte stammen aus ${deutsch(liveCharacter.active_spec_name||'der aktuellen Spezialisierung')}`:'');
@@ -1315,22 +1379,6 @@ function updateProfile(){
   function manualKey(){return liveCharacter?`wow-bis-manual:${normal($('region').value)}:${normal($('realm').value)}:${normal($('character').value)}`:null}
   function applyManual(){statsLoadSerial++;statsReadStatus='idle';const r=id=>{const n=parseFloat($(id).value);return Number.isFinite(n)&&n>=0?n:null};const vals={crit:r('manualCrit'),haste:r('manualHaste'),mastery:r('manualMastery'),versatility:r('manualVersatility'),leech:r('manualLeech'),avoidance:r('manualAvoidance'),speed:r('manualSpeed')};const statSources={};for(const k of ['crit','haste','mastery','versatility','leech','avoidance','speed'])if(Number.isFinite(statNumber(vals[k])))statSources[k]='Manuell';characterStats={...vals,statSources,sourceLabel:'Manuell eingetragene Werte'};if(manualKey())localStorage.setItem(manualKey(),JSON.stringify(characterStats));renderStatComparison()}
   function statNumber(v){return (typeof v==='number'||typeof v==='string'&&v.trim()!=='')&&Number.isFinite(Number(v))?Number(v):NaN}
-  const VERIFIED_INGAME_STATS=new Map([
-    ['eu|blackhand|satansbraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}],
-    ['eu|blackhand|satansbtraten',{crit:25.98,haste:34.67,mastery:20.79,versatility:6.00,leech:5.42,avoidance:0.00,speed:9.57}]
-  ]);
-  function verifiedIngameStats(){
-    const region=normal($('region')?.value||liveCharacter?.region||'eu');
-    const realm=cleanRealmSlug($('realm')?.value||liveCharacter?.realm||'');
-    const name=normal($('character')?.value||liveCharacter?.name||'');
-    return VERIFIED_INGAME_STATS.get([region,realm,name].join('|'))||null;
-  }
-  function applyVerifiedIngameStats(stats,statSources={}){
-    const verified=verifiedIngameStats();if(!verified)return{stats,statSources,verified:false};
-    const merged={...(stats||{}),...verified},sources={...(statSources||{})};
-    for(const k of ['crit','haste','mastery','versatility','leech','avoidance','speed'])sources[k]='Verifiziert · Ingame-Wert';
-    return{stats:merged,statSources:sources,verified:true};
-  }
   function completeStats(v){return Boolean(v&&['crit','haste','mastery','versatility'].every(k=>Number.isFinite(statNumber(v[k]))&&statNumber(v[k])>=0))}
   function completeTertiaryStats(v){return Boolean(v&&['leech','avoidance','speed'].every(k=>Number.isFinite(statNumber(v[k]))&&statNumber(v[k])>=0))}
   function completeAllStats(v){return completeStats(v)&&completeTertiaryStats(v)}
@@ -1679,7 +1727,7 @@ function updateProfile(){
   function refreshIntervalLabel(h){if(h<1)return `alle ${Math.max(1,Math.round(h*60))} Minuten`;return h===1?'jede Stunde':`alle ${h} Stunden`}
   function updateRefreshSummary(){const h=Number($('refreshHours').value||0.25);$('refreshSummary').textContent=refreshIntervalLabel(h)}
   function scheduleRefresh(){if(refreshTimer)clearInterval(refreshTimer);const ms=Math.max(300000,Number($('refreshHours').value||0.25)*3600000);refreshTimer=setInterval(()=>refreshCharacter(false),ms)}
-  const RIO_CHARACTER_FIELDS='gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs';
+  const RIO_CHARACTER_FIELDS='gear,talents,talents:categorized,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs';
   async function fetchRioDirect(s){const u=new URL('https://raider.io/api/v1/characters/profile');u.searchParams.set('region',s.region);u.searchParams.set('realm',s.realm);u.searchParams.set('name',s.character);u.searchParams.set('fields',RIO_CHARACTER_FIELDS);const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.json()}
   function hasRioDungeonHistory(d){return Boolean(d&&(['mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_dungeon_run_counts'].some(k=>Array.isArray(d[k]))))}
   function mergeRioCharacter(base,extra){if(!base)return extra;if(!extra)return base;const merged={...extra,...base};for(const k of ['mythic_plus_recent_runs','mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_scores_by_season','mythic_plus_dungeon_run_counts'])if(Array.isArray(extra[k]))merged[k]=extra[k];if(base.gear)merged.gear=base.gear;return merged}
@@ -1715,6 +1763,7 @@ function updateProfile(){
     if(switching){
       liveCharacter=null;
       loadedCharacterIdentity='';
+      profilePlanningLocked=false;
   let statsReadStatus='idle';
       clearVisibleCharacterForSwitch();
       renderStatComparison();
@@ -1762,9 +1811,9 @@ function updateProfile(){
 
     try{
       const p=findProfile();
-      const keepPlanning=Boolean(profilePlanningLocked&&profileClassMatches(activeProfile));
+      const keepPlanning=Boolean(profilePlanningLocked&&profileMatches(activeProfile));
       if(!keepPlanning&&p){profilePlanningLocked=false;setProfile(p.key,true)}
-      else if(!profileClassMatches(activeProfile)&&p){profilePlanningLocked=false;setProfile(p.key,true)}
+      else if(!profileMatches(activeProfile)&&p){profilePlanningLocked=false;setProfile(p.key,true)}
       if(requestSerial!==characterLoadSerial)return;
 
       await ensureBackgroundRaidBis(activeProfile,false);
