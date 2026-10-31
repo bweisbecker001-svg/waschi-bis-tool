@@ -1841,7 +1841,8 @@ function updateProfile(){
         timedCount:warcraftLogs.timedCount??0,
         outtimeCount:warcraftLogs.outtimeCount??0,
         source:warcraftLogs.source||'Warcraft Logs API v2',
-        runDataTrusted:true
+        runDataTrusted:true,
+        zoneRankings:warcraftLogs.zoneRankings||null
       };
     }else{
       fetchedCharacter.warcraft_logs_runs=[];
@@ -1956,10 +1957,28 @@ function updateProfile(){
     return rows;
   }
   function characterDungeonRunCounts(){
+    const rankings=liveCharacter?.warcraft_logs_meta?.zoneRankings?.rankings;
+    if(Array.isArray(rankings)&&rankings.length){
+      return rankings.map(x=>({
+        zone_id:Number(x?.encounter?.id||0)||0,
+        dungeon:String(x?.encounter?.name||'Unbekannter Dungeon'),
+        short_name:'',
+        total:Math.max(0,Number(x?.totalKills||0)||0),
+        timed:Math.max(0,Number(x?.totalKills||0)||0),
+        best_level:Math.max(0,Number(x?.bestRank?.ilvl||0)||0),
+        best_score:Number(x?.bestAmount||0)||0
+      })).filter(x=>x.dungeon!=='Unbekannter Dungeon'&&x.total>0);
+    }
     const raw=Array.isArray(liveCharacter?.mythic_plus_dungeon_run_counts)?liveCharacter.mythic_plus_dungeon_run_counts:[];
     return raw.map(x=>({zone_id:Number(x?.zone_id||0)||0,dungeon:String(x?.dungeon||x?.name||x?.short_name||'Unbekannter Dungeon'),short_name:String(x?.short_name||''),total:Math.max(0,Number(x?.season_runs_total??x?.total??0)||0),timed:Math.max(0,Number(x?.season_runs_timed??x?.timed??0)||0)})).filter(x=>x.dungeon!=='Unbekannter Dungeon'&&x.total>0);
   }
   function authoritativeRunTotals(){
+    const rankings=liveCharacter?.warcraft_logs_meta?.zoneRankings?.rankings;
+    if(Array.isArray(rankings)&&rankings.length){
+      const counts=characterDungeonRunCounts();
+      const total=counts.reduce((n,x)=>n+x.total,0);
+      return{source:'Warcraft Logs · Charakter-Zonenrangliste',counts,total,timed:total,outtime:0};
+    }
     const merged=allKnownDungeonRuns();
     if(merged.length){
       const timed=merged.filter(runIsTimed).length;
