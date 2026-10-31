@@ -1731,13 +1731,22 @@ function updateProfile(){
 
     const warcraftLogs=await fetchWarcraftLogs(s);
     if(requestSerial!==characterLoadSerial)return;
-    if(warcraftLogs&&Array.isArray(warcraftLogs.runs)){
-      fetchedCharacter.warcraft_logs_runs=warcraftLogs.runs;
-      fetchedCharacter.warcraft_logs_meta={reportCount:warcraftLogs.reportCount||0,seasonReportCount:warcraftLogs.seasonReportCount||0,pagesRead:warcraftLogs.pagesRead||0,seasonZoneId:warcraftLogs.seasonZoneId||0,seasonZoneName:warcraftLogs.seasonZoneName||'',runCount:warcraftLogs.runCount??warcraftLogs.runs.length,timedCount:warcraftLogs.timedCount??0,outtimeCount:warcraftLogs.outtimeCount??0,source:warcraftLogs.source||'Warcraft Logs API v2'};
-    }else{
-      fetchedCharacter.warcraft_logs_runs=[];
-      fetchedCharacter.warcraft_logs_meta=null;
-    }
+    // WICHTIG: character.recentReports von Warcraft Logs liefert Reports, in denen
+    // der Charakter vorkommt. Die fights-Liste eines solchen Reports ist aber nicht
+    // automatisch auf die Teilnahme dieses Charakters begrenzt. Deshalb dürfen diese
+    // Fights nicht als persönliche M+-Historie, höchste Keys oder Saison-Gesamtzahl
+    // verwendet werden. Bis wir die Teilnahme je Fight sicher verifizieren, kommen
+    // persönliche Run-Daten ausschließlich aus der charaktergebundenen Raider.IO-Antwort.
+    fetchedCharacter.warcraft_logs_runs=[];
+    fetchedCharacter.warcraft_logs_meta=warcraftLogs?{
+      reportCount:warcraftLogs.reportCount||0,
+      seasonReportCount:warcraftLogs.seasonReportCount||0,
+      pagesRead:warcraftLogs.pagesRead||0,
+      seasonZoneId:warcraftLogs.seasonZoneId||0,
+      seasonZoneName:warcraftLogs.seasonZoneName||'',
+      source:warcraftLogs.source||'Warcraft Logs API v2',
+      runDataTrusted:false
+    }:null;
 
     liveCharacter=fetchedCharacter;
     loadedCharacterIdentity=resolvedCharacterIdentity(fetchedCharacter,s)||requestedIdentity;
@@ -1827,13 +1836,8 @@ function updateProfile(){
     return raw.map(x=>({zone_id:Number(x?.zone_id||0)||0,dungeon:String(x?.dungeon||x?.name||x?.short_name||'Unbekannter Dungeon'),short_name:String(x?.short_name||''),total:Math.max(0,Number(x?.season_runs_total??x?.total??0)||0),timed:Math.max(0,Number(x?.season_runs_timed??x?.timed??0)||0)})).filter(x=>x.dungeon!=='Unbekannter Dungeon'&&x.total>0);
   }
   function authoritativeRunTotals(){
-    const meta=liveCharacter?.warcraft_logs_meta;
-    const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs:[];
-    if(meta&&wcl.length){
-      const total=Number(meta.runCount??wcl.length)||0;
-      const timed=Number(meta.timedCount??wcl.filter(r=>Number(r?.num_keystone_upgrades||0)>0).length)||0;
-      return{source:'Warcraft Logs',counts:[],total,timed,outtime:Math.max(0,Number(meta.outtimeCount??(total-timed))||0)};
-    }
+    // Warcraft-Logs-RecentReports werden bewusst nicht mehr als persönliche
+    // Saisonstatistik verwendet, weil deren Fight-Liste nicht charaktergebunden ist.
     const counts=characterDungeonRunCounts();
     if(!counts.length)return null;
     const total=counts.reduce((n,x)=>n+x.total,0),timed=counts.reduce((n,x)=>n+Math.min(x.total,x.timed),0);
