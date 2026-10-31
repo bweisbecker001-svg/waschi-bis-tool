@@ -623,9 +623,11 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
       if(Array.isArray(v)){for(const x of v)visit(x,key);return}
       if(typeof v==='object'){for(const [k,x] of Object.entries(v))visit(x,k)}
     };
-    for(const source of [liveCharacter.talents,liveCharacter.talents_categorized,liveCharacter.talent_loadout,liveCharacter.loadout])visit(source);
+    for(const source of [liveCharacter.talentLoadout,liveCharacter.talents,liveCharacter.talents_categorized,liveCharacter.talent_loadout,liveCharacter.loadout])visit(source);
     const hay=normal(parts.join(' '));
     const explicit=[
+      liveCharacter.talentLoadout?.active_hero_tree?.name,
+      liveCharacter.talentLoadout?.active_hero_tree?.slug,
       liveCharacter.hero_talent,liveCharacter.heroTalent,liveCharacter.hero_talent_name,
       liveCharacter.talents?.hero_talent,liveCharacter.talents?.heroTalent,
       liveCharacter.talents_categorized?.hero_talent,liveCharacter.talents_categorized?.heroTalent
@@ -640,6 +642,11 @@ srüstungsplatz.","embellishment":"—","note":"Midnight Saison 2 Setteil. Raidf
     const profiles=profilesForLoadedCharacter();
     if(!liveCharacter){
       select.innerHTML='<option value="">Bitte zuerst Charakter laden</option>';
+      select.disabled=true;
+      return;
+    }
+    if(!profiles.length){
+      select.innerHTML='<option value="">Kein BiS-Profil für diese Spezialisierung verfügbar</option>';
       select.disabled=true;
       return;
     }
@@ -2609,8 +2616,13 @@ function updateProfile(){
   }
   function syncProfileSelect(){
     const src=q('profileSelect'),dst=q('wcProfileSelect');if(!src||!dst)return;
-    if(dst.dataset.signature!==String(src.options.length)){
-      dst.innerHTML=src.innerHTML;dst.dataset.signature=String(src.options.length);
+    const signature=JSON.stringify(Array.from(src.options).map(o=>[o.value,o.textContent,o.disabled]));
+    if(dst.dataset.signature!==signature){
+      dst.innerHTML=src.innerHTML;
+      dst.disabled=src.disabled;
+      dst.dataset.signature=signature;
+    }else{
+      dst.disabled=src.disabled;
     }
     dst.value=src.value;
   }
