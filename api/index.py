@@ -1206,7 +1206,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=50):
       characterData{
         character(name:$name,serverSlug:$serverSlug,serverRegion:$serverRegion){
           id name
-          recentReports(limit:100,page:$page){
+          recentReports(limit:25,page:$page){
             current_page last_page has_more_pages
             data{
               code title startTime endTime
