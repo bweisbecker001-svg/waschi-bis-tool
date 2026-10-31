@@ -1252,6 +1252,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
     season_report_count = 0
     pages = 0
     character_id = None
+    diag = {'seasonMplusFights':0,'noActorMatch':0,'actorMatchedButNotFriendly':0,'acceptedFights':0,'nameMatchCounts':{}}
 
     for page in range(1, min(10, max(1, int(max_pages))) + 1):
         data = warcraftlogs_graphql(query, {
@@ -1313,6 +1314,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
             chosen = exact_realm_matches
             if not chosen and len(name_matches) == 1 and not name_matches[0][1]:
                 chosen = [name_matches[0][0]]
+            diag['nameMatchCounts'][str(len(name_matches))] = diag['nameMatchCounts'].get(str(len(name_matches)),0) + 1
 
             for actor in chosen:
                 try:
@@ -1321,9 +1323,14 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
                     pass
 
             if not actor_ids:
+                diag['noActorMatch'] += 1
                 continue
 
             for fight in report.get('fights') or []:
+                level = int(fight.get('keystoneLevel') or 0)
+                if level <= 0:
+                    continue
+                diag['seasonMplusFights'] += 1
                 friendly_players = set()
                 for player_id in fight.get('friendlyPlayers') or []:
                     try:
@@ -1331,11 +1338,9 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
                     except (TypeError, ValueError):
                         pass
                 if not actor_ids.intersection(friendly_players):
+                    diag['actorMatchedButNotFriendly'] += 1
                     continue
-
-                level = int(fight.get('keystoneLevel') or 0)
-                if level <= 0:
-                    continue
+                diag['acceptedFights'] += 1
 
                 start_rel = float(fight.get('startTime') or 0)
                 end_rel = float(fight.get('endTime') or 0)
@@ -1422,6 +1427,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
         'outtimeCount':max(0,total-timed),
         'source':'Warcraft Logs API v2 · Teilnahme je Fight verifiziert',
         'participationVerified':True,
+        'diagnostics':diag,
     }
     return _cache_put(WARCRAFTLOGS_CACHE, cache_key, result)
 
