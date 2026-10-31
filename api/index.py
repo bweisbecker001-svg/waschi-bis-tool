@@ -31,7 +31,7 @@ WARCRAFTLOGS_TOKEN = {'access_token': '', 'expires_at': 0.0, 'client_id': ''}
 WARCRAFTLOGS_TOKEN_LOCK = threading.Lock()
 WARCRAFTLOGS_CACHE = {}
 USER_AGENT = 'Mozilla/5.0 (Waschi.fun WoW BiS Dashboard Web API)'
-RIO_FIELDS = 'gear,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs'
+RIO_FIELDS = 'gear,talents,talents:categorized,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs'
 
 EQUIPMENT_CACHE = {}
 ITEM_DATA_CACHE = {}
@@ -810,8 +810,22 @@ def fetch_blizzard_character_stats(region, realm, name, character_class='', spec
     missing = [k for k, v in stats.items() if v is None]
     if missing:
         raise RuntimeError('Blizzard-Antwort ohne vollstaendige Werte: ' + ', '.join(missing))
-    correction = _apply_missing_equipment_bonuses(data, stats, equipment, character_class, spec)
-    return correction['stats'], stats_url, _combat_stat_mode(character_class, spec), correction, equipment_url, _equipment_tooltip_details(equipment)
+    # Die Character Statistics API liefert bereits die finalen Charakterwerte inklusive
+    # der aktuell angelegten Ausrüstung. Diese Werte dürfen nicht nachträglich noch einmal
+    # um Verzauberungs-/Edelsteinboni erhöht werden, da solche Doppelkorrekturen falsche
+    # Prozentwerte erzeugen. Equipment wird nur noch für Anzeige/Tooltips mitgeladen.
+    correction = {
+        'stats': dict(stats),
+        'equipmentBaseRatings': {},
+        'enhancementRatings': {},
+        'appliedRatings': {},
+        'appliedPercent': {},
+        'inclusion': {k: 'Blizzard Character Statistics ist maßgeblich; keine Nachkorrektur' for k in STAT_KEYS},
+        'details': [],
+        'enchantCount': 0,
+        'gemCount': 0,
+    }
+    return dict(stats), stats_url, _combat_stat_mode(character_class, spec), correction, equipment_url, _equipment_tooltip_details(equipment)
 
 
 
@@ -1532,12 +1546,12 @@ def api_character_stats():
         stats, reconciled = reconcile_display_stats(stats, armory_stats)
         applied = {k:v for k,v in correction.get('appliedRatings',{}).items() if float(v or 0)>0}
         applied_pct = {k:v for k,v in correction.get('appliedPercent',{}).items() if float(v or 0)>0}
-        addon_note = ' · inkl. fehlender Verzauberungs-/Edelsteinboni' if applied else ' · Verzauberungen/Edelsteine geprüft'
-        sources = {k:'Automatisch · Blizzard API · Character Statistics + Equipment' for k in stats}
+        addon_note = ' · direkte Werte ohne Nachkorrektur'
+        sources = {k:'Automatisch · Blizzard API · Character Statistics' for k in stats}
         for k,v in reconciled.items():
             if v.get('fallback'):
                 sources[k]='Automatisch · Blizzard Charakterseite · Fallback'
-        method='Blizzard API · Character Statistics + Equipment'+addon_note
+        method='Blizzard API · Character Statistics'+addon_note
         if reconciled:
             method += ' · öffentliche Charakterseite nur zur Plausibilitätsprüfung'
         return _json({'ok': True, 'stats': stats, 'statSources': sources, 'method':method, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':3 if armory_stats else 2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'armoryEndpoint':armory_url, 'armorySource':armory_source, 'apiRawStats':api_stats, 'armoryStats':armory_stats, 'reconciledStats':reconciled, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details})
