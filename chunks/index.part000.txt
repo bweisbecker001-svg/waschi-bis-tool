@@ -454,6 +454,24 @@ select:focus{
   color:#ffffff!important;
   background-color:#111831!important;
 }
+select{
+  color-scheme:dark!important;
+  background:#10162f!important;
+  color:#f7f9ff!important;
+  border-color:rgba(184,194,255,.22)!important;
+}
+select option,
+select optgroup{
+  color-scheme:dark!important;
+  background:#10162f!important;
+  color:#f7f9ff!important;
+}
+#profileSelect,
+#wcProfileSelect{
+  background:linear-gradient(180deg,#111831,#0b1023)!important;
+  color:#f7f9ff!important;
+  border:1px solid rgba(184,194,255,.25)!important;
+}
 
 /* Tafel IV / BiS-Kammer ist eine sichtbare Hauptansicht.
    Die frühere Cockpit-Regel, die #gearPanel komplett ausblendete, wurde entfernt,
