@@ -2798,9 +2798,7 @@ function updateProfile(){
       try{localStorage.setItem('wow-midnight-active-tab',key)}catch{}
     }
     buttons.forEach(btn=>btn.addEventListener('click',()=>activate(btn.dataset.tabTarget)));
-    let start='overview';
-    try{start=localStorage.getItem('wow-midnight-active-tab')||'overview'}catch{}
-    if(!buttons.some(b=>b.dataset.tabTarget===start))start='overview';
+    const start='overview';
     activate(start);
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initMidnightTabs);
