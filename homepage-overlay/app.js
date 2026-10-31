@@ -232,12 +232,19 @@ radial-gradient(circle at 7% 63%,transparent 0 30px,rgba(120,30,145,.09) 31px 33
 radial-gradient(circle at 93% 70%,transparent 0 42px,rgba(255,60,0,.07) 43px 45px,transparent 46px);
 animation:hwRunes 5s ease-in-out infinite alternate}
 #waschi-halloween-fx .hw-whisper{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);color:rgba(255,175,125,.22);font:italic 700 clamp(16px,2vw,28px) Georgia,serif;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 10px rgba(120,0,0,.55);white-space:nowrap;animation:hwWhisper 4.5s ease-in-out infinite alternate}
-#waschi-halloween-fx .hw-web{position:absolute;width:170px;height:170px;opacity:.72;background:
-linear-gradient(45deg,transparent 49.5%,rgba(220,220,220,.42) 50%,transparent 50.5%),
-linear-gradient(90deg,transparent 49.5%,rgba(220,220,220,.32) 50%,transparent 50.5%),
-linear-gradient(135deg,transparent 49.5%,rgba(220,220,220,.4) 50%,transparent 50.5%),
-radial-gradient(circle at 0 0,transparent 0 22px,rgba(215,215,215,.32) 23px 24px,transparent 25px 45px,rgba(215,215,215,.24) 46px 47px,transparent 48px 69px,rgba(215,215,215,.19) 70px 71px,transparent 72px);
-filter:drop-shadow(0 0 5px rgba(220,220,255,.16))}
+#waschi-halloween-fx .hw-web{position:absolute;width:210px;height:210px;opacity:.8;filter:drop-shadow(0 0 4px rgba(235,235,255,.18))}
+#waschi-halloween-fx .hw-web:before,#waschi-halloween-fx .hw-web:after{content:"";position:absolute;inset:0;border-radius:50%}
+#waschi-halloween-fx .hw-web:before{background:
+repeating-radial-gradient(circle at 0 0,transparent 0 20px,rgba(235,235,235,.28) 21px 22px,transparent 23px 41px);
+-webkit-mask:conic-gradient(from 4deg at 0 0,#000 0 6deg,transparent 6deg 18deg,#000 18deg 20deg,transparent 20deg 35deg,#000 35deg 38deg,transparent 38deg 52deg,#000 52deg 54deg,transparent 54deg 69deg,#000 69deg 72deg,transparent 72deg 88deg,#000 88deg 90deg,transparent 90deg 106deg,#000 106deg 108deg,transparent 108deg 124deg,#000 124deg 127deg,transparent 127deg 145deg,#000 145deg 148deg,transparent 148deg 166deg,#000 166deg 169deg,transparent 169deg 186deg,#000 186deg 189deg,transparent 189deg 208deg,#000 208deg 211deg,transparent 211deg 232deg,#000 232deg 235deg,transparent 235deg 258deg,#000 258deg 261deg,transparent 261deg 286deg,#000 286deg 289deg,transparent 289deg 317deg,#000 317deg 320deg,transparent 320deg 360deg);
+mask:conic-gradient(from 4deg at 0 0,#000 0 6deg,transparent 6deg 18deg,#000 18deg 20deg,transparent 20deg 35deg,#000 35deg 38deg,transparent 38deg 52deg,#000 52deg 54deg,transparent 54deg 69deg,#000 69deg 72deg,transparent 72deg 88deg,#000 88deg 90deg,transparent 90deg 106deg,#000 106deg 108deg,transparent 108deg 124deg,#000 124deg 127deg,transparent 127deg 145deg,#000 145deg 148deg,transparent 148deg 166deg,#000 166deg 169deg,transparent 169deg 186deg,#000 186deg 189deg,transparent 189deg 208deg,#000 208deg 211deg,transparent 211deg 232deg,#000 232deg 235deg,transparent 235deg 258deg,#000 258deg 261deg,transparent 261deg 286deg,#000 286deg 289deg,transparent 289deg 317deg,#000 317deg 320deg,transparent 320deg 360deg)}
+#waschi-halloween-fx .hw-web:after{background:
+linear-gradient(9deg,transparent 49.4%,rgba(245,245,245,.34) 49.8% 50.2%,transparent 50.6%),
+linear-gradient(27deg,transparent 49.4%,rgba(235,235,235,.28) 49.8% 50.2%,transparent 50.6%),
+linear-gradient(48deg,transparent 49.4%,rgba(245,245,245,.3) 49.8% 50.2%,transparent 50.6%),
+linear-gradient(68deg,transparent 49.4%,rgba(235,235,235,.26) 49.8% 50.2%,transparent 50.6%),
+linear-gradient(89deg,transparent 49.4%,rgba(245,245,245,.3) 49.8% 50.2%,transparent 50.6%);
+transform-origin:0 0;transform:rotate(2deg) scale(1.04,.97)}
 #waschi-halloween-fx .hw-web.tl{left:0;top:0;transform-origin:0 0}
 #waschi-halloween-fx .hw-web.tr{right:0;top:0;transform:scaleX(-1);transform-origin:100% 0}
 #waschi-halloween-fx .hw-web.bl{left:0;bottom:0;transform:scaleY(-1);transform-origin:0 100%}
@@ -253,14 +260,21 @@ filter:drop-shadow(0 0 5px rgba(220,220,255,.16))}
 #waschi-halloween-fx .hw-blood-stream.s1{left:7%;height:110px;animation-delay:-1.1s}.hw-blood-stream.s2{left:18%;height:75px;animation-delay:-2.7s}.hw-blood-stream.s3{left:43%;height:125px;animation-delay:-.3s}.hw-blood-stream.s4{left:68%;height:92px;animation-delay:-3.2s}.hw-blood-stream.s5{right:9%;height:135px;animation-delay:-1.9s}
 #waschi-halloween-fx .hw-bat-flight{position:absolute;left:-18vw;font-size:30px;color:#050207;text-shadow:0 0 5px #42104b;animation:hwFlyAcross linear infinite}
 #waschi-halloween-fx .hw-bat-flight.f1{top:18%;animation-duration:12s}.hw-bat-flight.f2{top:33%;font-size:21px;animation-duration:17s;animation-delay:-5s}.hw-bat-flight.f3{top:51%;font-size:34px;animation-duration:21s;animation-delay:-11s}.hw-bat-flight.f4{top:68%;font-size:18px;animation-duration:15s;animation-delay:-8s}
-#waschi-halloween-fx .hw-horseman{position:absolute;left:-320px;bottom:7vh;width:280px;height:140px;opacity:.72;filter:drop-shadow(0 0 13px rgba(90,255,125,.22)) drop-shadow(0 0 30px rgba(80,20,120,.24));animation:hwHorseman 19s linear infinite}
-#waschi-halloween-fx .hw-horse{position:absolute;left:0;bottom:10px;width:190px;height:72px;border-radius:55% 45% 40% 60%;background:linear-gradient(180deg,#0a0a0d,#020203);transform:skewX(-8deg)}
-#waschi-halloween-fx .hw-horse:before{content:"";position:absolute;left:138px;top:-34px;width:62px;height:55px;border-radius:48% 52% 40% 60%;background:#050507;transform:rotate(-28deg)}
-#waschi-halloween-fx .hw-horse:after{content:"";position:absolute;left:28px;top:54px;width:145px;height:52px;border-left:8px solid #040405;border-right:8px solid #040405;border-bottom:8px solid transparent;transform:skewX(-14deg)}
-#waschi-halloween-fx .hw-rider{position:absolute;left:78px;bottom:60px;width:62px;height:72px;border-radius:40% 45% 20% 20%;background:linear-gradient(#111117,#020203);transform:rotate(-8deg)}
-#waschi-halloween-fx .hw-rider:before{content:"";position:absolute;left:14px;top:-30px;width:34px;height:34px;border-radius:50%;background:radial-gradient(circle at 50% 45%,#ffe278 0 12%,#ff7b00 13% 45%,#5d1400 47% 70%,transparent 72%);box-shadow:0 0 13px #ff6a00,0 0 28px rgba(255,90,0,.4)}
-#waschi-halloween-fx .hw-rider:after{content:"";position:absolute;left:48px;top:16px;width:72px;height:7px;background:#050507;transform:rotate(-22deg);transform-origin:left center;box-shadow:44px -18px 0 -2px #050507}
-#waschi-halloween-fx .hw-horseman .hw-greenfire{position:absolute;left:8px;bottom:0;width:220px;height:38px;background:radial-gradient(ellipse at center,rgba(90,255,110,.35),rgba(42,128,58,.16) 45%,transparent 72%);filter:blur(7px);animation:hwGreenFire 1.4s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-waschi{position:absolute;left:-330px;bottom:6vh;width:300px;height:150px;opacity:.88;filter:drop-shadow(0 0 12px rgba(95,255,135,.22)) drop-shadow(0 0 34px rgba(80,20,120,.25));animation:hwWaschiRide 19s linear infinite}
+#waschi-halloween-fx .hw-waschi .hw-greenfire{position:absolute;left:10px;bottom:0;width:250px;height:40px;background:radial-gradient(ellipse at center,rgba(90,255,110,.34),rgba(42,128,58,.14) 45%,transparent 72%);filter:blur(7px);animation:hwGreenFire 1.4s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-raccoon-body{position:absolute;left:78px;bottom:23px;width:124px;height:92px;border-radius:48% 52% 42% 40%;background:linear-gradient(180deg,#4a4a4f,#1f2024 55%,#0a0b0d);box-shadow:inset 0 0 18px rgba(255,255,255,.06)}
+#waschi-halloween-fx .hw-raccoon-tail{position:absolute;left:24px;bottom:34px;width:88px;height:34px;border-radius:60% 20% 60% 20%;background:repeating-linear-gradient(90deg,#25262a 0 13px,#6a6b70 14px 25px);transform:rotate(-14deg);transform-origin:right center}
+#waschi-halloween-fx .hw-raccoon-head{position:absolute;left:105px;bottom:91px;width:72px;height:62px;border-radius:48% 52% 48% 52%;background:linear-gradient(#777a7f,#393b40);animation:hwRaccoonNod 2.7s ease-in-out infinite}
+#waschi-halloween-fx .hw-raccoon-head:before,#waschi-halloween-fx .hw-raccoon-head:after{content:"";position:absolute;top:-10px;width:24px;height:26px;background:#4b4d52;clip-path:polygon(50% 0,100% 100%,0 100%)}
+#waschi-halloween-fx .hw-raccoon-head:before{left:4px;transform:rotate(-12deg)}#waschi-halloween-fx .hw-raccoon-head:after{right:4px;transform:rotate(12deg)}
+#waschi-halloween-fx .hw-mask{position:absolute;left:10px;top:18px;width:52px;height:20px;border-radius:50%;background:#111216;box-shadow:0 0 6px rgba(0,0,0,.7)}
+#waschi-halloween-fx .hw-mask:before,#waschi-halloween-fx .hw-mask:after{content:"";position:absolute;top:5px;width:7px;height:7px;border-radius:50%;background:#b4ff8b;box-shadow:0 0 8px rgba(105,255,100,.75)}
+#waschi-halloween-fx .hw-mask:before{left:11px}#waschi-halloween-fx .hw-mask:after{right:11px}
+#waschi-halloween-fx .hw-snout{position:absolute;left:23px;top:33px;width:28px;height:19px;border-radius:50%;background:#a5a3a0}
+#waschi-halloween-fx .hw-snout:after{content:"";position:absolute;left:9px;top:2px;width:10px;height:8px;border-radius:50%;background:#090909}
+#waschi-halloween-fx .hw-hat{position:absolute;left:105px;bottom:139px;width:76px;height:26px;border-radius:50%;background:#0b0c10;border:2px solid rgba(120,255,120,.14);transform-origin:28px 22px;animation:hwHatSalute 4.4s ease-in-out infinite}
+#waschi-halloween-fx .hw-hat:before{content:"";position:absolute;left:20px;top:-31px;width:36px;height:38px;background:linear-gradient(90deg,#07080a,#18191d);clip-path:polygon(16% 100%,28% 16%,72% 0,88% 100%)}
+#waschi-halloween-fx .hw-paw{position:absolute;left:164px;bottom:74px;width:46px;height:18px;border-radius:40%;background:#33353a;transform-origin:left center;animation:hwPawWave 2.4s ease-in-out infinite}
 @keyframes hwFog{from{transform:translate3d(-7vw,0,0) scale(1)}to{transform:translate3d(8vw,-3vh,0) scale(1.11)}}
 @keyframes hwBat{from{transform:translate3d(0,0,0) rotate(-8deg) scale(.9)}to{transform:translate3d(16vw,-7vh,0) rotate(10deg) scale(1.2)}}
 @keyframes hwRunes{from{opacity:.35;filter:blur(0)}to{opacity:.75;filter:blur(1px)}}
@@ -271,7 +285,10 @@ filter:drop-shadow(0 0 5px rgba(220,220,255,.16))}
 @keyframes hwLook{0%,18%{transform:translate(0,0)}19%,36%{transform:translate(-18px,6px)}37%,56%{transform:translate(16px,-5px)}57%,75%{transform:translate(6px,10px)}76%,100%{transform:translate(-8px,-7px)}}
 @keyframes hwBloodFlow{from{transform:scaleY(.82);opacity:.72}to{transform:scaleY(1.18);opacity:.95}}
 @keyframes hwFlyAcross{0%{transform:translateX(0) translateY(0) rotate(-8deg) scale(.85)}20%{transform:translateX(28vw) translateY(-5vh) rotate(7deg) scale(1.05)}45%{transform:translateX(58vw) translateY(3vh) rotate(-4deg) scale(.92)}75%{transform:translateX(92vw) translateY(-7vh) rotate(9deg) scale(1.12)}100%{transform:translateX(135vw) translateY(2vh) rotate(-6deg) scale(.9)}}
-@keyframes hwHorseman{0%{transform:translateX(0) scale(.86);opacity:0}8%{opacity:.74}48%{transform:translateX(62vw) scale(1);opacity:.84}88%{opacity:.66}100%{transform:translateX(145vw) scale(.9);opacity:0}}
+@keyframes hwWaschiRide{0%{transform:translateX(0) scale(.86);opacity:0}8%{opacity:.82}48%{transform:translateX(62vw) scale(1);opacity:.94}88%{opacity:.78}100%{transform:translateX(145vw) scale(.9);opacity:0}}
+@keyframes hwHatSalute{0%,22%,100%{transform:translate(0,0) rotate(0deg)}34%,46%{transform:translate(18px,-18px) rotate(28deg)}58%{transform:translate(8px,-8px) rotate(12deg)}}
+@keyframes hwRaccoonNod{0%,100%{transform:rotate(0deg)}40%{transform:rotate(-4deg)}55%{transform:rotate(5deg)}}
+@keyframes hwPawWave{0%,100%{transform:rotate(-8deg)}35%{transform:rotate(-38deg)}60%{transform:rotate(-20deg)}}
 @keyframes hwGreenFire{from{opacity:.35;transform:scaleX(.92)}to{opacity:.72;transform:scaleX(1.08)}}
 @media(max-width:700px){
  #waschi-halloween-fx .hw-banner{top:92px;font-size:9px;padding:7px 10px}
@@ -286,7 +303,7 @@ filter:drop-shadow(0 0 5px rgba(220,220,255,.16))}
   }
   if(!document.getElementById('waschi-halloween-fx')&&document.body){
     const fx=document.createElement('div');fx.id='waschi-halloween-fx';fx.setAttribute('aria-hidden','true');
-    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><span class="hw-blood-stream s1"></span><span class="hw-blood-stream s2"></span><span class="hw-blood-stream s3"></span><span class="hw-blood-stream s4"></span><span class="hw-blood-stream s5"></span><div class="hw-runes"></div><div class="hw-web tl"></div><div class="hw-web tr"></div><div class="hw-web bl"></div><div class="hw-web br"></div><div class="hw-spider-line"></div><div class="hw-spider"></div><div class="hw-eye"><span class="hw-pupil"></span></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><span class="hw-bat-flight f1">⌁</span><span class="hw-bat-flight f2">⌁</span><span class="hw-bat-flight f3">⌁</span><span class="hw-bat-flight f4">⌁</span><div class="hw-horseman"><div class="hw-greenfire"></div><div class="hw-horse"></div><div class="hw-rider"></div></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
+    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><span class="hw-blood-stream s1"></span><span class="hw-blood-stream s2"></span><span class="hw-blood-stream s3"></span><span class="hw-blood-stream s4"></span><span class="hw-blood-stream s5"></span><div class="hw-runes"></div><div class="hw-web tl"></div><div class="hw-web tr"></div><div class="hw-web bl"></div><div class="hw-web br"></div><div class="hw-spider-line"></div><div class="hw-spider"></div><div class="hw-eye"><span class="hw-pupil"></span></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><span class="hw-bat-flight f1">⌁</span><span class="hw-bat-flight f2">⌁</span><span class="hw-bat-flight f3">⌁</span><span class="hw-bat-flight f4">⌁</span><div class="hw-waschi"><div class="hw-greenfire"></div><div class="hw-raccoon-tail"></div><div class="hw-raccoon-body"></div><div class="hw-raccoon-head"><span class="hw-mask"></span><span class="hw-snout"></span></div><div class="hw-hat"></div><div class="hw-paw"></div></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
     document.body.appendChild(fx);
   }
 }
