@@ -1191,7 +1191,7 @@ def warcraftlogs_current_mplus_zone():
     return max(pool, key=lambda z: int(z.get('id') or 0))
 
 
-def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=50):
+def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
     cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
     cached = _cache_get(WARCRAFTLOGS_CACHE, cache_key, 900)
     if cached is not None:
@@ -1229,7 +1229,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=50):
     pages = 0
     character_id = None
 
-    for page in range(1, max(1, int(max_pages)) + 1):
+    for page in range(1, min(5, max(1, int(max_pages))) + 1):
         data = warcraftlogs_graphql(query, {
             'name': str(name),
             'serverSlug': re.sub(r"[’'\s]+", '-', str(realm or '').strip().lower()),
