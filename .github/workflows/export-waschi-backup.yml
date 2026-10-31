@@ -1,0 +1,46 @@
+name: Export Waschi.fun Backup
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/export-waschi-backup.yml
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout saved site state
+        uses: actions/checkout@v4
+        with:
+          ref: waschi-fun-current
+          persist-credentials: false
+
+      - name: Prepare backup folder
+        run: |
+          mkdir -p backup
+          cp -a homepage-overlay backup/waschi.fun
+          cat > backup/README.txt <<'EOF'
+          Waschi.fun - lokale Sicherung
+          Referenzstand: Branch waschi-fun-current
+          Commit: e3c28a9e93bb2b2d53a29f60043b10ee085a3932
+
+          Inhalt:
+          - komplette Homepage unter backup/waschi.fun
+          - HTML, CSS, JavaScript und alle lokalen Assets
+
+          Hinweis:
+          Externe Links und externe Inhalte benötigen weiterhin eine Internetverbindung.
+          EOF
+
+      - name: Upload backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: Waschi_fun_kompletter_Stand_2026-10-31
+          path: backup/
+          if-no-files-found: error
+          retention-days: 7
