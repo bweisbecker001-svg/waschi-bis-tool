@@ -1878,27 +1878,51 @@ function updateProfile(){
     merged.sort((a,b)=>new Date(b.completed_at||0)-new Date(a.completed_at||0));
     const kept=merged.slice(0,5);saveRecentKeysCache(kept);return{runs:kept,freshCount:fresh.length};
   }
+  function samePhysicalRun(a,b){
+    if(!a||!b)return false;
+    if(Number(a.mythic_level||0)!==Number(b.mythic_level||0))return false;
+    const da=normal(a.dungeon||a.short_name||''),db=normal(b.dungeon||b.short_name||'');
+    if(!da||!db||da!==db)return false;
+    const ta=new Date(a.completed_at||0).getTime(),tb=new Date(b.completed_at||0).getTime();
+    return Number.isFinite(ta)&&Number.isFinite(tb)&&Math.abs(ta-tb)<=180000;
+  }
   function allKnownDungeonRuns(){
-    const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs.map(cleanRecentRun):[];
-    if(wcl.length){
-      const seen=new Set(),rows=[];
-      for(const r of wcl){const id=runIdentity(r);if(!id||seen.has(id))continue;seen.add(id);rows.push(r)}
-      rows.sort((a,b)=>new Date(b.completed_at||0)-new Date(a.completed_at||0));
-      return rows;
+    const rows=[];
+    const add=raw=>{
+      const r=cleanRecentRun(raw);
+      if(!r.dungeon||r.dungeon==='Unbekannter Dungeon'||r.mythic_level<=0)return;
+      const duplicate=rows.find(x=>samePhysicalRun(x,r));
+      if(duplicate){
+        // Behalte die reichhaltigere Quelle; Warcraft Logs hat oft bessere Fight-Details,
+        // Raider.IO teils Par-Zeit/Map-ID. Felder werden daher zusammengeführt.
+        Object.assign(duplicate,{...r,...duplicate,
+          par_time_ms:Number(duplicate.par_time_ms||r.par_time_ms||0),
+          map_challenge_mode_id:Number(duplicate.map_challenge_mode_id||r.map_challenge_mode_id||0),
+          zone_id:Number(duplicate.zone_id||r.zone_id||0),
+          score:Number(duplicate.score||r.score||0)
+        });
+        return;
+      }
+      rows.push(r);
+    };
+    for(const key of ['warcraft_logs_runs','mythic_plus_all_known_runs','mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_recent_runs']){
+      for(const raw of (Array.isArray(liveCharacter?.[key])?liveCharacter[key]:[]))add(raw);
     }
-    return updateSeasonRunArchive();
+    for(const raw of getSeasonRunArchive())add(raw);
+    rows.sort((a,b)=>new Date(b.completed_at||0)-new Date(a.completed_at||0));
+    return rows;
   }
   function characterDungeonRunCounts(){
     const raw=Array.isArray(liveCharacter?.mythic_plus_dungeon_run_counts)?liveCharacter.mythic_plus_dungeon_run_counts:[];
     return raw.map(x=>({zone_id:Number(x?.zone_id||0)||0,dungeon:String(x?.dungeon||x?.name||x?.short_name||'Unbekannter Dungeon'),short_name:String(x?.short_name||''),total:Math.max(0,Number(x?.season_runs_total??x?.total??0)||0),timed:Math.max(0,Number(x?.season_runs_timed??x?.timed??0)||0)})).filter(x=>x.dungeon!=='Unbekannter Dungeon'&&x.total>0);
   }
   function authoritativeRunTotals(){
-    const meta=liveCharacter?.warcraft_logs_meta;
-    const wcl=Array.isArray(liveCharacter?.warcraft_logs_runs)?liveCharacter.warcraft_logs_runs:[];
-    if(meta?.runDataTrusted===true&&wcl.length){
-      const total=Number(meta.runCount??wcl.length)||0;
-      const timed=Number(meta.timedCount??wcl.filter(r=>Number(r?.num_keystone_upgrades||0)>0).length)||0;
-      return{source:'Warcraft Logs',counts:[],total,timed,outtime:Math.max(0,Number(meta.outtimeCount??(total-timed))||0)};
+    const merged=allKnownDungeonRuns();
+    if(merged.length){
+      const timed=merged.filter(runIsTimed).length;
+      const hasWcl=merged.some(r=>String(r.source||'').toLowerCase().includes('warcraft'));
+      const hasRio=merged.some(r=>!String(r.source||'').toLowerCase().includes('warcraft'));
+      return{source:hasWcl&&hasRio?'Warcraft Logs + Raider.IO':hasWcl?'Warcraft Logs':'Raider.IO',counts:[],total:merged.length,timed,outtime:Math.max(0,merged.length-timed)};
     }
     const counts=characterDungeonRunCounts();
     if(!counts.length)return null;
