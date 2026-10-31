@@ -6,55 +6,55 @@
     },
     {
       "source": "/api/health",
-      "destination": "/api/index.py?route=health"
+      "destination": "https://waschi-bis-tool.vercel.app/api/health"
     },
     {
       "source": "/api/blizzard-config-status",
-      "destination": "/api/index.py?route=blizzard-config-status"
+      "destination": "https://waschi-bis-tool.vercel.app/api/blizzard-config-status"
     },
     {
       "source": "/api/blizzard-config",
-      "destination": "/api/index.py?route=blizzard-config"
+      "destination": "https://waschi-bis-tool.vercel.app/api/blizzard-config"
     },
     {
       "source": "/api/character-media",
-      "destination": "/api/index.py?route=character-media"
+      "destination": "https://waschi-bis-tool.vercel.app/api/character-media"
     },
     {
       "source": "/api/equipment-details",
-      "destination": "/api/index.py?route=equipment-details"
+      "destination": "https://waschi-bis-tool.vercel.app/api/equipment-details"
     },
     {
       "source": "/api/item-tooltip",
-      "destination": "/api/index.py?route=item-tooltip"
+      "destination": "https://waschi-bis-tool.vercel.app/api/item-tooltip"
     },
     {
       "source": "/api/item-media",
-      "destination": "/api/index.py?route=item-media"
+      "destination": "https://waschi-bis-tool.vercel.app/api/item-media"
     },
     {
       "source": "/api/render-image",
-      "destination": "/api/index.py?route=render-image"
+      "destination": "https://waschi-bis-tool.vercel.app/api/render-image"
     },
     {
       "source": "/api/character-stats",
-      "destination": "/api/index.py?route=character-stats"
+      "destination": "https://waschi-bis-tool.vercel.app/api/character-stats"
     },
     {
       "source": "/api/raiderio",
-      "destination": "/api/index.py?route=raiderio"
+      "destination": "https://waschi-bis-tool.vercel.app/api/raiderio"
     },
     {
       "source": "/api/warcraftlogs",
-      "destination": "/api/index.py?route=warcraftlogs"
+      "destination": "https://waschi-bis-tool.vercel.app/api/warcraftlogs"
     },
     {
       "source": "/api/warcraftlogs-status",
-      "destination": "/api/index.py?route=warcraftlogs-status"
+      "destination": "https://waschi-bis-tool.vercel.app/api/warcraftlogs-status"
     },
     {
       "source": "/api/bis-refresh",
-      "destination": "/api/index.py?route=bis-refresh"
+      "destination": "https://waschi-bis-tool.vercel.app/api/bis-refresh"
     }
   ],
   "buildCommand": "python build_index.py",
