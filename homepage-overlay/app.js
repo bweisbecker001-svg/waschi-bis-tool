@@ -203,8 +203,8 @@ html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!im
 }
 #waschi-halloween-fx .hw-hotspot{
   position:absolute;
-  top:24.55%;
-  height:6.1%;
+  top:20.62%;
+  height:6.16%;
   pointer-events:auto;
   display:block;
   border-radius:8px;
@@ -217,14 +217,14 @@ html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!im
   outline-offset:-2px;
   box-shadow:0 0 18px rgba(255,72,0,.35) inset,0 0 18px rgba(255,72,0,.18);
 }
-#waschi-halloween-fx .hw-hotspot.home{left:13.0%;width:9.5%}
-#waschi-halloween-fx .hw-hotspot.guild{left:22.9%;width:9.7%}
-#waschi-halloween-fx .hw-hotspot.mplus{left:32.7%;width:8.2%}
-#waschi-halloween-fx .hw-hotspot.extensions{left:40.8%;width:10.6%}
-#waschi-halloween-fx .hw-hotspot.bis{left:51.2%;width:8.5%}
-#waschi-halloween-fx .hw-hotspot.download{left:59.7%;width:9.4%}
-#waschi-halloween-fx .hw-hotspot.streams{left:69.3%;width:8.2%}
-#waschi-halloween-fx .hw-hotspot.community{left:77.9%;width:9.8%}
+#waschi-halloween-fx .hw-hotspot.home{left:8.97%;width:12.26%}
+#waschi-halloween-fx .hw-hotspot.guild{left:21.23%;width:9.87%}
+#waschi-halloween-fx .hw-hotspot.mplus{left:31.10%;width:8.07%}
+#waschi-halloween-fx .hw-hotspot.extensions{left:39.18%;width:11.96%}
+#waschi-halloween-fx .hw-hotspot.bis{left:51.14%;width:8.67%}
+#waschi-halloween-fx .hw-hotspot.download{left:59.81%;width:8.85%}
+#waschi-halloween-fx .hw-hotspot.streams{left:68.66%;width:9.39%}
+#waschi-halloween-fx .hw-hotspot.community{left:78.05%;width:11.96%}
 `;
     document.head.appendChild(style);
   }
