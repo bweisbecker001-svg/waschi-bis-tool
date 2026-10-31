@@ -1289,8 +1289,39 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
         if not reports.get('has_more_pages'):
             break
 
-    dedup = {run['id']:run for run in runs}
-    season_runs = sorted(dedup.values(), key=lambda r: str(r.get('completed_at') or ''), reverse=True)
+    # Warcraft Logs kann denselben M+-Lauf in mehreren hochgeladenen Reports enthalten.
+    # Fuer die Saisonanzahl zaehlen wir nur abgeschlossene Dungeonlaeufe und deduplizieren
+    # quellenuebergreifend nach Dungeon, Key-Stufe, Abschlusszeit und Laufdauer.
+    completed_runs = [r for r in runs if bool(r.get('kill'))]
+    completed_runs.sort(key=lambda r: str(r.get('completed_at') or ''), reverse=True)
+
+    season_runs = []
+    for run in completed_runs:
+        dungeon = re.sub(r'[^a-z0-9]+', '', str(run.get('dungeon') or '').lower())
+        level = int(run.get('mythic_level') or 0)
+        clear_ms = int(run.get('clear_time_ms') or 0)
+        try:
+            ts = int(time.mktime(time.strptime(str(run.get('completed_at') or ''), '%Y-%m-%dT%H:%M:%SZ')))
+        except Exception:
+            ts = 0
+
+        duplicate = False
+        for kept in season_runs:
+            kept_dungeon = re.sub(r'[^a-z0-9]+', '', str(kept.get('dungeon') or '').lower())
+            if kept_dungeon != dungeon or int(kept.get('mythic_level') or 0) != level:
+                continue
+            kept_clear = int(kept.get('clear_time_ms') or 0)
+            try:
+                kept_ts = int(time.mktime(time.strptime(str(kept.get('completed_at') or ''), '%Y-%m-%dT%H:%M:%SZ')))
+            except Exception:
+                kept_ts = 0
+            if abs(kept_ts - ts) <= 10 and abs(kept_clear - clear_ms) <= 5000:
+                duplicate = True
+                break
+
+        if not duplicate:
+            season_runs.append(run)
+
     timed = sum(1 for r in season_runs if int(r.get('num_keystone_upgrades') or 0) > 0)
     total = len(season_runs)
 
