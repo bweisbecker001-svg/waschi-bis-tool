@@ -6,55 +6,315 @@
     },
     {
       "source": "/api/health",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/health"
     },
     {
+      "source": "/api/health",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/health"
+    },
+    {
+      "source": "/api/health",
+      "destination": "/api/index.py?route=health"
+    },
+    {
       "source": "/api/blizzard-config-status",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/blizzard-config-status"
     },
     {
+      "source": "/api/blizzard-config-status",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/blizzard-config-status"
+    },
+    {
+      "source": "/api/blizzard-config-status",
+      "destination": "/api/index.py?route=blizzard-config-status"
+    },
+    {
       "source": "/api/blizzard-config",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/blizzard-config"
     },
     {
+      "source": "/api/blizzard-config",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/blizzard-config"
+    },
+    {
+      "source": "/api/blizzard-config",
+      "destination": "/api/index.py?route=blizzard-config"
+    },
+    {
       "source": "/api/character-media",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/character-media"
     },
     {
+      "source": "/api/character-media",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/character-media"
+    },
+    {
+      "source": "/api/character-media",
+      "destination": "/api/index.py?route=character-media"
+    },
+    {
       "source": "/api/equipment-details",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/equipment-details"
     },
     {
+      "source": "/api/equipment-details",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/equipment-details"
+    },
+    {
+      "source": "/api/equipment-details",
+      "destination": "/api/index.py?route=equipment-details"
+    },
+    {
       "source": "/api/item-tooltip",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/item-tooltip"
     },
     {
+      "source": "/api/item-tooltip",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/item-tooltip"
+    },
+    {
+      "source": "/api/item-tooltip",
+      "destination": "/api/index.py?route=item-tooltip"
+    },
+    {
       "source": "/api/item-media",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/item-media"
     },
     {
+      "source": "/api/item-media",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/item-media"
+    },
+    {
+      "source": "/api/item-media",
+      "destination": "/api/index.py?route=item-media"
+    },
+    {
       "source": "/api/render-image",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/render-image"
     },
     {
+      "source": "/api/render-image",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/render-image"
+    },
+    {
+      "source": "/api/render-image",
+      "destination": "/api/index.py?route=render-image"
+    },
+    {
       "source": "/api/character-stats",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/character-stats"
     },
     {
+      "source": "/api/character-stats",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/character-stats"
+    },
+    {
+      "source": "/api/character-stats",
+      "destination": "/api/index.py?route=character-stats"
+    },
+    {
       "source": "/api/raiderio",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/raiderio"
     },
     {
+      "source": "/api/raiderio",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/raiderio"
+    },
+    {
+      "source": "/api/raiderio",
+      "destination": "/api/index.py?route=raiderio"
+    },
+    {
       "source": "/api/warcraftlogs",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/warcraftlogs"
     },
     {
+      "source": "/api/warcraftlogs",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/warcraftlogs"
+    },
+    {
+      "source": "/api/warcraftlogs",
+      "destination": "/api/index.py?route=warcraftlogs"
+    },
+    {
       "source": "/api/warcraftlogs-status",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/warcraftlogs-status"
     },
     {
+      "source": "/api/warcraftlogs-status",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/warcraftlogs-status"
+    },
+    {
+      "source": "/api/warcraftlogs-status",
+      "destination": "/api/index.py?route=warcraftlogs-status"
+    },
+    {
       "source": "/api/bis-refresh",
+      "has": [
+        {
+          "type": "host",
+          "value": "waschi.fun"
+        }
+      ],
       "destination": "https://waschi-bis-tool.vercel.app/api/bis-refresh"
+    },
+    {
+      "source": "/api/bis-refresh",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.waschi.fun"
+        }
+      ],
+      "destination": "https://waschi-bis-tool.vercel.app/api/bis-refresh"
+    },
+    {
+      "source": "/api/bis-refresh",
+      "destination": "/api/index.py?route=bis-refresh"
     }
   ],
   "buildCommand": "python build_index.py",
