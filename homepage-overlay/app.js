@@ -161,8 +161,53 @@ function forceHeaderLogoSize(){
     navwrap.style.setProperty("padding-bottom","0","important");
   }
 }
-function boot(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan()}
+function applyHalloweenTheme(){
+  if(location.pathname==='/bis'||location.pathname==='/bis/'||location.pathname.startsWith('/bis/'))return;
+  const halloweenEnds=Date.parse('2026-11-01T11:00:00Z');
+  if(Date.now()>=halloweenEnds){
+    document.documentElement.classList.remove('waschi-halloween');
+    const oldStyle=document.getElementById('waschi-halloween-style');if(oldStyle)oldStyle.remove();
+    const oldFx=document.getElementById('waschi-halloween-fx');if(oldFx)oldFx.remove();
+    return;
+  }
+  document.documentElement.classList.add('waschi-halloween');
+  if(!document.getElementById('waschi-halloween-style')){
+    const style=document.createElement('style');
+    style.id='waschi-halloween-style';
+    style.textContent=`
+html.waschi-halloween{--hw-orange:#ff7a18;--hw-green:#91d14f;--hw-violet:#7b3fb0}
+html.waschi-halloween body{background:#050306!important}
+html.waschi-halloween body:before{content:"";position:fixed;inset:0;z-index:2147482000;pointer-events:none;background:
+radial-gradient(circle at 12% 8%,rgba(123,63,176,.18),transparent 28%),
+radial-gradient(circle at 88% 14%,rgba(255,122,24,.12),transparent 24%),
+linear-gradient(rgba(3,2,5,.12),rgba(2,1,3,.34));mix-blend-mode:screen}
+html.waschi-halloween .header{background:linear-gradient(180deg,rgba(7,3,10,.97),rgba(18,5,16,.94))!important;border-bottom-color:rgba(255,122,24,.42)!important;box-shadow:0 12px 36px rgba(0,0,0,.72),0 0 28px rgba(123,63,176,.16)!important}
+html.waschi-halloween .brand strong,html.waschi-halloween h1,html.waschi-halloween h2,html.waschi-halloween h3{filter:drop-shadow(0 0 10px rgba(255,122,24,.18))}
+html.waschi-halloween .nav a:hover,html.waschi-halloween .nav a.active{color:#ffb15d!important;text-shadow:0 0 12px rgba(255,122,24,.4)}
+html.waschi-halloween .btn.gold{background:linear-gradient(180deg,#ff8a27,#9a3d0a)!important;border-color:#ffad5f!important;box-shadow:0 0 18px rgba(255,122,24,.18)!important}
+html.waschi-halloween .quick,html.waschi-halloween .panel,html.waschi-halloween .card,html.waschi-halloween .download-card,html.waschi-halloween .addon-card{box-shadow:0 14px 36px rgba(0,0,0,.72),0 0 20px rgba(123,63,176,.08)!important}
+#waschi-halloween-fx{position:fixed;inset:0;z-index:2147483000;pointer-events:none;overflow:hidden}
+#waschi-halloween-fx .hw-banner{position:fixed;top:118px;left:50%;transform:translateX(-50%);max-width:min(92vw,760px);padding:9px 18px;border:1px solid rgba(255,122,24,.5);border-radius:999px;background:rgba(12,5,12,.86);color:#ffc27f;font:700 12px/1.25 Georgia,serif;letter-spacing:.08em;text-transform:uppercase;text-align:center;box-shadow:0 0 26px rgba(255,122,24,.14);backdrop-filter:blur(7px)}
+#waschi-halloween-fx .hw-moon{position:absolute;right:5vw;top:13vh;width:115px;height:115px;border-radius:50%;background:radial-gradient(circle at 38% 36%,#e9f0c6 0 8%,#a6bc7d 24%,#55704f 52%,rgba(35,52,39,.24) 70%,transparent 72%);opacity:.42;filter:drop-shadow(0 0 24px rgba(145,209,79,.28))}
+#waschi-halloween-fx .hw-fog{position:absolute;left:-20vw;width:140vw;height:22vh;border-radius:50%;background:radial-gradient(ellipse at center,rgba(185,193,202,.12),rgba(90,70,100,.05) 45%,transparent 70%);filter:blur(18px);animation:hwFog 19s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-fog.one{bottom:2vh}#waschi-halloween-fx .hw-fog.two{bottom:20vh;opacity:.55;animation-duration:26s;animation-direction:alternate-reverse}
+#waschi-halloween-fx .hw-bats{position:absolute;left:6vw;top:18vh;color:rgba(15,8,18,.92);font-size:28px;letter-spacing:18px;transform:rotate(-8deg);text-shadow:80px 45px 0 rgba(15,8,18,.8),165px -15px 0 rgba(15,8,18,.65);animation:hwBats 9s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-pumpkins{position:absolute;right:4vw;bottom:3vh;font-size:34px;filter:drop-shadow(0 0 12px rgba(255,122,24,.4));opacity:.82}
+@keyframes hwFog{from{transform:translate3d(-5vw,0,0) scale(1)}to{transform:translate3d(6vw,-2vh,0) scale(1.08)}}
+@keyframes hwBats{from{transform:translate3d(0,0,0) rotate(-8deg)}to{transform:translate3d(12vw,-4vh,0) rotate(3deg)}}
+@media(max-width:700px){#waschi-halloween-fx .hw-banner{top:92px;font-size:10px;padding:8px 12px}#waschi-halloween-fx .hw-moon{width:78px;height:78px;top:15vh}.hw-bats{opacity:.55}}
+@media(prefers-reduced-motion:reduce){#waschi-halloween-fx *{animation:none!important}}
+`;
+    document.head.appendChild(style);
+  }
+  if(!document.getElementById('waschi-halloween-fx')&&document.body){
+    const fx=document.createElement('div');fx.id='waschi-halloween-fx';fx.setAttribute('aria-hidden','true');
+    fx.innerHTML='<div class="hw-banner">☠ Schaurige Grüße aus Azeroth · Waschi Halloween 2026 ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-bats">⌁⌁⌁</div><div class="hw-pumpkins">🎃</div>';
+    document.body.appendChild(fx);
+  }
+}
+function boot(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan();applyHalloweenTheme()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
-new MutationObserver(function(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan()}).observe(document.documentElement,{childList:true,subtree:true});
+new MutationObserver(function(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan();applyHalloweenTheme()}).observe(document.documentElement,{childList:true,subtree:true});
 const s=document.createElement("script");s.src=upstream;s.async=true;document.head.appendChild(s);
 })();
