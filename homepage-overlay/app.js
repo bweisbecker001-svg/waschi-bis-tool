@@ -185,9 +185,10 @@ html.waschi-halloween body{background:#030104!important;overflow:hidden!importan
   position:absolute;
   inset:0;
   background-image:url("/halloween-2026.webp");
-  background-size:cover;
+  background-size:contain;
   background-position:center center;
   background-repeat:no-repeat;
+  background-color:#030104;
   image-rendering:auto;
 }
 #waschi-halloween-fx .hw-takeover{
