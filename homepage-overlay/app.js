@@ -164,8 +164,51 @@ function forceHeaderLogoSize(){
 function applyHalloweenTheme(){
   const isHome=location.pathname==='/'||location.pathname==='';
   if(!isHome)return;
-  const halloweenEnds=Date.parse('2026-11-01T11:00:00Z');
-  if(Date.now()>=halloweenEnds){
+
+  function berlinPseudoNow(){
+    const parts=new Intl.DateTimeFormat('en-CA',{
+      timeZone:'Europe/Berlin',year:'numeric',month:'2-digit',day:'2-digit',
+      hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false
+    }).formatToParts(new Date());
+    const v={};
+    parts.forEach(p=>{if(p.type!=='literal')v[p.type]=p.value});
+    return Date.UTC(+v.year,+v.month-1,+v.day,+v.hour,+v.minute,+v.second);
+  }
+  function easterSunday(year){
+    const a=year%19,b=Math.floor(year/100),c=year%100,d=Math.floor(b/4),e=b%4;
+    const f=Math.floor((b+8)/25),g=Math.floor((b-f+1)/3);
+    const h=(19*a+b-d-g+15)%30,i=Math.floor(c/4),k=c%4;
+    const l=(32+2*e+2*i-h-k)%7,m=Math.floor((a+11*h+22*l)/451);
+    const month=Math.floor((h+l-7*m+114)/31);
+    const day=((h+l-7*m+114)%31)+1;
+    return Date.UTC(year,month-1,day);
+  }
+  const day=86400000;
+  const now=berlinPseudoNow();
+  const nowYear=new Date(now).getUTCFullYear();
+
+  const hotspotPresets={
+    halloween:{top:20.62,height:6.16,boxes:[[8.97,12.26],[21.23,9.87],[31.10,8.07],[39.18,11.96],[51.14,8.67],[59.81,8.85],[68.66,9.39],[78.05,11.96]]},
+    christmas:{top:21.35,height:6.7,boxes:[[11.6,10.7],[22.9,9.2],[32.0,8.3],[40.5,10.8],[51.3,8.5],[59.9,9.0],[69.4,8.7],[78.2,10.9]]},
+    newyear:{top:20.8,height:6.9,boxes:[[11.3,10.7],[22.2,9.4],[31.8,8.1],[40.0,11.2],[51.2,8.6],[59.8,9.0],[69.0,8.9],[78.0,10.6]]},
+    easter:{top:20.3,height:7.2,boxes:[[9.9,11.2],[21.8,9.9],[31.9,8.6],[40.5,11.1],[51.6,8.5],[60.2,9.1],[69.6,8.9],[78.6,10.7]]},
+    nikolaus:{top:20.6,height:6.9,boxes:[[10.0,10.7],[21.4,10.0],[31.7,8.5],[40.2,11.2],[51.4,8.6],[60.0,9.0],[69.2,9.0],[78.3,10.7]]}
+  };
+
+  const ranges=[];
+  for(let y=nowYear-1;y<=nowYear+1;y++){
+    const easter=easterSunday(y);
+    ranges.push(
+      {key:'halloween',image:'/halloween-2026.webp',start:Date.UTC(y,9,24,0,0,0),end:Date.UTC(y,10,1,12,0,0),priority:50},
+      {key:'nikolaus',image:'/season-nikolaus.webp',start:Date.UTC(y,10,29,0,0,0),end:Date.UTC(y,11,7,12,0,0),priority:60},
+      {key:'christmas',image:'/season-christmas.webp',start:Date.UTC(y,11,17,0,0,0),end:Date.UTC(y,11,27,12,0,0),priority:90},
+      {key:'newyear',image:'/season-newyear.webp',start:Date.UTC(y,11,24,0,0,0),end:Date.UTC(y+1,0,2,12,0,0),priority:80},
+      {key:'easter',image:'/season-easter.webp',start:easter-7*day,end:easter+2*day+12*3600000,priority:70}
+    );
+  }
+  const active=ranges.filter(r=>now>=r.start&&now<r.end).sort((a,b)=>b.priority-a.priority)[0]||null;
+
+  if(!active){
     document.documentElement.classList.remove('waschi-halloween');
     const oldStyle=document.getElementById('waschi-halloween-style');if(oldStyle)oldStyle.remove();
     const oldFx=document.getElementById('waschi-halloween-fx');if(oldFx)oldFx.remove();
@@ -174,62 +217,24 @@ function applyHalloweenTheme(){
 
   document.documentElement.classList.add('waschi-halloween');
 
-  if(!document.getElementById('waschi-halloween-style')){
-    const style=document.createElement('style');
+  let style=document.getElementById('waschi-halloween-style');
+  if(!style){
+    style=document.createElement('style');
     style.id='waschi-halloween-style';
     style.textContent=`
 html.waschi-halloween body{background:#030104!important;overflow:hidden!important}
 html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!important}
-#waschi-halloween-fx{
-  position:fixed;
-  inset:0;
-  z-index:2147483000;
-  pointer-events:none;
-  overflow:hidden;
-  background:#030104;
-}
-#waschi-halloween-fx .hw-stage{
-  position:absolute;
-  left:50%;
-  top:50%;
-  width:min(100vw,calc(100vh * 1672 / 941));
-  aspect-ratio:1672/941;
-  transform:translate(-50%,-50%);
-  background-image:url("/halloween-2026.webp");
-  background-size:100% 100%;
-  background-position:center;
-  background-repeat:no-repeat;
-  pointer-events:none;
-}
-#waschi-halloween-fx .hw-hotspot{
-  position:absolute;
-  top:20.62%;
-  height:6.16%;
-  pointer-events:auto;
-  display:block;
-  border-radius:8px;
-  cursor:pointer;
-  background:rgba(255,255,255,0);
-}
-#waschi-halloween-fx .hw-hotspot:hover,
-#waschi-halloween-fx .hw-hotspot:focus-visible{
-  outline:2px solid rgba(255,130,45,.55);
-  outline-offset:-2px;
-  box-shadow:0 0 18px rgba(255,72,0,.35) inset,0 0 18px rgba(255,72,0,.18);
-}
-#waschi-halloween-fx .hw-hotspot.home{left:8.97%;width:12.26%}
-#waschi-halloween-fx .hw-hotspot.guild{left:21.23%;width:9.87%}
-#waschi-halloween-fx .hw-hotspot.mplus{left:31.10%;width:8.07%}
-#waschi-halloween-fx .hw-hotspot.extensions{left:39.18%;width:11.96%}
-#waschi-halloween-fx .hw-hotspot.bis{left:51.14%;width:8.67%}
-#waschi-halloween-fx .hw-hotspot.download{left:59.81%;width:8.85%}
-#waschi-halloween-fx .hw-hotspot.streams{left:68.66%;width:9.39%}
-#waschi-halloween-fx .hw-hotspot.community{left:78.05%;width:11.96%}
+#waschi-halloween-fx{position:fixed;inset:0;z-index:2147483000;pointer-events:none;overflow:hidden;background:#030104}
+#waschi-halloween-fx .hw-stage{position:absolute;left:50%;top:50%;width:min(100vw,calc(100vh * 1672 / 941));aspect-ratio:1672/941;transform:translate(-50%,-50%);background-size:100% 100%;background-position:center;background-repeat:no-repeat;pointer-events:none}
+#waschi-halloween-fx .hw-hotspot{position:absolute;pointer-events:auto;display:block;border-radius:8px;cursor:pointer;background:rgba(255,255,255,0)}
+#waschi-halloween-fx .hw-hotspot:hover,#waschi-halloween-fx .hw-hotspot:focus-visible{outline:2px solid rgba(255,130,45,.55);outline-offset:-2px;box-shadow:0 0 18px rgba(255,72,0,.35) inset,0 0 18px rgba(255,72,0,.18)}
 `;
     document.head.appendChild(style);
   }
 
-  if(!document.getElementById('waschi-halloween-fx')&&document.body){
+  let fx=document.getElementById('waschi-halloween-fx');
+  if(fx&&fx.dataset.theme!==active.key){fx.remove();fx=null}
+  if(!fx&&document.body){
     const navLinks=[...document.querySelectorAll('.header .nav a')];
     const map={};
     navLinks.forEach(a=>{
@@ -244,31 +249,32 @@ html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!im
       else if(t.includes('community'))map.community=a.href;
     });
 
-    const fx=document.createElement('div');
+    fx=document.createElement('div');
     fx.id='waschi-halloween-fx';
+    fx.dataset.theme=active.key;
     fx.setAttribute('aria-hidden','false');
     fx.innerHTML='<div class="hw-stage"></div>';
-
     const stage=fx.querySelector('.hw-stage');
+    stage.style.backgroundImage='url("'+active.image+'")';
+
+    const preset=hotspotPresets[active.key];
     const defs=[
-      ['home','Startseite','/'],
-      ['guild','Waschi Gilde','#'],
-      ['mplus','M+ Team','#'],
-      ['extensions','Erweiterungen','#'],
-      ['bis','BiS-Tools','/bis/'],
-      ['download','Download','#'],
-      ['streams','Streams','#'],
-      ['community','Community','#']
+      ['home','Startseite','/'],['guild','Waschi Gilde','#'],['mplus','M+ Team','#'],
+      ['extensions','Erweiterungen','#'],['bis','BiS-Tools','/bis/'],['download','Download','#'],
+      ['streams','Streams','#'],['community','Community','#']
     ];
-    defs.forEach(([key,label,fallback])=>{
+    defs.forEach(([key,label,fallback],idx)=>{
       const a=document.createElement('a');
       a.className='hw-hotspot '+key;
       a.href=map[key]||fallback;
       a.setAttribute('aria-label',label);
       a.title=label;
+      a.style.top=preset.top+'%';
+      a.style.height=preset.height+'%';
+      a.style.left=preset.boxes[idx][0]+'%';
+      a.style.width=preset.boxes[idx][1]+'%';
       stage.appendChild(a);
     });
-
     document.body.appendChild(fx);
   }
 }
