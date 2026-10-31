@@ -165,44 +165,92 @@ function applyHalloweenTheme(){
   if(location.pathname==='/bis'||location.pathname==='/bis/'||location.pathname.startsWith('/bis/'))return;
   const halloweenEnds=Date.parse('2026-11-01T11:00:00Z');
   if(Date.now()>=halloweenEnds){
-    document.documentElement.classList.remove('waschi-halloween');
+    document.documentElement.classList.remove('waschi-halloween','waschi-halloween-extreme');
     const oldStyle=document.getElementById('waschi-halloween-style');if(oldStyle)oldStyle.remove();
     const oldFx=document.getElementById('waschi-halloween-fx');if(oldFx)oldFx.remove();
     return;
   }
-  document.documentElement.classList.add('waschi-halloween');
+  document.documentElement.classList.add('waschi-halloween','waschi-halloween-extreme');
   if(!document.getElementById('waschi-halloween-style')){
     const style=document.createElement('style');
     style.id='waschi-halloween-style';
     style.textContent=`
-html.waschi-halloween{--hw-orange:#ff7a18;--hw-green:#91d14f;--hw-violet:#7b3fb0}
-html.waschi-halloween body{background:#050306!important}
-html.waschi-halloween body:before{content:"";position:fixed;inset:0;z-index:2147482000;pointer-events:none;background:
-radial-gradient(circle at 12% 8%,rgba(123,63,176,.18),transparent 28%),
-radial-gradient(circle at 88% 14%,rgba(255,122,24,.12),transparent 24%),
-linear-gradient(rgba(3,2,5,.12),rgba(2,1,3,.34));mix-blend-mode:screen}
-html.waschi-halloween .header{background:linear-gradient(180deg,rgba(7,3,10,.97),rgba(18,5,16,.94))!important;border-bottom-color:rgba(255,122,24,.42)!important;box-shadow:0 12px 36px rgba(0,0,0,.72),0 0 28px rgba(123,63,176,.16)!important}
-html.waschi-halloween .brand strong,html.waschi-halloween h1,html.waschi-halloween h2,html.waschi-halloween h3{filter:drop-shadow(0 0 10px rgba(255,122,24,.18))}
-html.waschi-halloween .nav a:hover,html.waschi-halloween .nav a.active{color:#ffb15d!important;text-shadow:0 0 12px rgba(255,122,24,.4)}
-html.waschi-halloween .btn.gold{background:linear-gradient(180deg,#ff8a27,#9a3d0a)!important;border-color:#ffad5f!important;box-shadow:0 0 18px rgba(255,122,24,.18)!important}
-html.waschi-halloween .quick,html.waschi-halloween .panel,html.waschi-halloween .card,html.waschi-halloween .download-card,html.waschi-halloween .addon-card{box-shadow:0 14px 36px rgba(0,0,0,.72),0 0 20px rgba(123,63,176,.08)!important}
+html.waschi-halloween{--hw-orange:#ff6a00;--hw-blood:#8d0000;--hw-green:#8be85f;--hw-violet:#8d39d8;--hw-void:#09030d}
+html.waschi-halloween body{background:#030104!important;color:#ddd0c9!important}
+html.waschi-halloween body:before{content:"";position:fixed;inset:0;z-index:2147481000;pointer-events:none;background:
+radial-gradient(circle at 50% -10%,rgba(160,18,8,.24),transparent 36%),
+radial-gradient(circle at 10% 18%,rgba(112,20,150,.22),transparent 28%),
+radial-gradient(circle at 90% 14%,rgba(255,92,0,.19),transparent 26%),
+linear-gradient(180deg,rgba(4,0,8,.2),rgba(10,0,0,.54));mix-blend-mode:screen}
+html.waschi-halloween body:after{content:"";position:fixed;inset:0;z-index:2147481100;pointer-events:none;background:
+repeating-linear-gradient(90deg,transparent 0 96px,rgba(255,72,0,.016) 97px 98px),
+repeating-linear-gradient(0deg,transparent 0 78px,rgba(130,15,160,.014) 79px 80px);
+box-shadow:inset 0 0 160px 52px rgba(0,0,0,.76),inset 0 0 52px 12px rgba(100,0,0,.28)}
+html.waschi-halloween .site-bg{filter:saturate(.68) brightness(.46) contrast(1.3) hue-rotate(325deg)!important}
+html.waschi-halloween .header{background:linear-gradient(180deg,rgba(5,0,8,.985),rgba(30,2,8,.955))!important;border-bottom:1px solid rgba(255,88,0,.68)!important;box-shadow:0 14px 44px rgba(0,0,0,.88),0 0 34px rgba(150,0,0,.28),0 0 70px rgba(104,24,150,.13)!important}
+html.waschi-halloween .header:after{content:"";position:absolute;left:0;right:0;bottom:-9px;height:10px;background:linear-gradient(90deg,transparent 1%,#620000 10%,#b01400 22%,#430000 35%,#a21b00 51%,#480000 67%,#a00d00 83%,transparent 99%);filter:blur(3px);opacity:.75;pointer-events:none}
+html.waschi-halloween .brand-logo{filter:drop-shadow(0 0 13px rgba(255,72,0,.55)) drop-shadow(0 0 27px rgba(125,0,0,.4))!important}
+html.waschi-halloween .brand strong{color:#ff963b!important;text-shadow:0 0 8px #8b1600,0 0 24px rgba(255,60,0,.55)!important}
+html.waschi-halloween h1,html.waschi-halloween h2,html.waschi-halloween h3{color:#f0a757!important;text-shadow:0 2px 0 #3a0000,0 0 12px rgba(255,70,0,.28),0 0 28px rgba(110,0,0,.28)!important}
+html.waschi-halloween .nav a{transition:.2s ease;text-shadow:0 0 8px rgba(0,0,0,.8)}
+html.waschi-halloween .nav a:hover,html.waschi-halloween .nav a.active{color:#ff8b37!important;text-shadow:0 0 8px #e53b00,0 0 20px rgba(255,73,0,.6)!important}
+html.waschi-halloween .btn.gold{background:linear-gradient(180deg,#ff7b16,#7b1700)!important;border-color:#ff9a47!important;color:#fff2df!important;box-shadow:0 0 10px rgba(255,85,0,.42),inset 0 0 12px rgba(255,185,90,.16)!important}
+html.waschi-halloween .btn.dark{background:linear-gradient(180deg,#1b071d,#09040b)!important;border-color:rgba(140,48,171,.58)!important}
+html.waschi-halloween .quick,html.waschi-halloween .panel,html.waschi-halloween .card,html.waschi-halloween .download-card,html.waschi-halloween .addon-card,html.waschi-halloween .addons-hero,html.waschi-halloween .addons-notice{border-color:rgba(130,38,18,.72)!important;background-color:rgba(8,3,8,.9)!important;box-shadow:0 18px 40px rgba(0,0,0,.84),0 0 22px rgba(121,0,0,.17),inset 0 0 30px rgba(70,0,65,.08)!important}
+html.waschi-halloween .quick:hover,html.waschi-halloween .download-card:hover,html.waschi-halloween .addon-card:hover{transform:translateY(-2px) scale(1.006);box-shadow:0 22px 48px rgba(0,0,0,.9),0 0 26px rgba(255,67,0,.24),0 0 60px rgba(112,22,152,.12)!important}
+html.waschi-halloween img{filter:saturate(.82) contrast(1.05)}
+html.waschi-halloween .footer{border-top-color:rgba(120,0,0,.52)!important}
 #waschi-halloween-fx{position:fixed;inset:0;z-index:2147483000;pointer-events:none;overflow:hidden}
-#waschi-halloween-fx .hw-banner{position:fixed;top:118px;left:50%;transform:translateX(-50%);max-width:min(92vw,760px);padding:9px 18px;border:1px solid rgba(255,122,24,.5);border-radius:999px;background:rgba(12,5,12,.86);color:#ffc27f;font:700 12px/1.25 Georgia,serif;letter-spacing:.08em;text-transform:uppercase;text-align:center;box-shadow:0 0 26px rgba(255,122,24,.14);backdrop-filter:blur(7px)}
-#waschi-halloween-fx .hw-moon{position:absolute;right:5vw;top:13vh;width:115px;height:115px;border-radius:50%;background:radial-gradient(circle at 38% 36%,#e9f0c6 0 8%,#a6bc7d 24%,#55704f 52%,rgba(35,52,39,.24) 70%,transparent 72%);opacity:.42;filter:drop-shadow(0 0 24px rgba(145,209,79,.28))}
-#waschi-halloween-fx .hw-fog{position:absolute;left:-20vw;width:140vw;height:22vh;border-radius:50%;background:radial-gradient(ellipse at center,rgba(185,193,202,.12),rgba(90,70,100,.05) 45%,transparent 70%);filter:blur(18px);animation:hwFog 19s ease-in-out infinite alternate}
-#waschi-halloween-fx .hw-fog.one{bottom:2vh}#waschi-halloween-fx .hw-fog.two{bottom:20vh;opacity:.55;animation-duration:26s;animation-direction:alternate-reverse}
-#waschi-halloween-fx .hw-bats{position:absolute;left:6vw;top:18vh;color:rgba(15,8,18,.92);font-size:28px;letter-spacing:18px;transform:rotate(-8deg);text-shadow:80px 45px 0 rgba(15,8,18,.8),165px -15px 0 rgba(15,8,18,.65);animation:hwBats 9s ease-in-out infinite alternate}
-#waschi-halloween-fx .hw-pumpkins{position:absolute;right:4vw;bottom:3vh;font-size:34px;filter:drop-shadow(0 0 12px rgba(255,122,24,.4));opacity:.82}
-@keyframes hwFog{from{transform:translate3d(-5vw,0,0) scale(1)}to{transform:translate3d(6vw,-2vh,0) scale(1.08)}}
-@keyframes hwBats{from{transform:translate3d(0,0,0) rotate(-8deg)}to{transform:translate3d(12vw,-4vh,0) rotate(3deg)}}
-@media(max-width:700px){#waschi-halloween-fx .hw-banner{top:92px;font-size:10px;padding:8px 12px}#waschi-halloween-fx .hw-moon{width:78px;height:78px;top:15vh}.hw-bats{opacity:.55}}
+#waschi-halloween-fx .hw-banner{position:fixed;top:116px;left:50%;transform:translateX(-50%);width:min(92vw,860px);padding:10px 22px;border:1px solid rgba(255,85,0,.72);border-radius:999px;background:linear-gradient(90deg,rgba(10,0,12,.92),rgba(42,2,5,.94),rgba(10,0,12,.92));color:#ffd0a1;font:800 12px/1.25 Georgia,serif;letter-spacing:.1em;text-transform:uppercase;text-align:center;box-shadow:0 0 20px rgba(255,70,0,.18),0 0 42px rgba(122,0,0,.18);backdrop-filter:blur(9px)}
+#waschi-halloween-fx .hw-moon{position:absolute;right:4vw;top:14vh;width:170px;height:170px;border-radius:50%;background:
+radial-gradient(circle at 33% 31%,#f1f0c8 0 6%,#b9c680 11%,transparent 12%),
+radial-gradient(circle at 58% 58%,rgba(48,57,44,.45) 0 13%,transparent 14%),
+radial-gradient(circle at 44% 48%,#b6c177 0 28%,#63704d 54%,rgba(31,40,31,.72) 67%,transparent 69%);
+opacity:.66;filter:drop-shadow(0 0 20px rgba(161,205,93,.36)) drop-shadow(0 0 55px rgba(124,255,76,.12))}
+#waschi-halloween-fx .hw-moon:after{content:"";position:absolute;inset:-25%;border-radius:50%;border:1px solid rgba(157,230,106,.13);box-shadow:0 0 45px rgba(115,212,78,.14)}
+#waschi-halloween-fx .hw-fog{position:absolute;left:-25vw;width:150vw;height:30vh;border-radius:50%;background:radial-gradient(ellipse at center,rgba(210,216,224,.18),rgba(116,77,125,.09) 40%,rgba(60,8,36,.07) 56%,transparent 72%);filter:blur(22px);animation:hwFog 15s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-fog.one{bottom:-3vh}#waschi-halloween-fx .hw-fog.two{bottom:20vh;opacity:.66;animation-duration:21s;animation-direction:alternate-reverse}#waschi-halloween-fx .hw-fog.three{top:14vh;opacity:.32;height:22vh;animation-duration:27s}
+#waschi-halloween-fx .hw-vignette{position:absolute;inset:0;box-shadow:inset 0 0 180px 58px rgba(0,0,0,.74),inset 0 0 36px 6px rgba(90,0,0,.34)}
+#waschi-halloween-fx .hw-lightning{position:absolute;inset:0;background:rgba(185,145,255,.0);animation:hwLightning 8.5s infinite}
+#waschi-halloween-fx .hw-blood{position:absolute;left:0;right:0;top:0;height:72px;background:
+radial-gradient(ellipse at 8% 0,#7d0000 0 9px,transparent 10px),
+radial-gradient(ellipse at 22% 0,#940800 0 14px,transparent 15px),
+radial-gradient(ellipse at 37% 0,#5f0000 0 8px,transparent 9px),
+radial-gradient(ellipse at 59% 0,#8e0900 0 13px,transparent 14px),
+radial-gradient(ellipse at 76% 0,#600000 0 9px,transparent 10px),
+radial-gradient(ellipse at 92% 0,#930600 0 15px,transparent 16px);
+opacity:.7;filter:drop-shadow(0 5px 5px rgba(0,0,0,.8))}
+#waschi-halloween-fx .hw-blood:before,#waschi-halloween-fx .hw-blood:after{content:"";position:absolute;top:0;width:7px;border-radius:0 0 60% 60%;background:linear-gradient(#8e0700,#4b0000);box-shadow:0 0 7px rgba(120,0,0,.6)}
+#waschi-halloween-fx .hw-blood:before{left:22%;height:54px}#waschi-halloween-fx .hw-blood:after{right:24%;height:38px}
+#waschi-halloween-fx .hw-bats{position:absolute;left:2vw;top:21vh;width:55vw;height:26vh}
+#waschi-halloween-fx .hw-bat{position:absolute;font-size:26px;color:#07030a;text-shadow:0 0 3px #6b1a78;animation:hwBat 6s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-bat.b1{left:0;top:42%;animation-delay:-1s}.hw-bat.b2{left:17%;top:9%;font-size:19px;animation-delay:-3s}.hw-bat.b3{left:34%;top:52%;font-size:31px;animation-delay:-5s}.hw-bat.b4{left:51%;top:18%;font-size:16px;animation-delay:-2s}.hw-bat.b5{left:72%;top:60%;font-size:22px;animation-delay:-4s}
+#waschi-halloween-fx .hw-skulls{position:absolute;left:2vw;bottom:2vh;font-size:32px;letter-spacing:12px;opacity:.72;filter:drop-shadow(0 0 9px rgba(150,30,0,.5));transform:rotate(-4deg)}
+#waschi-halloween-fx .hw-pumpkins{position:absolute;right:2vw;bottom:2vh;font-size:38px;letter-spacing:7px;filter:drop-shadow(0 0 14px rgba(255,92,0,.55));opacity:.9}
+#waschi-halloween-fx .hw-runes{position:absolute;inset:0;background:
+radial-gradient(circle at 7% 63%,transparent 0 30px,rgba(120,30,145,.09) 31px 33px,transparent 34px),
+radial-gradient(circle at 93% 70%,transparent 0 42px,rgba(255,60,0,.07) 43px 45px,transparent 46px);
+animation:hwRunes 5s ease-in-out infinite alternate}
+#waschi-halloween-fx .hw-whisper{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);color:rgba(255,175,125,.22);font:italic 700 clamp(16px,2vw,28px) Georgia,serif;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 10px rgba(120,0,0,.55);white-space:nowrap;animation:hwWhisper 4.5s ease-in-out infinite alternate}
+@keyframes hwFog{from{transform:translate3d(-7vw,0,0) scale(1)}to{transform:translate3d(8vw,-3vh,0) scale(1.11)}}
+@keyframes hwBat{from{transform:translate3d(0,0,0) rotate(-8deg) scale(.9)}to{transform:translate3d(16vw,-7vh,0) rotate(10deg) scale(1.2)}}
+@keyframes hwRunes{from{opacity:.35;filter:blur(0)}to{opacity:.75;filter:blur(1px)}}
+@keyframes hwWhisper{from{opacity:.2;transform:translateX(-50%) scale(.98)}to{opacity:.6;transform:translateX(-50%) scale(1.03)}}
+@keyframes hwLightning{0%,7%,9%,35%,37%,100%{background:rgba(210,180,255,0)}8%{background:rgba(210,180,255,.16)}36%{background:rgba(255,95,35,.08)}}
+@media(max-width:700px){
+ #waschi-halloween-fx .hw-banner{top:92px;font-size:9px;padding:7px 10px}
+ #waschi-halloween-fx .hw-moon{width:105px;height:105px;top:16vh;right:-8px}
+ #waschi-halloween-fx .hw-skulls{font-size:22px;letter-spacing:5px}
+ #waschi-halloween-fx .hw-pumpkins{font-size:26px}
+ #waschi-halloween-fx .hw-whisper{font-size:12px;bottom:6vh}
+}
 @media(prefers-reduced-motion:reduce){#waschi-halloween-fx *{animation:none!important}}
 `;
     document.head.appendChild(style);
   }
   if(!document.getElementById('waschi-halloween-fx')&&document.body){
     const fx=document.createElement('div');fx.id='waschi-halloween-fx';fx.setAttribute('aria-hidden','true');
-    fx.innerHTML='<div class="hw-banner">☠ Schaurige Grüße aus Azeroth · Waschi Halloween 2026 ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-bats">⌁⌁⌁</div><div class="hw-pumpkins">🎃</div>';
+    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><div class="hw-runes"></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
     document.body.appendChild(fx);
   }
 }
