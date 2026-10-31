@@ -232,37 +232,17 @@ radial-gradient(circle at 7% 63%,transparent 0 30px,rgba(120,30,145,.09) 31px 33
 radial-gradient(circle at 93% 70%,transparent 0 42px,rgba(255,60,0,.07) 43px 45px,transparent 46px);
 animation:hwRunes 5s ease-in-out infinite alternate}
 #waschi-halloween-fx .hw-whisper{position:absolute;left:50%;bottom:3vh;transform:translateX(-50%);color:rgba(255,175,125,.22);font:italic 700 clamp(16px,2vw,28px) Georgia,serif;letter-spacing:.18em;text-transform:uppercase;text-shadow:0 0 10px rgba(120,0,0,.55);white-space:nowrap;animation:hwWhisper 4.5s ease-in-out infinite alternate}
-#waschi-halloween-fx .hw-web{position:absolute;width:240px;height:220px;opacity:.88;filter:drop-shadow(0 0 4px rgba(245,245,255,.14));transform-origin:0 0}
-#waschi-halloween-fx .hw-web:before,#waschi-halloween-fx .hw-web:after{content:"";position:absolute;inset:0}
-#waschi-halloween-fx .hw-web:before{background:
-radial-gradient(ellipse at 0 0,transparent 0 28px,rgba(235,235,235,.18) 29px 30px,transparent 31px 53px,rgba(235,235,235,.22) 54px 55px,transparent 56px 82px,rgba(235,235,235,.16) 83px 84px,transparent 85px 116px,rgba(235,235,235,.14) 117px 118px,transparent 119px),
-linear-gradient(12deg,transparent 49.65%,rgba(245,245,245,.34) 49.85% 50.05%,transparent 50.25%),
-linear-gradient(31deg,transparent 49.65%,rgba(235,235,235,.28) 49.85% 50.05%,transparent 50.25%),
-linear-gradient(52deg,transparent 49.65%,rgba(248,248,248,.32) 49.85% 50.05%,transparent 50.25%),
-linear-gradient(73deg,transparent 49.65%,rgba(232,232,232,.25) 49.85% 50.05%,transparent 50.25%),
-linear-gradient(93deg,transparent 49.65%,rgba(245,245,245,.29) 49.85% 50.05%,transparent 50.25%);
-transform:skewX(-2deg) scaleY(.92)}
-#waschi-halloween-fx .hw-web:after{background:
-radial-gradient(ellipse at 9% 11%,transparent 0 46px,rgba(235,235,235,.2) 47px 48px,transparent 49px 74px,rgba(235,235,235,.16) 75px 76px,transparent 77px),
-radial-gradient(ellipse at 5% 8%,transparent 0 102px,rgba(235,235,235,.13) 103px 104px,transparent 105px),
-linear-gradient(18deg,transparent 49.7%,rgba(235,235,235,.18) 49.9% 50.05%,transparent 50.25%),
-linear-gradient(61deg,transparent 49.7%,rgba(235,235,235,.15) 49.9% 50.05%,transparent 50.25%);
-transform:translate(8px,7px) rotate(-3deg) scale(.97,1.03);filter:blur(.15px)}
-#waschi-halloween-fx .hw-web.tl{left:-8px;top:-6px;transform:rotate(-2deg)}
-#waschi-halloween-fx .hw-web.tl:after{box-shadow:18px 14px 0 -17px rgba(255,255,255,.55),42px 30px 0 -19px rgba(255,255,255,.45),66px 48px 0 -20px rgba(255,255,255,.35)}
-#waschi-halloween-fx .hw-web.tr{right:-8px;top:-6px;transform:scaleX(-1) rotate(-1deg);transform-origin:100% 0}
-#waschi-halloween-fx .hw-web.bl{left:-10px;bottom:-10px;transform:scaleY(-1) rotate(2deg);transform-origin:0 100%}
-#waschi-halloween-fx .hw-web.br{right:-10px;bottom:-10px;transform:scale(-1) rotate(-2deg);transform-origin:100% 100%}
-#waschi-halloween-fx .hw-web i{position:absolute;display:block;height:1px;background:linear-gradient(90deg,rgba(245,245,245,.34),rgba(245,245,245,.07));transform-origin:left center;opacity:.9}
-#waschi-halloween-fx .hw-web i.w1{left:17px;top:34px;width:132px;transform:rotate(14deg)}
-#waschi-halloween-fx .hw-web i.w2{left:9px;top:70px;width:148px;transform:rotate(28deg)}
-#waschi-halloween-fx .hw-web i.w3{left:5px;top:108px;width:158px;transform:rotate(42deg)}
-#waschi-halloween-fx .hw-web i.w4{left:34px;top:8px;width:120px;transform:rotate(67deg)}
-#waschi-halloween-fx .hw-web i.w5{left:72px;top:5px;width:115px;transform:rotate(81deg)}
-#waschi-halloween-fx .hw-web.tl{left:0;top:0;transform-origin:0 0}
-#waschi-halloween-fx .hw-web.tr{right:0;top:0;transform:scaleX(-1);transform-origin:100% 0}
-#waschi-halloween-fx .hw-web.bl{left:0;bottom:0;transform:scaleY(-1);transform-origin:0 100%}
-#waschi-halloween-fx .hw-web.br{right:0;bottom:0;transform:scale(-1);transform-origin:100% 100%}
+#waschi-halloween-fx .hw-web{position:absolute;width:310px;height:300px;opacity:.9;filter:drop-shadow(0 0 3px rgba(255,255,255,.2));transform-origin:center}
+#waschi-halloween-fx .hw-web svg{display:block;width:100%;height:100%;overflow:visible}
+#waschi-halloween-fx .hw-web .web-ray{stroke:rgba(242,242,242,.66);stroke-width:1.15;fill:none;vector-effect:non-scaling-stroke}
+#waschi-halloween-fx .hw-web .web-ring{stroke:rgba(245,245,245,.58);stroke-width:1;fill:none;vector-effect:non-scaling-stroke}
+#waschi-halloween-fx .hw-web .web-ring.soft{stroke:rgba(245,245,245,.38);stroke-width:.8}
+#waschi-halloween-fx .hw-web .web-stray{stroke:rgba(245,245,245,.34);stroke-width:.75;fill:none}
+#waschi-halloween-fx .hw-web .web-knot{fill:rgba(255,255,255,.72)}
+#waschi-halloween-fx .hw-web.tl{left:-18px;top:-12px;transform:rotate(-4deg) scale(1.05)}
+#waschi-halloween-fx .hw-web.tr{right:-24px;top:-14px;transform:scaleX(-1) rotate(-3deg)}
+#waschi-halloween-fx .hw-web.bl{left:-24px;bottom:-26px;transform:scaleY(-1) rotate(3deg)}
+#waschi-halloween-fx .hw-web.br{right:-26px;bottom:-26px;transform:scale(-1) rotate(-2deg)}
 #waschi-halloween-fx .hw-spider-line{position:absolute;right:10vw;top:0;width:1px;height:160px;background:linear-gradient(rgba(225,225,225,.55),rgba(225,225,225,.18));animation:hwSpiderLine 6.5s ease-in-out infinite}
 #waschi-halloween-fx .hw-spider{position:absolute;right:calc(10vw - 11px);top:138px;width:22px;height:20px;border-radius:50%;background:#08040a;box-shadow:0 0 9px rgba(125,35,145,.45);animation:hwSpider 6.5s ease-in-out infinite}
 #waschi-halloween-fx .hw-spider:before,#waschi-halloween-fx .hw-spider:after{content:"";position:absolute;left:-9px;top:5px;width:40px;height:10px;border-top:2px solid #09050a;border-bottom:2px solid #09050a;transform:rotate(18deg)}
@@ -317,7 +297,51 @@ transform:translate(8px,7px) rotate(-3deg) scale(.97,1.03);filter:blur(.15px)}
   }
   if(!document.getElementById('waschi-halloween-fx')&&document.body){
     const fx=document.createElement('div');fx.id='waschi-halloween-fx';fx.setAttribute('aria-hidden','true');
-    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><span class="hw-blood-stream s1"></span><span class="hw-blood-stream s2"></span><span class="hw-blood-stream s3"></span><span class="hw-blood-stream s4"></span><span class="hw-blood-stream s5"></span><div class="hw-runes"></div><div class="hw-web tl"><i class="w1"></i><i class="w2"></i><i class="w3"></i><i class="w4"></i><i class="w5"></i></div><div class="hw-web tr"><i class="w1"></i><i class="w2"></i><i class="w3"></i></div><div class="hw-web bl"><i class="w1"></i><i class="w2"></i><i class="w4"></i></div><div class="hw-web br"><i class="w1"></i><i class="w3"></i><i class="w5"></i></div><div class="hw-spider-line"></div><div class="hw-spider"></div><div class="hw-eye"><span class="hw-pupil"></span></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><span class="hw-bat-flight f1">⌁</span><span class="hw-bat-flight f2">⌁</span><span class="hw-bat-flight f3">⌁</span><span class="hw-bat-flight f4">⌁</span><div class="hw-waschi"><div class="hw-greenfire"></div><div class="hw-raccoon-tail"></div><div class="hw-raccoon-body"></div><div class="hw-raccoon-head"><span class="hw-mask"></span><span class="hw-snout"></span></div><div class="hw-hat"></div><div class="hw-paw"></div></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
+    fx.innerHTML='<div class="hw-vignette"></div><div class="hw-lightning"></div><div class="hw-blood"></div><span class="hw-blood-stream s1"></span><span class="hw-blood-stream s2"></span><span class="hw-blood-stream s3"></span><span class="hw-blood-stream s4"></span><span class="hw-blood-stream s5"></span><div class="hw-runes"></div><div class="hw-web tl"><svg viewBox="0 0 300 290" aria-hidden="true">
+<g>
+<path class="web-ray" d="M58 55 L2 3"/><path class="web-ray" d="M58 55 L52 0"/><path class="web-ray" d="M58 55 L98 0"/><path class="web-ray" d="M58 55 L150 0"/><path class="web-ray" d="M58 55 L222 0"/><path class="web-ray" d="M58 55 L300 12"/><path class="web-ray" d="M58 55 L300 70"/><path class="web-ray" d="M58 55 L300 132"/><path class="web-ray" d="M58 55 L300 205"/><path class="web-ray" d="M58 55 L265 290"/><path class="web-ray" d="M58 55 L182 290"/><path class="web-ray" d="M58 55 L104 290"/><path class="web-ray" d="M58 55 L42 290"/><path class="web-ray" d="M58 55 L0 252"/><path class="web-ray" d="M58 55 L0 174"/><path class="web-ray" d="M58 55 L0 104"/>
+<path class="web-ring" d="M42 41 C48 35 56 32 64 34 C76 36 83 44 83 55 C83 67 76 75 65 80 C54 84 43 79 37 70 C30 59 33 49 42 41"/>
+<path class="web-ring" d="M29 29 C40 19 54 15 69 18 C87 21 101 34 105 50 C110 68 102 87 86 99 C69 111 49 111 31 101 C14 91 5 74 8 56 C10 45 18 37 29 29"/>
+<path class="web-ring" d="M17 17 C33 3 55 -2 78 3 C104 8 125 27 132 51 C139 77 130 103 109 121 C88 139 59 144 34 134 C10 124 -4 101 -5 76 C-6 54 2 32 17 17"/>
+<path class="web-ring soft" d="M6 5 C29 -14 61 -20 92 -12 C126 -3 154 22 164 54 C174 87 163 121 136 145 C109 169 72 177 38 164 C7 152 -13 126 -18 94 C-22 60 -13 28 6 5"/>
+<path class="web-ring soft" d="M-7 -8 C23 -32 64 -39 104 -29 C146 -18 181 13 194 54 C208 96 193 139 159 169 C124 200 77 211 34 194 C-8 178 -34 143 -40 101 C-46 58 -32 18 -7 -8"/>
+<path class="web-ring soft" d="M-21 -22 C17 -51 68 -60 116 -47 C166 -34 207 3 223 52 C239 102 222 153 181 189 C140 225 83 237 31 217 C-18 198 -49 156 -55 107 C-62 56 -46 11 -21 -22"/>
+<path class="web-stray" d="M12 8 C60 62 115 112 177 159"/><path class="web-stray" d="M30 3 C92 58 160 103 234 142"/><path class="web-stray" d="M4 30 C76 95 139 169 194 254"/>
+<circle class="web-knot" cx="58" cy="55" r="1.8"/><circle class="web-knot" cx="83" cy="55" r="1"/><circle class="web-knot" cx="105" cy="50" r=".9"/><circle class="web-knot" cx="132" cy="51" r=".8"/>
+</g></svg></div><div class="hw-web tr"><svg viewBox="0 0 300 290" aria-hidden="true">
+<g>
+<path class="web-ray" d="M58 55 L2 3"/><path class="web-ray" d="M58 55 L52 0"/><path class="web-ray" d="M58 55 L98 0"/><path class="web-ray" d="M58 55 L150 0"/><path class="web-ray" d="M58 55 L222 0"/><path class="web-ray" d="M58 55 L300 12"/><path class="web-ray" d="M58 55 L300 70"/><path class="web-ray" d="M58 55 L300 132"/><path class="web-ray" d="M58 55 L300 205"/><path class="web-ray" d="M58 55 L265 290"/><path class="web-ray" d="M58 55 L182 290"/><path class="web-ray" d="M58 55 L104 290"/><path class="web-ray" d="M58 55 L42 290"/><path class="web-ray" d="M58 55 L0 252"/><path class="web-ray" d="M58 55 L0 174"/><path class="web-ray" d="M58 55 L0 104"/>
+<path class="web-ring" d="M42 41 C48 35 56 32 64 34 C76 36 83 44 83 55 C83 67 76 75 65 80 C54 84 43 79 37 70 C30 59 33 49 42 41"/>
+<path class="web-ring" d="M29 29 C40 19 54 15 69 18 C87 21 101 34 105 50 C110 68 102 87 86 99 C69 111 49 111 31 101 C14 91 5 74 8 56 C10 45 18 37 29 29"/>
+<path class="web-ring" d="M17 17 C33 3 55 -2 78 3 C104 8 125 27 132 51 C139 77 130 103 109 121 C88 139 59 144 34 134 C10 124 -4 101 -5 76 C-6 54 2 32 17 17"/>
+<path class="web-ring soft" d="M6 5 C29 -14 61 -20 92 -12 C126 -3 154 22 164 54 C174 87 163 121 136 145 C109 169 72 177 38 164 C7 152 -13 126 -18 94 C-22 60 -13 28 6 5"/>
+<path class="web-ring soft" d="M-7 -8 C23 -32 64 -39 104 -29 C146 -18 181 13 194 54 C208 96 193 139 159 169 C124 200 77 211 34 194 C-8 178 -34 143 -40 101 C-46 58 -32 18 -7 -8"/>
+<path class="web-ring soft" d="M-21 -22 C17 -51 68 -60 116 -47 C166 -34 207 3 223 52 C239 102 222 153 181 189 C140 225 83 237 31 217 C-18 198 -49 156 -55 107 C-62 56 -46 11 -21 -22"/>
+<path class="web-stray" d="M12 8 C60 62 115 112 177 159"/><path class="web-stray" d="M30 3 C92 58 160 103 234 142"/><path class="web-stray" d="M4 30 C76 95 139 169 194 254"/>
+<circle class="web-knot" cx="58" cy="55" r="1.8"/><circle class="web-knot" cx="83" cy="55" r="1"/><circle class="web-knot" cx="105" cy="50" r=".9"/><circle class="web-knot" cx="132" cy="51" r=".8"/>
+</g></svg></div><div class="hw-web bl"><svg viewBox="0 0 300 290" aria-hidden="true">
+<g>
+<path class="web-ray" d="M58 55 L2 3"/><path class="web-ray" d="M58 55 L52 0"/><path class="web-ray" d="M58 55 L98 0"/><path class="web-ray" d="M58 55 L150 0"/><path class="web-ray" d="M58 55 L222 0"/><path class="web-ray" d="M58 55 L300 12"/><path class="web-ray" d="M58 55 L300 70"/><path class="web-ray" d="M58 55 L300 132"/><path class="web-ray" d="M58 55 L300 205"/><path class="web-ray" d="M58 55 L265 290"/><path class="web-ray" d="M58 55 L182 290"/><path class="web-ray" d="M58 55 L104 290"/><path class="web-ray" d="M58 55 L42 290"/><path class="web-ray" d="M58 55 L0 252"/><path class="web-ray" d="M58 55 L0 174"/><path class="web-ray" d="M58 55 L0 104"/>
+<path class="web-ring" d="M42 41 C48 35 56 32 64 34 C76 36 83 44 83 55 C83 67 76 75 65 80 C54 84 43 79 37 70 C30 59 33 49 42 41"/>
+<path class="web-ring" d="M29 29 C40 19 54 15 69 18 C87 21 101 34 105 50 C110 68 102 87 86 99 C69 111 49 111 31 101 C14 91 5 74 8 56 C10 45 18 37 29 29"/>
+<path class="web-ring" d="M17 17 C33 3 55 -2 78 3 C104 8 125 27 132 51 C139 77 130 103 109 121 C88 139 59 144 34 134 C10 124 -4 101 -5 76 C-6 54 2 32 17 17"/>
+<path class="web-ring soft" d="M6 5 C29 -14 61 -20 92 -12 C126 -3 154 22 164 54 C174 87 163 121 136 145 C109 169 72 177 38 164 C7 152 -13 126 -18 94 C-22 60 -13 28 6 5"/>
+<path class="web-ring soft" d="M-7 -8 C23 -32 64 -39 104 -29 C146 -18 181 13 194 54 C208 96 193 139 159 169 C124 200 77 211 34 194 C-8 178 -34 143 -40 101 C-46 58 -32 18 -7 -8"/>
+<path class="web-ring soft" d="M-21 -22 C17 -51 68 -60 116 -47 C166 -34 207 3 223 52 C239 102 222 153 181 189 C140 225 83 237 31 217 C-18 198 -49 156 -55 107 C-62 56 -46 11 -21 -22"/>
+<path class="web-stray" d="M12 8 C60 62 115 112 177 159"/><path class="web-stray" d="M30 3 C92 58 160 103 234 142"/><path class="web-stray" d="M4 30 C76 95 139 169 194 254"/>
+<circle class="web-knot" cx="58" cy="55" r="1.8"/><circle class="web-knot" cx="83" cy="55" r="1"/><circle class="web-knot" cx="105" cy="50" r=".9"/><circle class="web-knot" cx="132" cy="51" r=".8"/>
+</g></svg></div><div class="hw-web br"><svg viewBox="0 0 300 290" aria-hidden="true">
+<g>
+<path class="web-ray" d="M58 55 L2 3"/><path class="web-ray" d="M58 55 L52 0"/><path class="web-ray" d="M58 55 L98 0"/><path class="web-ray" d="M58 55 L150 0"/><path class="web-ray" d="M58 55 L222 0"/><path class="web-ray" d="M58 55 L300 12"/><path class="web-ray" d="M58 55 L300 70"/><path class="web-ray" d="M58 55 L300 132"/><path class="web-ray" d="M58 55 L300 205"/><path class="web-ray" d="M58 55 L265 290"/><path class="web-ray" d="M58 55 L182 290"/><path class="web-ray" d="M58 55 L104 290"/><path class="web-ray" d="M58 55 L42 290"/><path class="web-ray" d="M58 55 L0 252"/><path class="web-ray" d="M58 55 L0 174"/><path class="web-ray" d="M58 55 L0 104"/>
+<path class="web-ring" d="M42 41 C48 35 56 32 64 34 C76 36 83 44 83 55 C83 67 76 75 65 80 C54 84 43 79 37 70 C30 59 33 49 42 41"/>
+<path class="web-ring" d="M29 29 C40 19 54 15 69 18 C87 21 101 34 105 50 C110 68 102 87 86 99 C69 111 49 111 31 101 C14 91 5 74 8 56 C10 45 18 37 29 29"/>
+<path class="web-ring" d="M17 17 C33 3 55 -2 78 3 C104 8 125 27 132 51 C139 77 130 103 109 121 C88 139 59 144 34 134 C10 124 -4 101 -5 76 C-6 54 2 32 17 17"/>
+<path class="web-ring soft" d="M6 5 C29 -14 61 -20 92 -12 C126 -3 154 22 164 54 C174 87 163 121 136 145 C109 169 72 177 38 164 C7 152 -13 126 -18 94 C-22 60 -13 28 6 5"/>
+<path class="web-ring soft" d="M-7 -8 C23 -32 64 -39 104 -29 C146 -18 181 13 194 54 C208 96 193 139 159 169 C124 200 77 211 34 194 C-8 178 -34 143 -40 101 C-46 58 -32 18 -7 -8"/>
+<path class="web-ring soft" d="M-21 -22 C17 -51 68 -60 116 -47 C166 -34 207 3 223 52 C239 102 222 153 181 189 C140 225 83 237 31 217 C-18 198 -49 156 -55 107 C-62 56 -46 11 -21 -22"/>
+<path class="web-stray" d="M12 8 C60 62 115 112 177 159"/><path class="web-stray" d="M30 3 C92 58 160 103 234 142"/><path class="web-stray" d="M4 30 C76 95 139 169 194 254"/>
+<circle class="web-knot" cx="58" cy="55" r="1.8"/><circle class="web-knot" cx="83" cy="55" r="1"/><circle class="web-knot" cx="105" cy="50" r=".9"/><circle class="web-knot" cx="132" cy="51" r=".8"/>
+</g></svg></div><div class="hw-spider-line"></div><div class="hw-spider"></div><div class="hw-eye"><span class="hw-pupil"></span></div><div class="hw-banner">☠ Azeroth ist verflucht · Waschi Halloween 2026 · Betritt die Schatten auf eigene Gefahr ☠</div><div class="hw-moon"></div><div class="hw-fog one"></div><div class="hw-fog two"></div><div class="hw-fog three"></div><div class="hw-bats"><span class="hw-bat b1">⌁</span><span class="hw-bat b2">⌁</span><span class="hw-bat b3">⌁</span><span class="hw-bat b4">⌁</span><span class="hw-bat b5">⌁</span></div><span class="hw-bat-flight f1">⌁</span><span class="hw-bat-flight f2">⌁</span><span class="hw-bat-flight f3">⌁</span><span class="hw-bat-flight f4">⌁</span><div class="hw-waschi"><div class="hw-greenfire"></div><div class="hw-raccoon-tail"></div><div class="hw-raccoon-body"></div><div class="hw-raccoon-head"><span class="hw-mask"></span><span class="hw-snout"></span></div><div class="hw-hat"></div><div class="hw-paw"></div></div><div class="hw-skulls">☠ ☠ ☠</div><div class="hw-pumpkins">🎃 🎃</div><div class="hw-whisper">Die Schatten beobachten dich …</div>';
     document.body.appendChild(fx);
   }
 }
