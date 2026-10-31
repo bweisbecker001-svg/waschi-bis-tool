@@ -1211,8 +1211,12 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
             data{
               code title startTime endTime
               zone{id name}
+              masterData(translate:false){
+                actors(type:"Player"){id name server type subType}
+              }
               fights{
                 id name startTime endTime kill
+                friendlyPlayers
                 keystoneLevel keystoneBonus keystoneTime rating
                 countReached countRequired
                 gameZone{id name}
@@ -1255,7 +1259,43 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
             code = str(report.get('code') or '')
             report_start = float(report.get('startTime') or 0)
 
+            # recentReports identifies reports in which the character appears, but a
+            # report can contain fights the character did not participate in. Match the
+            # requested character to the report's player actor IDs and only accept fights
+            # whose friendlyPlayers list contains one of those IDs.
+            def _norm_actor(value):
+                return re.sub(r'[^a-z0-9]+', '', str(value or '').lower())
+
+            wanted_name = _norm_actor(name)
+            wanted_realm = _norm_actor(realm)
+            actor_ids = set()
+            master = report.get('masterData') or {}
+            for actor in master.get('actors') or []:
+                if str(actor.get('type') or '').lower() != 'player':
+                    continue
+                if _norm_actor(actor.get('name')) != wanted_name:
+                    continue
+                actor_server = _norm_actor(actor.get('server'))
+                if actor_server and wanted_realm and actor_server != wanted_realm:
+                    continue
+                try:
+                    actor_ids.add(int(actor.get('id')))
+                except (TypeError, ValueError):
+                    pass
+
+            if not actor_ids:
+                continue
+
             for fight in report.get('fights') or []:
+                friendly_players = set()
+                for player_id in fight.get('friendlyPlayers') or []:
+                    try:
+                        friendly_players.add(int(player_id))
+                    except (TypeError, ValueError):
+                        pass
+                if not actor_ids.intersection(friendly_players):
+                    continue
+
                 level = int(fight.get('keystoneLevel') or 0)
                 if level <= 0:
                     continue
@@ -1338,7 +1378,8 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
         'runCount':total,
         'timedCount':timed,
         'outtimeCount':max(0,total-timed),
-        'source':'Warcraft Logs API v2',
+        'source':'Warcraft Logs API v2 · Teilnahme je Fight verifiziert',
+        'participationVerified':True,
     }
     return _cache_put(WARCRAFTLOGS_CACHE, cache_key, result)
 
