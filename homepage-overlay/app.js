@@ -179,9 +179,15 @@ function applyHalloweenTheme(){
     style.id='waschi-halloween-style';
     style.textContent=`
 html.waschi-halloween body{background:#030104!important;overflow:hidden!important}
-#waschi-halloween-fx{position:fixed;inset:0;z-index:2147483000;pointer-events:none;overflow:hidden;background:#030104}
-#waschi-halloween-fx .hw-takeover,
-#waschi-halloween-fx .hw-header-window{
+#waschi-halloween-fx{
+  position:fixed;
+  inset:0;
+  z-index:2147483000;
+  pointer-events:none;
+  overflow:hidden;
+  background:#030104;
+}
+#waschi-halloween-fx .hw-takeover{
   position:absolute;
   inset:0;
   background-image:url("/halloween-2026.webp");
@@ -190,30 +196,48 @@ html.waschi-halloween body{background:#030104!important;overflow:hidden!importan
   background-repeat:no-repeat;
   background-color:#030104;
   image-rendering:auto;
-}
-#waschi-halloween-fx .hw-takeover{
-  clip-path:inset(190px 0 0 0);
   opacity:1;
 }
-#waschi-halloween-fx .hw-header-window{
-  clip-path:inset(0 0 calc(100% - 190px) 0);
-  opacity:1;
-  animation:hwHeaderReveal 36s cubic-bezier(.45,0,.55,1) infinite;
+
+html.waschi-halloween .header{
+  position:relative!important;
+  z-index:2147484000!important;
+  background:transparent!important;
+  border:0!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
 }
-@keyframes hwHeaderReveal{
-  0%,18%{opacity:1}
-  40%,60%{opacity:0}
-  82%,100%{opacity:1}
+html.waschi-halloween .header .brand,
+html.waschi-halloween .header .brand-logo,
+html.waschi-halloween .header .btn,
+html.waschi-halloween .header .header-actions{
+  visibility:hidden!important;
+  pointer-events:none!important;
 }
-@media(max-width:700px){
-  #waschi-halloween-fx .hw-takeover{clip-path:inset(140px 0 0 0)}
-  #waschi-halloween-fx .hw-header-window{
-    clip-path:inset(0 0 calc(100% - 140px) 0);
-    animation-duration:40s;
-  }
+html.waschi-halloween .header .nav{
+  position:relative!important;
+  z-index:2147484100!important;
+  pointer-events:auto!important;
+  visibility:visible!important;
 }
-@media(prefers-reduced-motion:reduce){
-  #waschi-halloween-fx .hw-header-window{animation:none!important;opacity:0}
+html.waschi-halloween .header .nav a{
+  visibility:visible!important;
+  pointer-events:auto!important;
+  opacity:1!important;
+  color:#ffb36a!important;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 8px rgba(0,0,0,.95),
+    0 0 14px rgba(120,0,0,.85)!important;
+  font-weight:800!important;
+}
+html.waschi-halloween .header .nav a:hover,
+html.waschi-halloween .header .nav a.active{
+  color:#ffd2a0!important;
+  text-shadow:
+    0 1px 2px #000,
+    0 0 8px rgba(255,80,20,.8),
+    0 0 18px rgba(145,0,0,.9)!important;
 }
 `;
     document.head.appendChild(style);
@@ -223,7 +247,7 @@ html.waschi-halloween body{background:#030104!important;overflow:hidden!importan
     const fx=document.createElement('div');
     fx.id='waschi-halloween-fx';
     fx.setAttribute('aria-hidden','true');
-    fx.innerHTML='<div class="hw-takeover"></div><div class="hw-header-window"></div>';
+    fx.innerHTML='<div class="hw-takeover"></div>';
     document.body.appendChild(fx);
   }
 }
