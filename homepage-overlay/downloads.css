@@ -94,3 +94,27 @@
 .curseforge-preview img{display:block;width:100%;height:100%;min-height:350px;max-width:none;object-fit:cover;object-position:center;filter:none}
 .curseforge-official{border-color:rgba(241,104,35,.75);background:rgba(241,104,35,.14);color:#ffad72}
 @media(max-width:900px){.curseforge-preview img{min-height:280px}}
+
+
+/* Waschi Addon-Unterseite */
+.addons-page{position:relative;z-index:1;padding:44px 0 72px}
+.addons-hero{padding:36px 38px;border:1px solid rgba(139,100,40,.88);border-radius:6px;background:linear-gradient(135deg,rgba(8,11,14,.97),rgba(24,13,7,.88));box-shadow:0 16px 44px #0008}
+.addons-hero h1{margin:7px 0 12px;color:#f0c45a;font:800 clamp(34px,6vw,58px) Georgia,serif;text-transform:uppercase;letter-spacing:.025em}
+.addons-hero p{max-width:850px;margin:0;color:#d7cec1;line-height:1.65}
+.addons-notice{margin:18px 0 22px;padding:20px 22px;border:1px solid rgba(241,104,35,.58);border-left:4px solid #f16823;background:rgba(45,21,8,.68);box-shadow:0 12px 34px #0006}
+.addons-notice strong{display:block;color:#ffb27c;font:700 20px Georgia,serif}
+.addons-notice p{margin:7px 0 0;color:#d8c9bb;line-height:1.6;font-size:13px}
+.addon-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.addon-card{display:grid;grid-template-columns:170px minmax(0,1fr);min-height:230px;border:1px solid rgba(139,100,40,.72);border-radius:6px;overflow:hidden;background:linear-gradient(120deg,rgba(6,9,12,.97),rgba(13,17,21,.9));box-shadow:0 12px 32px #0007}
+.addon-logo-wrap{position:relative;display:grid;place-items:center;min-height:230px;padding:20px;border-right:1px solid rgba(139,100,40,.45);background:radial-gradient(circle at 50% 38%,rgba(241,104,35,.15),rgba(3,5,7,.98) 72%);overflow:hidden}
+.addon-logo-wrap img{position:relative;z-index:2;display:block;width:100%;height:100%;max-width:150px;max-height:170px;object-fit:contain;filter:drop-shadow(0 12px 22px #000)}
+.addon-logo-fallback{position:absolute;z-index:1;display:grid;place-items:center;width:104px;height:104px;border:1px solid rgba(241,104,35,.65);border-radius:18px;background:linear-gradient(145deg,#17110e,#080a0d);color:#f0c45a;font:800 28px Georgia,serif;box-shadow:0 12px 28px #0008}
+.addon-logo-fallback-only .addon-logo-fallback{position:relative}
+.addon-card-copy{padding:23px 24px;display:flex;flex-direction:column;align-items:flex-start}
+.addon-meta{color:#ff9b5d;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
+.addon-card h2{margin:7px 0 8px;color:#f0c45a;font:700 25px Georgia,serif}
+.addon-card p{margin:0 0 18px;color:#c9c0b3;line-height:1.58;font-size:13px;flex:1}
+.addon-link{min-width:0!important;padding-left:16px;padding-right:16px}
+.addons-back{margin-top:20px;text-align:center}
+@media(max-width:1050px){.addon-grid{grid-template-columns:1fr}}
+@media(max-width:620px){.addons-page{padding-top:28px}.addons-hero{padding:26px 20px}.addon-card{grid-template-columns:1fr}.addon-logo-wrap{min-height:190px;border-right:0;border-bottom:1px solid rgba(139,100,40,.45)}.addon-card-copy{padding:21px 19px}.addon-link{width:100%;text-align:center}}
