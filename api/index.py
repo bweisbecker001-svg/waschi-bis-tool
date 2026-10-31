@@ -781,7 +781,13 @@ def normalize_blizzard_stats(data, character_class='', spec=''):
     if haste is None:
         haste = next((v for v in (_number(data, 'melee_haste', 'value'), _number(data, 'ranged_haste', 'value'), _number(data, 'spell_haste', 'value')) if v is not None), None)
     mastery = _number(data, 'mastery', 'value')
-    versatility = _number(data, 'versatility_damage_done_bonus')
+    # Blizzard liefert versatility_damage_done_bonus bei einigen Charakteren nur
+    # grob gerundet. Die rohe Vielseitigkeitswertung ist praeziser. Auf Stufe 90
+    # entsprechen 54 Rating 1 % vor den ueblichen Secondary-Stat-DR-Stufen.
+    versatility_rating = _number(data, 'versatility')
+    versatility = (_dr_output(versatility_rating / 54.0)
+                   if versatility_rating is not None
+                   else _number(data, 'versatility_damage_done_bonus'))
     lifesteal = _number(data, 'lifesteal', 'rating_bonus')
     avoidance = _number(data, 'avoidance', 'rating_bonus')
     speed = _number(data, 'speed', 'rating_bonus')
@@ -1205,7 +1211,7 @@ def warcraftlogs_current_mplus_zone():
     return max(pool, key=lambda z: int(z.get('id') or 0))
 
 
-def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
+def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
     cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
     cached = _cache_get(WARCRAFTLOGS_CACHE, cache_key, 900)
     if cached is not None:
@@ -1220,7 +1226,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
       characterData{
         character(name:$name,serverSlug:$serverSlug,serverRegion:$serverRegion){
           id name
-          recentReports(limit:25,page:$page){
+          recentReports(limit:10,page:$page){
             current_page last_page has_more_pages
             data{
               code title startTime endTime
@@ -1247,7 +1253,7 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=5):
     pages = 0
     character_id = None
 
-    for page in range(1, min(5, max(1, int(max_pages))) + 1):
+    for page in range(1, min(10, max(1, int(max_pages))) + 1):
         data = warcraftlogs_graphql(query, {
             'name': str(name),
             'serverSlug': re.sub(r"[’'\s]+", '-', str(realm or '').strip().lower()),
