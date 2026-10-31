@@ -1728,10 +1728,16 @@ function updateProfile(){
       return
     }
     if(requestSerial!==characterLoadSerial)return;
+    const rioIdentity=resolvedCharacterIdentity(fetchedCharacter,s);
+    if(rioIdentity!==requestedIdentity){
+      if(showErrors)setMessage('Die geladene Raider.IO-Antwort gehört nicht eindeutig zum aktuell ausgewählten Charakter. M+-Daten wurden aus Sicherheitsgründen verworfen.','error');
+      return;
+    }
 
     const warcraftLogs=await fetchWarcraftLogs(s);
     if(requestSerial!==characterLoadSerial)return;
-    if(warcraftLogs&&warcraftLogs.participationVerified===true&&Array.isArray(warcraftLogs.runs)){
+    const warcraftLogsIdentity=warcraftLogs?.identity?requestedCharacterIdentity(warcraftLogs.identity):'';
+    if(warcraftLogs&&warcraftLogs.participationVerified===true&&warcraftLogsIdentity===requestedIdentity&&Array.isArray(warcraftLogs.runs)){
       fetchedCharacter.warcraft_logs_runs=warcraftLogs.runs;
       fetchedCharacter.warcraft_logs_meta={
         reportCount:warcraftLogs.reportCount||0,
