@@ -1801,9 +1801,15 @@ function updateProfile(){
   async function fetchRioDirect(s){const u=new URL('https://raider.io/api/v1/characters/profile');u.searchParams.set('region',s.region);u.searchParams.set('realm',s.realm);u.searchParams.set('name',s.character);u.searchParams.set('fields',RIO_CHARACTER_FIELDS);const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw new Error(`HTTP ${r.status}`);return await r.json()}
   function hasRioDungeonHistory(d){return Boolean(d&&(['mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_dungeon_run_counts'].some(k=>Array.isArray(d[k]))))}
   function mergeRioCharacter(base,extra){if(!base)return extra;if(!extra)return base;const merged={...extra,...base};for(const k of ['mythic_plus_recent_runs','mythic_plus_best_runs','mythic_plus_alternate_runs','mythic_plus_highest_level_runs','mythic_plus_weekly_highest_level_runs','mythic_plus_previous_weekly_highest_level_runs','mythic_plus_scores_by_season','mythic_plus_dungeon_run_counts'])if(Array.isArray(extra[k]))merged[k]=extra[k];if(base.gear)merged.gear=base.gear;return merged}
-  async function fetchRio(s){
+  async function fetchRio(s,fast=false){
     const local=location.protocol==='file:'?'http://127.0.0.1:8765/api/raiderio':'/api/raiderio';let localData=null;
-    try{const u=new URL(local,location.href);u.searchParams.set('region',s.region);u.searchParams.set('realm',s.realm);u.searchParams.set('name',s.character);const r=await fetch(u,{cache:'no-store'});if(r.ok)localData=await r.json()}catch{}
+    try{
+      const u=new URL(local,location.href);
+      u.searchParams.set('region',s.region);u.searchParams.set('realm',s.realm);u.searchParams.set('name',s.character);
+      if(fast)u.searchParams.set('fast','1');
+      const r=await fetch(u,{cache:'default'});if(r.ok)localData=await r.json()
+    }catch{}
+    if(fast&&localData)return localData;
     if(localData&&hasRioDungeonHistory(localData))return localData;
     try{return mergeRioCharacter(localData,await fetchRioDirect(s))}catch(e){if(localData)return localData;throw e}
   }
@@ -1841,7 +1847,7 @@ function updateProfile(){
     setMessage('Raider.IO wird abgefragt …','');
 
     let fetchedCharacter;
-    try{fetchedCharacter=await fetchRio(s)}catch(e){
+    try{fetchedCharacter=await fetchRio(s,true)}catch(e){
       if(requestSerial!==characterLoadSerial)return;
       if(showErrors)setMessage(`Raider.IO konnte nicht geladen werden (${e.message}).`,'error');
       return
@@ -1861,6 +1867,13 @@ function updateProfile(){
     loadedCharacterIdentity=resolvedCharacterIdentity(fetchedCharacter,s)||requestedIdentity;
     characterStats=null;
     try{renderCharacter();renderRecentKeys();renderGear();renderComparison()}catch(e){console.warn('Sofortdarstellung nach Raider.IO:',e)}
+
+    // Full Raider.IO dungeon history is enrichment. Fetch after the character is visible.
+    fetchRio(s,false).then(fullRio=>{
+      if(requestSerial!==characterLoadSerial||loadedCharacterIdentity!==requestedIdentity)return;
+      liveCharacter=mergeRioCharacter(liveCharacter,fullRio);
+      try{renderCharacter();renderRecentKeys();renderGear();renderComparison();updateSeasonRunArchive()}catch{}
+    }).catch(()=>{});
 
     fetchWarcraftLogs(s).then(warcraftLogs=>{
       if(requestSerial!==characterLoadSerial||loadedCharacterIdentity!==requestedIdentity)return;

@@ -35,6 +35,7 @@ BIS_REFRESH_CACHE = {}
 CHARACTER_STATS_CACHE = {}
 USER_AGENT = 'Mozilla/5.0 (Waschi.fun WoW BiS Dashboard Web API)'
 RIO_FIELDS = 'gear,talents,talents:categorized,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs'
+RIO_FAST_FIELDS = 'gear,talents,talents:categorized,mythic_plus_scores_by_season:current'
 
 EQUIPMENT_CACHE = {}
 ITEM_DATA_CACHE = {}
@@ -811,23 +812,10 @@ def fetch_blizzard_character_stats(region, realm, name, character_class='', spec
     token = blizzard_access_token()
     path_realm = urllib.parse.quote(realm, safe='-')
     path_name = urllib.parse.quote(name, safe='-')
-    # Statistics and equipment are independent Blizzard endpoints. Load both in parallel
-    # so the slower endpoint no longer blocks the other one.
-    results = {}
-    errors = []
-    def _load_part(key, endpoint):
-        try:
-            results[key] = _blizzard_profile_get(region, path_realm, path_name, endpoint, token, locale='en_US')
-        except Exception as exc:
-            errors.append(exc)
-    t_stats = threading.Thread(target=_load_part, args=('stats', 'statistics'), daemon=True)
-    t_equipment = threading.Thread(target=_load_part, args=('equipment', 'equipment'), daemon=True)
-    t_stats.start(); t_equipment.start()
-    t_stats.join(); t_equipment.join()
-    if errors:
-        raise errors[0]
-    data, stats_url = results['stats']
-    equipment, equipment_url = results['equipment']
+    # The visible stat card only needs Blizzard Character Statistics.
+    # Equipment/tooltips are loaded independently and must never delay the values.
+    data, stats_url = _blizzard_profile_get(region, path_realm, path_name, 'statistics', token, locale='en_US')
+    equipment_url = ''
     stats = normalize_blizzard_stats(data, character_class, spec)
     missing = [k for k, v in stats.items() if v is None]
     if missing:
@@ -847,7 +835,7 @@ def fetch_blizzard_character_stats(region, realm, name, character_class='', spec
         'enchantCount': 0,
         'gemCount': 0,
     }
-    return dict(stats), stats_url, _combat_stat_mode(character_class, spec), correction, equipment_url, _equipment_tooltip_details(equipment)
+    return dict(stats), stats_url, _combat_stat_mode(character_class, spec), correction, equipment_url, []
 
 
 
@@ -1614,34 +1602,16 @@ def api_character_stats():
         return _json({'ok': False, 'setupRequired': True, 'error': 'Blizzard API serverseitig noch nicht eingerichtet', 'detail': 'Setze BLIZZARD_CLIENT_ID und BLIZZARD_CLIENT_SECRET in der Hosting-Umgebung.'})
     try:
         cache_key = (str(region).lower(), str(realm).lower(), str(name).lower(), str(character_class).lower(), str(spec).lower())
-        cached = _cache_get(CHARACTER_STATS_CACHE, cache_key, 120)
+        cached = _cache_get(CHARACTER_STATS_CACHE, cache_key, 300)
         if cached is not None:
             return _json(cached)
 
-        result_box = {}
-        error_box = []
-        def _load_blizzard_stats():
-            try:
-                result_box['stats'] = fetch_blizzard_character_stats(region, realm, name, character_class, spec)
-            except Exception as exc:
-                error_box.append(exc)
-        def _load_public_armory():
-            try:
-                result_box['armory'] = fetch_public_armory_stats(region, realm, name)
-            except Exception:
-                result_box['armory'] = (None, '', '')
-
-        t1 = threading.Thread(target=_load_blizzard_stats, daemon=True)
-        t2 = threading.Thread(target=_load_public_armory, daemon=True)
-        t1.start(); t2.start()
-        t1.join(); t2.join()
-        if error_box:
-            raise error_box[0]
-
-        stats, api_url, mode, correction, equipment_url, equipment_details = result_box['stats']
+        stats, api_url, mode, correction, equipment_url, equipment_details = fetch_blizzard_character_stats(region, realm, name, character_class, spec)
         api_stats = dict(stats)
-        armory_stats, armory_source, armory_url = result_box.get('armory', (None, '', ''))
-        stats, reconciled = reconcile_display_stats(stats, armory_stats)
+        # Public Armory parsing is only a plausibility check. It used to delay every visible
+        # stat load by waiting for a second website request. Keep the primary path fast.
+        armory_stats, armory_source, armory_url = None, '', ''
+        reconciled = {}
         applied = {k:v for k,v in correction.get('appliedRatings',{}).items() if float(v or 0)>0}
         applied_pct = {k:v for k,v in correction.get('appliedPercent',{}).items() if float(v or 0)>0}
         addon_note = ' · direkte Werte ohne Nachkorrektur'
@@ -1727,9 +1697,11 @@ def api_raiderio():
     region, realm, name = _q('region','eu'), _q('realm'), _q('name')
     if not realm or not name:
         return _json({'error':'Realm oder Charaktername fehlt'},400)
-    params = urllib.parse.urlencode({'region':region,'realm':realm,'name':name,'fields':RIO_FIELDS})
-    cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
-    cached = _cache_get(RAIDERIO_CACHE, cache_key, 120)
+    fast = _q('fast','0') in {'1','true','yes'}
+    fields = RIO_FAST_FIELDS if fast else RIO_FIELDS
+    params = urllib.parse.urlencode({'region':region,'realm':realm,'name':name,'fields':fields})
+    cache_key = (str(region).lower(), str(realm).lower(), str(name).lower(), 'fast' if fast else 'full')
+    cached = _cache_get(RAIDERIO_CACHE, cache_key, 300)
     if cached is not None:
         return _json(cached)
     try:
