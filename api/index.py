@@ -30,6 +30,9 @@ BLIZZARD_TOKEN_LOCK = threading.Lock()
 WARCRAFTLOGS_TOKEN = {'access_token': '', 'expires_at': 0.0, 'client_id': ''}
 WARCRAFTLOGS_TOKEN_LOCK = threading.Lock()
 WARCRAFTLOGS_CACHE = {}
+RAIDERIO_CACHE = {}
+BIS_REFRESH_CACHE = {}
+CHARACTER_STATS_CACHE = {}
 USER_AGENT = 'Mozilla/5.0 (Waschi.fun WoW BiS Dashboard Web API)'
 RIO_FIELDS = 'gear,talents,talents:categorized,mythic_plus_scores_by_season:current,mythic_plus_recent_runs,mythic_plus_best_runs:all,mythic_plus_alternate_runs,mythic_plus_highest_level_runs,mythic_plus_weekly_highest_level_runs,mythic_plus_previous_weekly_highest_level_runs'
 
@@ -808,10 +811,23 @@ def fetch_blizzard_character_stats(region, realm, name, character_class='', spec
     token = blizzard_access_token()
     path_realm = urllib.parse.quote(realm, safe='-')
     path_name = urllib.parse.quote(name, safe='-')
-    # Request statistics plus equipment. Equipment is deliberately requested in en_US so
-    # enchant/gem stat strings can be parsed consistently independent of dashboard language.
-    data, stats_url = _blizzard_profile_get(region, path_realm, path_name, 'statistics', token, locale='en_US')
-    equipment, equipment_url = _blizzard_profile_get(region, path_realm, path_name, 'equipment', token, locale='en_US')
+    # Statistics and equipment are independent Blizzard endpoints. Load both in parallel
+    # so the slower endpoint no longer blocks the other one.
+    results = {}
+    errors = []
+    def _load_part(key, endpoint):
+        try:
+            results[key] = _blizzard_profile_get(region, path_realm, path_name, endpoint, token, locale='en_US')
+        except Exception as exc:
+            errors.append(exc)
+    t_stats = threading.Thread(target=_load_part, args=('stats', 'statistics'), daemon=True)
+    t_equipment = threading.Thread(target=_load_part, args=('equipment', 'equipment'), daemon=True)
+    t_stats.start(); t_equipment.start()
+    t_stats.join(); t_equipment.join()
+    if errors:
+        raise errors[0]
+    data, stats_url = results['stats']
+    equipment, equipment_url = results['equipment']
     stats = normalize_blizzard_stats(data, character_class, spec)
     missing = [k for k, v in stats.items() if v is None]
     if missing:
@@ -1597,9 +1613,34 @@ def api_character_stats():
     if not _configured():
         return _json({'ok': False, 'setupRequired': True, 'error': 'Blizzard API serverseitig noch nicht eingerichtet', 'detail': 'Setze BLIZZARD_CLIENT_ID und BLIZZARD_CLIENT_SECRET in der Hosting-Umgebung.'})
     try:
-        stats, api_url, mode, correction, equipment_url, equipment_details = fetch_blizzard_character_stats(region, realm, name, character_class, spec)
+        cache_key = (str(region).lower(), str(realm).lower(), str(name).lower(), str(character_class).lower(), str(spec).lower())
+        cached = _cache_get(CHARACTER_STATS_CACHE, cache_key, 120)
+        if cached is not None:
+            return _json(cached)
+
+        result_box = {}
+        error_box = []
+        def _load_blizzard_stats():
+            try:
+                result_box['stats'] = fetch_blizzard_character_stats(region, realm, name, character_class, spec)
+            except Exception as exc:
+                error_box.append(exc)
+        def _load_public_armory():
+            try:
+                result_box['armory'] = fetch_public_armory_stats(region, realm, name)
+            except Exception:
+                result_box['armory'] = (None, '', '')
+
+        t1 = threading.Thread(target=_load_blizzard_stats, daemon=True)
+        t2 = threading.Thread(target=_load_public_armory, daemon=True)
+        t1.start(); t2.start()
+        t1.join(); t2.join()
+        if error_box:
+            raise error_box[0]
+
+        stats, api_url, mode, correction, equipment_url, equipment_details = result_box['stats']
         api_stats = dict(stats)
-        armory_stats, armory_source, armory_url = fetch_public_armory_stats(region, realm, name)
+        armory_stats, armory_source, armory_url = result_box.get('armory', (None, '', ''))
         stats, reconciled = reconcile_display_stats(stats, armory_stats)
         applied = {k:v for k,v in correction.get('appliedRatings',{}).items() if float(v or 0)>0}
         applied_pct = {k:v for k,v in correction.get('appliedPercent',{}).items() if float(v or 0)>0}
@@ -1611,7 +1652,9 @@ def api_character_stats():
         method='Blizzard API · Character Statistics'+addon_note
         if reconciled:
             method += ' · öffentliche Charakterseite nur zur Plausibilitätsprüfung'
-        return _json({'ok': True, 'stats': stats, 'statSources': sources, 'method':method, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':3 if armory_stats else 2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'armoryEndpoint':armory_url, 'armorySource':armory_source, 'apiRawStats':api_stats, 'armoryStats':armory_stats, 'reconciledStats':reconciled, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details})
+        payload = {'ok': True, 'stats': stats, 'statSources': sources, 'method':method, 'source':'Blizzard Character Statistics + Equipment API', 'confidence':'hoch', 'verifiedBy':3 if armory_stats else 2, 'combatMode':mode, 'apiEndpoint':api_url, 'equipmentEndpoint':equipment_url, 'armoryEndpoint':armory_url, 'armorySource':armory_source, 'apiRawStats':api_stats, 'armoryStats':armory_stats, 'reconciledStats':reconciled, 'equipmentEnhancements':{'enchantCount':correction.get('enchantCount',0),'gemCount':correction.get('gemCount',0),'ratings':correction.get('enhancementRatings',{}),'appliedRatings':applied,'appliedPercent':applied_pct,'inclusion':correction.get('inclusion',{}),'details':correction.get('details',[])}, 'equipmentDetails':equipment_details}
+        _cache_put(CHARACTER_STATS_CACHE, cache_key, payload)
+        return _json(payload)
     except urllib.error.HTTPError as e:
         detail=f'HTTP {e.code}'
         if e.code==404: detail += ' · Charakter/Realm nicht gefunden oder Profil noch nicht aktualisiert'
@@ -1685,6 +1728,10 @@ def api_raiderio():
     if not realm or not name:
         return _json({'error':'Realm oder Charaktername fehlt'},400)
     params = urllib.parse.urlencode({'region':region,'realm':realm,'name':name,'fields':RIO_FIELDS})
+    cache_key = (str(region).lower(), str(realm).lower(), str(name).lower())
+    cached = _cache_get(RAIDERIO_CACHE, cache_key, 120)
+    if cached is not None:
+        return _json(cached)
     try:
         data, _, _ = fetch_json('https://raider.io/api/v1/characters/profile?'+params)
         all_runs = _raiderio_all_known_runs(data)
@@ -1695,6 +1742,7 @@ def api_raiderio():
             # set available from Raider.IO instead of only the tiny recent list.
             data['mythic_plus_recent_runs'] = all_runs
             data['mythic_plus_all_known_runs_count'] = len(all_runs)
+        _cache_put(RAIDERIO_CACHE, cache_key, data)
         return _json(data)
     except urllib.error.HTTPError as e:
         detail = ''
@@ -1761,13 +1809,19 @@ def api_bis_refresh():
         cfg = profile.get('bisUpdate') or {}; cls=cfg.get('classSlug'); spec=cfg.get('specSlug'); spec_id=cfg.get('specId')
         if not cls or not spec or not spec_id: return _json({'ok':False,'error':'Für dieses Profil fehlen KeystoneLoot-Importdaten'},400)
         view=_q('view','mythicplus').lower(); view=view if view in {'mythicplus','overall','raid'} else 'mythicplus'
+        cache_key = (str(key), str(view))
+        cached = _cache_get(BIS_REFRESH_CACHE, cache_key, 21600)
+        if cached is not None:
+            return _json(cached)
         api=f'https://keystoneloot.io/api/import/{urllib.parse.quote(str(cls))}/{urllib.parse.quote(str(spec))}?view={urllib.parse.quote(view)}'
         payload, headers, _ = fetch_json(api)
         if payload.get('error'): return _json({'ok':False,'error':payload.get('error'),'available':payload.get('available')},502)
         items=decode_keystone(payload.get('string'),spec_id)
         base_url=cfg.get('url') or f'https://keystoneloot.io/de/classes/{cls}/{spec}/mythic-plus'
         source_url=base_url.replace('/mythic-plus','/raid' if view=='raid' else '') if view!='mythicplus' else base_url
-        return _json({'ok':True,'items':items,'source':f'KeystoneLoot {view} API · Webserver','sourceUrl':source_url,'apiUrl':api,'fetchedAt':payload.get('updated') or headers.get('x-keystoneloot-updated') or ''})
+        result = {'ok':True,'items':items,'source':f'KeystoneLoot {view} API · Webserver','sourceUrl':source_url,'apiUrl':api,'fetchedAt':payload.get('updated') or headers.get('x-keystoneloot-updated') or ''}
+        _cache_put(BIS_REFRESH_CACHE, cache_key, result)
+        return _json(result)
     except Exception as e:
         return _json({'ok':False,'error':'KeystoneLoot-Abruf fehlgeschlagen','detail':str(e)},502)
 

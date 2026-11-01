@@ -1853,32 +1853,36 @@ function updateProfile(){
       return;
     }
 
-    const warcraftLogs=await fetchWarcraftLogs(s);
-    if(requestSerial!==characterLoadSerial)return;
-    const warcraftLogsIdentity=warcraftLogs?.identity?requestedCharacterIdentity(warcraftLogs.identity):'';
-    if(warcraftLogs&&warcraftLogs.participationVerified===true&&warcraftLogsIdentity===requestedIdentity&&Array.isArray(warcraftLogs.runs)){
-      fetchedCharacter.warcraft_logs_runs=warcraftLogs.runs;
-      fetchedCharacter.warcraft_logs_meta={
-        reportCount:warcraftLogs.reportCount||0,
-        seasonReportCount:warcraftLogs.seasonReportCount||0,
-        pagesRead:warcraftLogs.pagesRead||0,
-        seasonZoneId:warcraftLogs.seasonZoneId||0,
-        seasonZoneName:warcraftLogs.seasonZoneName||'',
-        runCount:warcraftLogs.runCount??warcraftLogs.runs.length,
-        timedCount:warcraftLogs.timedCount??0,
-        outtimeCount:warcraftLogs.outtimeCount??0,
-        source:warcraftLogs.source||'Warcraft Logs API v2',
-        runDataTrusted:true,
-        zoneRankings:warcraftLogs.zoneRankings||null
-      };
-    }else{
-      fetchedCharacter.warcraft_logs_runs=[];
-      fetchedCharacter.warcraft_logs_meta=null;
-    }
-
+    // Raider.IO contains everything required for the first visible character card.
+    // Show it immediately; Warcraft Logs is enrichment and must never block first paint.
+    fetchedCharacter.warcraft_logs_runs=[];
+    fetchedCharacter.warcraft_logs_meta=null;
     liveCharacter=fetchedCharacter;
     loadedCharacterIdentity=resolvedCharacterIdentity(fetchedCharacter,s)||requestedIdentity;
     characterStats=null;
+    try{renderCharacter();renderRecentKeys();renderGear();renderComparison()}catch(e){console.warn('Sofortdarstellung nach Raider.IO:',e)}
+
+    fetchWarcraftLogs(s).then(warcraftLogs=>{
+      if(requestSerial!==characterLoadSerial||loadedCharacterIdentity!==requestedIdentity)return;
+      const warcraftLogsIdentity=warcraftLogs?.identity?requestedCharacterIdentity(warcraftLogs.identity):'';
+      if(warcraftLogs&&warcraftLogs.participationVerified===true&&warcraftLogsIdentity===requestedIdentity&&Array.isArray(warcraftLogs.runs)){
+        liveCharacter.warcraft_logs_runs=warcraftLogs.runs;
+        liveCharacter.warcraft_logs_meta={
+          reportCount:warcraftLogs.reportCount||0,
+          seasonReportCount:warcraftLogs.seasonReportCount||0,
+          pagesRead:warcraftLogs.pagesRead||0,
+          seasonZoneId:warcraftLogs.seasonZoneId||0,
+          seasonZoneName:warcraftLogs.seasonZoneName||'',
+          runCount:warcraftLogs.runCount??warcraftLogs.runs.length,
+          timedCount:warcraftLogs.timedCount??0,
+          outtimeCount:warcraftLogs.outtimeCount??0,
+          source:warcraftLogs.source||'Warcraft Logs API v2',
+          runDataTrusted:true,
+          zoneRankings:warcraftLogs.zoneRankings||null
+        };
+        try{renderRecentKeys();updateSeasonRunArchive()}catch{}
+      }
+    }).catch(()=>{});
 
     try{
       const p=findProfile();
@@ -1887,19 +1891,28 @@ function updateProfile(){
       else if(!profileMatches(activeProfile)&&p){profilePlanningLocked=false;setProfile(p.key,true)}
       if(requestSerial!==characterLoadSerial)return;
 
-      await ensureBackgroundRaidBis(activeProfile,false);
-      if(requestSerial!==characterLoadSerial)return;
       rebuildPersonalCraftOverrides();renderCharacter();renderRecentKeys();renderGear();renderComparison();
-      const statsOk=await loadStats(false);
-      if(requestSerial!==characterLoadSerial)return;
-
       const planning=planningProfileActive();
-      const statSuffix=statsOk?' · Sekundärwerte automatisch geladen':(characterStats?.sourceLabel?.startsWith('Manuell')?' · gespeicherte manuelle Werte verwendet':' · automatische Sekundärwerte aktuell nicht verfügbar');
-      if(planning)setMessage(`✓ ${liveCharacter.name||'Charakter'} geladen. Planungsprofil ${activeProfile.label} aktiv; Raider.IO meldet aktuell ${deutsch(liveCharacter.active_spec_name||liveCharacter.class)}. Die angelegte Ausrüstung wird trotzdem gegen das gewählte BiS-Profil verglichen${statSuffix}.`,'ok');
-      else if(profileMatches())setMessage(`✓ ${activeProfile.label} erkannt und mit dem raidfreien BiS-Profil verglichen${statSuffix}.`,'ok');
-      else setMessage(`Charakter geladen, aber das gewählte Profil gehört zu einer anderen Klasse. Das passende Profil wurde, soweit möglich, automatisch gewählt${statSuffix}.`,'warning');
+      if(planning)setMessage(`✓ ${liveCharacter.name||'Charakter'} geladen. Planungsprofil ${activeProfile.label} aktiv; Zusatzdaten werden parallel nachgeladen …`,'ok');
+      else if(profileMatches())setMessage(`✓ ${activeProfile.label} erkannt. Charakter ist bereit; Werte und Zusatzdaten werden parallel nachgeladen …`,'ok');
+      else setMessage('Charakter geladen. Passendes Profil wurde, soweit möglich, gewählt; Zusatzdaten werden parallel nachgeladen …','warning');
       $('lastRefresh').textContent='Zuletzt aktualisiert: '+new Intl.DateTimeFormat('de-DE',{dateStyle:'medium',timeStyle:'short'}).format(new Date());
       saveSettings();
+
+      // Raid-BiS is background reference data and must not block the loaded character.
+      ensureBackgroundRaidBis(activeProfile,false).then(()=>{
+        if(requestSerial!==characterLoadSerial)return;
+        rebuildPersonalCraftOverrides();renderGear();renderComparison();renderCharacter();
+      }).catch(()=>{});
+
+      // Statistics run independently from Warcraft Logs and background BiS.
+      loadStats(false).then(statsOk=>{
+        if(requestSerial!==characterLoadSerial)return;
+        const statSuffix=statsOk?' · Sekundärwerte automatisch geladen':(characterStats?.sourceLabel?.startsWith('Manuell')?' · gespeicherte manuelle Werte verwendet':' · automatische Sekundärwerte aktuell nicht verfügbar');
+        if(planning)setMessage(`✓ ${liveCharacter.name||'Charakter'} geladen. Planungsprofil ${activeProfile.label} aktiv${statSuffix}.`,'ok');
+        else if(profileMatches())setMessage(`✓ ${activeProfile.label} erkannt und mit dem raidfreien BiS-Profil verglichen${statSuffix}.`,'ok');
+        else setMessage(`Charakter geladen; das passende Profil wurde, soweit möglich, automatisch gewählt${statSuffix}.`,'warning');
+      }).catch(()=>{});
     }catch(e){
       console.error('Dashboard-Verarbeitung nach Raider.IO:',e);
       if(requestSerial===characterLoadSerial&&showErrors)setMessage(`Charakter wurde von Raider.IO geladen, aber die Dashboard-Verarbeitung ist fehlgeschlagen (${e.message}).`,'error')
