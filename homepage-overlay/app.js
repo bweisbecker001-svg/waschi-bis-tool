@@ -346,8 +346,110 @@ html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!im
     document.body.appendChild(fx);
   }
 }
-function boot(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan();applyHalloweenTheme()}
+
+/* waschiAuthoritativeGuildAssignments20261101 */
+const waschiGuildAssignments={
+  "/team/adrian-prayox/":{player:"Adrian / Prayox",chars:[["Skullrex","blackhand"],["Skullbär","silvermoon"],["Skullclaw","silvermoon"],["Skullcow","blackhand"],["Skullchaos","blackhand"],["Skullfreeze","blackhand"],["Skullmare","blackhand"],["Skullopterix","blackhand"],["Skullthief","blackhand"],["Zepros","blackhand"],["Waschishop","blackhand"],["Skulldust","blackhand"],["Prayox","blackhand"],["Schnuffelox","blackhand"],["Skullbat","silvermoon"],["Skullkeg","blackhand"],["Skullpain","blackhand"]]},
+  "/team/andreas-andy/":{player:"Andreas / Andy",chars:[["Laklara","blackhand"],["Shedira","blackhand"]]},
+  "/team/bernd-lentor/":{player:"Bernd / Lentor",chars:[["Kainskind","blackhand"],["Olun","blackhand"],["Axeos","blackhand"],["Léntór","blackhand"],["Sînsîn","blackhand"],["Léntor","blackhand"],["Sâtânsbrâten","todeswache"],["Lentifux","blackhand"]]},
+  "/team/christina-fearry/":{player:"Christina / Fearry",chars:[["Fearry","blackrock"]]},
+  "/team/corni/":{player:"Corni",chars:[["Arcanon","todeswache"],["Corni","todeswache"],["Nastyangel","todeswache"]]},
+  "/team/curtis-curt/":{player:"Curtis / Curt",chars:[["Trapbotx","eredar"],["Poisonbotx","blackmoore"],["Carriefisher","eredar"],["Cleavelandz","eredar"],["Decaybotx","blackrock"],["Jønnå","eredar"],["Cheapsheep","blackrock"],["Shamnsfun","blackrock"],["Høtbøtx","eredar"],["Sparrowlolz","blackmoore"],["Shieldbotx","silvermoon"]]},
+  "/team/dennis/":{player:"Dennis",chars:[["Telgrim","blackhand"]]},
+  "/team/dima/":{player:"Dima",chars:[["Bohunt","blackhand"],["Bokireg","blackhand"],["Borabo","blackhand"]]},
+  "/team/dimi/":{player:"Dimi",chars:[["Râspûtî","blackhand"]]},
+  "/team/fabian-shootmex/":{player:"Fabian / Shootmex",chars:[["Shootmex","blackhand"]]},
+  "/team/florian/":{player:"Florian",chars:[["Mystikmonk","blackrock"]]},
+  "/team/junstin-bragol/":{player:"Justin / Bragol",chars:[["Bragol","blackmoore"]]},
+  "/team/kalilito-kalle/":{player:"Kalilito / Kalle",chars:[["Frontlfranz","thrall"],["Sturmgeweiht","thrall"],["Kallitto","thrall"],["Shubidu","thrall"]]},
+  "/team/kevin/":{player:"Kevin",chars:[["Afm","anetheron"]]},
+  "/team/marcel-juzoh/":{player:"Marcel / Juzoh",chars:[["Alisha","antonidas"],["Juzoh","blackhand"],["Neralla","antonidas"]]},
+  "/team/patrik/":{player:"Patrik",chars:[["Bonefall","malganis"]]},
+  "/team/rene-frosti/":{player:"René / Frosti",chars:[["Zêcks","nethersturm"],["Rôcket","nethersturm"]]},
+  "/team/sahra-boesesmaedchen/":{player:"Sara / Bösesmädchen",chars:[["Mylady","durotan"],["Bösesmädchen","shattrath"],["Talalafee","amanthul"],["Profi","shattrath"]]},
+  "/team/steffan-evel-bullet/":{player:"Stefan / Evil-Bullet",chars:[["Acron","nethersturm"],["Vry","nethersturm"],["Trake","nethersturm"],["Ghostzone","nethersturm"],["Kythor","nethersturm"],["Majéstý","nethersturm"]]},
+  "/team/steven/":{player:"Steven",chars:[["Küschen","kelthuzad"],["Krümelkuchen","blackhand"]]},
+  "/team/tanner/":{player:"Tanner",chars:[["Tanerdras","blackmoore"],["Tanerath","blackmoore"],["Taneragan","blackmoore"]]},
+  "/team/tatjana-chathalon/":{player:"Tatjana / Câthalon",chars:[["Câthalon","eredar"],["Ásunâ","eredar"],["Nasjátàr","nozdormu"],["Kirarà","eredar"],["Cathâlón","eredar"],["Câthalon","nozdormu"]]},
+  "/team/tim/":{player:"Tim",chars:[["Xelthuzar","blackhand"],["Velyara","antonidas"],["Aváelle","antonidas"],["Xerjin","blackhand"]]},
+  "/team/tobi/":{player:"Tobi",chars:[["Garnof","blackhand"],["Lafonio","blackhand"],["Lackdosejary","blackhand"],["Iranja","blackhand"]]}
+};
+function waschiNormTeamPath(){
+  let p=location.pathname;
+  if(!p.endsWith("/"))p+="/";
+  return p;
+}
+function waschiCharacterCard(name,realm){
+  const detail="/charakter/?realm="+encodeURIComponent(realm)+"&name="+encodeURIComponent(name);
+  const rio="https://raider.io/characters/eu/"+encodeURIComponent(realm)+"/"+encodeURIComponent(name);
+  const safeName=name.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+  const safeRealm=realm.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;");
+  return '<article class="character-entry" data-character="'+safeName+'" data-realm="'+safeRealm+'" data-detail="'+detail+'" role="link" tabindex="0" aria-label="'+safeName+' Charakterdetails öffnen">'+
+    '<div class="character-card-art"><img data-char-image alt="'+safeName+' – Charakterbild" hidden><div class="character-card-fallback" data-char-fallback aria-hidden="true"></div></div>'+
+    '<div class="character-entry-body"><div class="character-entry-head"><div class="character-monogram">'+safeName.charAt(0).toUpperCase()+'</div><div><h3>'+safeName+'</h3><span class="character-realm">'+safeRealm.charAt(0).toUpperCase()+safeRealm.slice(1)+'</span></div></div>'+
+    '<div class="character-live-facts"><div><span>Klasse</span><strong data-char-class>—</strong></div><div><span>Skillung</span><strong data-char-spec>—</strong></div><div><span>M+ Wertung</span><strong data-char-score>—</strong></div></div>'+
+    '<div class="character-links"><a class="character-source-link raider" target="_blank" rel="noopener noreferrer" href="'+rio+'" aria-label="'+safeName+' auf Raider.IO öffnen"><img src="https://cdn.raiderio.net/images/brand/Logo_2ColorWhite.svg" alt="Raider.IO"></a></div>'+
+    '<div class="character-open-hint">Kachel anklicken für Charakterdetails</div></div></article>';
+}
+function waschiRenderAuthoritativeProfile(){
+  const cfg=waschiGuildAssignments[waschiNormTeamPath()];
+  if(!cfg)return;
+  const page=document.querySelector(".member-profile-page");
+  const dir=page&&page.querySelector(".character-directory");
+  if(!dir)return;
+  const signature=cfg.chars.map(x=>x[0]+"@"+x[1]).join("|");
+  if(dir.dataset.waschiAssignmentSignature===signature)return;
+  dir.dataset.waschiAssignmentSignature=signature;
+  dir.innerHTML=cfg.chars.map(x=>waschiCharacterCard(x[0],x[1])).join("");
+  const count=page.querySelector(".character-count strong,[data-character-count]");
+  if(count)count.textContent=String(cfg.chars.length);
+  if(waschiNormTeamPath()==="/team/sahra-boesesmaedchen/"){
+    const h1=page.querySelector(".profile-heading h1");if(h1)h1.innerHTML='Sara <span>/ Bösesmädchen</span>';
+    const bc=page.querySelector(".breadcrumbs strong");if(bc)bc.textContent="Sara / Bösesmädchen";
+  }
+  dir.querySelectorAll(".character-entry").forEach(function(card){
+    card.addEventListener("click",function(e){if(!e.target.closest("a"))location.href=card.dataset.detail});
+    card.addEventListener("keydown",function(e){if((e.key==="Enter"||e.key===" ")&&!e.target.closest("a")){e.preventDefault();location.href=card.dataset.detail}});
+    load(card);
+  });
+}
+const waschiExtraPlayers=[
+  {href:"/team/dennis/",name:"Dennis",sub:"World of Warcraft · Blackhand"},
+  {href:"/team/dima/",name:"Dima",sub:"World of Warcraft · Blackhand"},
+  {href:"/team/florian/",name:"Florian",sub:"World of Warcraft · Blackrock"},
+  {href:"/team/patrik/",name:"Patrik",sub:"World of Warcraft · Mal'Ganis"},
+  {href:"/team/tanner/",name:"Tanner",sub:"World of Warcraft · Blackmoore"}
+];
+function waschiMemberCard(def){
+  const initial=def.name.charAt(0).toUpperCase();
+  const a=document.createElement("a");
+  a.className="member-card";a.href=def.href;a.dataset.waschiAuthoritativePlayer="1";
+  a.innerHTML='<div class="member-art"><div class="member-monogram">'+initial+'</div></div><div class="member-copy"><span class="member-kicker">Waschi Gilde</span><h2>'+def.name+'</h2><p>'+def.sub+'</p><p><strong style="color:#e7b445">Gildenrang:</strong> Gildenmitglied</p><span class="member-link">Profil &amp; Charaktere ansehen →</span></div>';
+  return a;
+}
+function waschiApplyTeamOverviewAssignments(){
+  if(waschiNormTeamPath()!=="/team/")return;
+  const grid=document.querySelector(".member-grid");if(!grid)return;
+  ["/team/kurt/","/team/patrick-paddy/"].forEach(function(h){const el=grid.querySelector('a[href="'+h+'"]');if(el)el.remove()});
+  const sara=grid.querySelector('a[href="/team/sahra-boesesmaedchen/"] h2');if(sara)sara.innerHTML='Sara <small>/ Bösesmädchen</small>';
+  const anchor=grid.querySelector(".unassigned-character-directory,.unassigned-divider");
+  waschiExtraPlayers.forEach(function(def){if(!grid.querySelector('a[href="'+def.href+'"]'))grid.insertBefore(waschiMemberCard(def),anchor||null)});
+  const assigned=new Set();
+  Object.values(waschiGuildAssignments).forEach(function(cfg){cfg.chars.forEach(function(ch){assigned.add(ch[0].normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase())})});
+  grid.querySelectorAll(".unassigned-live-card").forEach(function(card){
+    const n=(card.dataset.character||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
+    if(assigned.has(n))card.remove();
+  });
+  const left=grid.querySelectorAll(".unassigned-live-card").length;
+  grid.querySelectorAll(".unassigned-divider small").forEach(function(el){el.textContent="("+left+")"});
+}
+function applyGuildAssignments(){
+  waschiApplyTeamOverviewAssignments();
+  waschiRenderAuthoritativeProfile();
+}
+
+function boot(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();applyGuildAssignments();scan();applyHalloweenTheme()}
 if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",boot);else boot();
-new MutationObserver(function(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();scan();applyHalloweenTheme()}).observe(document.documentElement,{childList:true,subtree:true});
+new MutationObserver(function(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();applyGuildAssignments();scan();applyHalloweenTheme()}).observe(document.documentElement,{childList:true,subtree:true});
 const s=document.createElement("script");s.src=upstream;s.async=true;document.head.appendChild(s);
 })();
