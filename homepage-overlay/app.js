@@ -195,6 +195,20 @@ function applyHalloweenTheme(){
     nikolaus:{top:20.6,height:6.9,boxes:[[10.0,10.7],[21.4,10.0],[31.7,8.5],[40.2,11.2],[51.4,8.6],[60.0,9.0],[69.2,9.0],[78.3,10.7]]}
   };
 
+  function firstAdventSunday(year){
+    const dec3=Date.UTC(year,11,3,0,0,0);
+    return dec3-new Date(dec3).getUTCDay()*day;
+  }
+  function adventState(){
+    const utcDate=new Date(now);
+    const seasonYear=utcDate.getUTCMonth()===0?nowYear-1:nowYear;
+    const first=firstAdventSunday(seasonYear);
+    const end=Date.UTC(seasonYear+1,0,2,12,0,0);
+    if(now<first||now>=end)return {active:false,candles:0};
+    const candles=Math.max(1,Math.min(4,Math.floor((now-first)/(7*day))+1));
+    return {active:true,candles};
+  }
+
   const ranges=[];
   for(let y=nowYear-1;y<=nowYear+1;y++){
     const easter=easterSunday(y);
@@ -228,6 +242,28 @@ html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!im
 #waschi-halloween-fx .hw-stage{position:absolute;left:50%;top:50%;width:min(100vw,calc(100vh * 1672 / 941));aspect-ratio:1672/941;transform:translate(-50%,-50%);background-size:100% 100%;background-position:center;background-repeat:no-repeat;pointer-events:none}
 #waschi-halloween-fx .hw-hotspot{position:absolute;pointer-events:auto;display:block;border-radius:8px;cursor:pointer;background:rgba(255,255,255,0)}
 #waschi-halloween-fx .hw-hotspot:hover,#waschi-halloween-fx .hw-hotspot:focus-visible{outline:2px solid rgba(255,130,45,.55);outline-offset:-2px;box-shadow:0 0 18px rgba(255,72,0,.35) inset,0 0 18px rgba(255,72,0,.18)}
+#waschi-halloween-fx .waschi-advent{position:absolute;right:2.6%;bottom:3.2%;width:20.5%;aspect-ratio:1/1;z-index:2;pointer-events:none;filter:drop-shadow(0 10px 16px rgba(0,0,0,.58))}
+#waschi-halloween-fx .waschi-advent .wreath-ring{position:absolute;inset:20% 6% 6%;border-radius:50%;background:radial-gradient(circle at 50% 48%,transparent 0 29%,rgba(12,41,20,.2) 30% 33%,#173f25 34% 42%,#1f5a2e 43% 52%,#0e2e1b 53% 61%,transparent 62%),conic-gradient(from 15deg,#143d20,#2a6a35,#102f1a,#34763d,#12371e,#245d30,#11341d);box-shadow:0 0 0 2px rgba(185,132,38,.35) inset,0 0 28px rgba(18,4,0,.72)}
+#waschi-halloween-fx .waschi-advent .wreath-ring:before,#waschi-halloween-fx .waschi-advent .wreath-ring:after{content:"";position:absolute;width:16%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle at 34% 30%,#ff7159 0 13%,#a80f0f 36%,#5d0707 70%);box-shadow:24px 8px 0 -1px #9e0d0d,11px 23px 0 -2px #c81919;top:54%}
+#waschi-halloween-fx .waschi-advent .wreath-ring:before{left:9%}
+#waschi-halloween-fx .waschi-advent .wreath-ring:after{right:13%;transform:scale(.9)}
+#waschi-halloween-fx .waschi-advent .candle{position:absolute;width:18%;height:39%;bottom:38%;border-radius:13% 13% 8% 8%;background:linear-gradient(90deg,#7e0909 0,#d82c21 27%,#ff6650 50%,#c71915 72%,#690707 100%);border:2px solid rgba(247,183,76,.58);box-shadow:inset 0 0 12px rgba(255,190,110,.25),0 5px 8px rgba(0,0,0,.52)}
+#waschi-halloween-fx .waschi-advent .candle:after{content:"";position:absolute;left:12%;right:12%;top:-4%;height:9%;border-radius:50%;background:#f3634f;box-shadow:inset 0 -3px 5px rgba(91,0,0,.55)}
+#waschi-halloween-fx .waschi-advent .c1{left:8%;bottom:31%;transform:rotate(-6deg)}
+#waschi-halloween-fx .waschi-advent .c2{left:29%;bottom:43%;height:43%;transform:rotate(-2deg)}
+#waschi-halloween-fx .waschi-advent .c3{right:29%;bottom:43%;height:43%;transform:rotate(2deg)}
+#waschi-halloween-fx .waschi-advent .c4{right:8%;bottom:31%;transform:rotate(6deg)}
+#waschi-halloween-fx .waschi-advent .wick{position:absolute;left:47%;top:-12%;width:6%;height:12%;border-radius:5px;background:#1a0c09}
+#waschi-halloween-fx .waschi-advent .flame{display:none;position:absolute;left:50%;top:-38%;width:45%;height:34%;transform:translateX(-50%);border-radius:55% 45% 55% 45%;background:radial-gradient(ellipse at 50% 72%,#fff 0 16%,#ffe06b 26%,#ff9a18 52%,rgba(255,74,0,.96) 70%,rgba(255,74,0,0) 74%);filter:drop-shadow(0 0 5px #ffd76d) drop-shadow(0 0 11px rgba(255,117,20,.9));animation:waschiFlame 1.45s ease-in-out infinite alternate;transform-origin:50% 100%}
+#waschi-halloween-fx .waschi-advent .candle.lit .flame{display:block}
+#waschi-halloween-fx .waschi-advent .bow{position:absolute;left:50%;bottom:4%;width:49%;height:25%;transform:translateX(-50%)}
+#waschi-halloween-fx .waschi-advent .bow:before,#waschi-halloween-fx .waschi-advent .bow:after{content:"";position:absolute;top:12%;width:48%;height:62%;background:linear-gradient(135deg,#7b0505,#e31b18 48%,#7b0505);border:2px solid #d79d2c;box-shadow:0 3px 8px rgba(0,0,0,.45)}
+#waschi-halloween-fx .waschi-advent .bow:before{left:0;border-radius:55% 12% 46% 18%;transform:rotate(9deg)}
+#waschi-halloween-fx .waschi-advent .bow:after{right:0;border-radius:12% 55% 18% 46%;transform:rotate(-9deg)}
+#waschi-halloween-fx .waschi-advent .gem{position:absolute;left:50%;top:9%;width:23%;aspect-ratio:1;transform:translateX(-50%) rotate(45deg);background:linear-gradient(135deg,#f7cf67,#9a6017);border:2px solid #ffe28b;box-shadow:0 0 9px rgba(255,198,74,.5)}
+#waschi-halloween-fx .waschi-advent .gem:after{content:"W";position:absolute;inset:14%;display:grid;place-items:center;transform:rotate(-45deg);border-radius:50%;background:#122d58;color:#f7d368;font:900 52% Georgia,serif;text-shadow:0 1px 1px #000}
+@keyframes waschiFlame{0%{transform:translateX(-50%) rotate(-3deg) scale(.96,1.02)}100%{transform:translateX(-50%) rotate(4deg) scale(1.05,.96)}}
+@media(max-width:760px){#waschi-halloween-fx .waschi-advent{width:24%;right:1.2%;bottom:1.8%}}
 `;
     document.head.appendChild(style);
   }
@@ -275,6 +311,16 @@ html.waschi-halloween .header{visibility:hidden!important;pointer-events:none!im
       a.style.width=preset.boxes[idx][1]+'%';
       stage.appendChild(a);
     });
+    const advent=adventState();
+    if(advent.active&&['nikolaus','christmas','newyear'].includes(active.key)){
+      const wreath=document.createElement('div');
+      wreath.className='waschi-advent';
+      wreath.setAttribute('aria-label','Adventskranz mit '+advent.candles+' brennenden Kerzen');
+      wreath.innerHTML='<div class="wreath-ring"></div>'+
+        [1,2,3,4].map(function(n){return '<div class="candle c'+n+(n<=advent.candles?' lit':'')+'"><span class="wick"></span><span class="flame"></span></div>'}).join('')+
+        '<div class="bow"><span class="gem"></span></div>';
+      stage.appendChild(wreath);
+    }
     document.body.appendChild(fx);
   }
 }
