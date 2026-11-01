@@ -120,15 +120,15 @@ async function load(card){
   try{
     const q=new URLSearchParams({realm:realm,name:name});
     const pair=await Promise.allSettled([
-      realFetch("/api/guild-character?"+q.toString(),{cache:"force-cache"}).then(async function(r){if(!r.ok)throw new Error("character");return r.json()}),
+      realFetch("/api/guild-character?"+q.toString(),{cache:"no-store"}).then(async function(r){if(!r.ok)throw new Error("character");return r.json()}),
       detailImage(card,name,realm)
     ]);
     const d=pair[0].status==="fulfilled"?pair[0].value:{};
     const detailSrc=pair[1].status==="fulfilled"?pair[1].value:"";
     setImage(card,p,d,detailSrc);
-    const c=card.querySelector("[data-char-class]"),s=card.querySelector("[data-char-spec]"),m=card.querySelector("[data-char-score]");
+    const c=card.querySelector("[data-char-class]"),sp=card.querySelector("[data-char-spec]"),m=card.querySelector("[data-char-score]");
     if(c&&d.className)c.textContent=classDe[d.className]||d.className;
-    if(s&&d.spec)s.textContent=specDe[d.spec]||d.spec;
+    if(sp&&d.spec)sp.textContent=specDe[d.spec]||d.spec;
     if(m&&d.mythicPlus&&d.mythicPlus.score!=null)m.textContent=new Intl.NumberFormat("de-DE",{maximumFractionDigits:1}).format(d.mythicPlus.score);
   }catch(e){fallback(card,p)}
 }
