@@ -1,6 +1,8 @@
 {
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/$1" }
+    { "src": "/api/(.*)", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/api/$1" },
+    { "src": "/assets/(.*)", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/assets/$1" },
+    { "src": "/favicon.ico", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/favicon.ico" }
   ]
 }
