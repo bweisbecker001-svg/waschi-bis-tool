@@ -434,8 +434,10 @@ function waschiApplyTeamOverviewAssignments(){
   if(waschiNormTeamPath()!=="/team/")return;
   const grid=document.querySelector(".member-grid");if(!grid)return;
   ["/team/kurt/","/team/patrick-paddy/","/team/dima/"].forEach(function(h){const el=grid.querySelector('a[href="'+h+'"]');if(el)el.remove()});
-  const sara=grid.querySelector('a[href="/team/sahra-boesesmaedchen/"] h2');if(sara)sara.innerHTML='Sara <small>/ Bösesmädchen</small>';
-  const dimi=grid.querySelector('a[href="/team/dimi/"] h2');if(dimi)dimi.innerHTML='Dima <small>/ Dimi</small>';
+  const sara=grid.querySelector('a[href="/team/sahra-boesesmaedchen/"] h2');
+  if(sara&&sara.innerHTML!=='Sara <small>/ Bösesmädchen</small>')sara.innerHTML='Sara <small>/ Bösesmädchen</small>';
+  const dimi=grid.querySelector('a[href="/team/dimi/"] h2');
+  if(dimi&&dimi.innerHTML!=='Dima <small>/ Dimi</small>')dimi.innerHTML='Dima <small>/ Dimi</small>';
   const anchor=grid.querySelector(".unassigned-character-directory,.unassigned-divider");
   waschiExtraPlayers.forEach(function(def){if(!grid.querySelector('a[href="'+def.href+'"]'))grid.insertBefore(waschiMemberCard(def),anchor||null)});
   const assigned=new Set();
@@ -445,7 +447,7 @@ function waschiApplyTeamOverviewAssignments(){
     if(assigned.has(n))card.remove();
   });
   const left=grid.querySelectorAll(".unassigned-live-card").length;
-  grid.querySelectorAll(".unassigned-divider small").forEach(function(el){el.textContent="("+left+")"});
+  grid.querySelectorAll(".unassigned-divider small").forEach(function(el){const next="("+left+")";if(el.textContent!==next)el.textContent=next});
 }
 function applyGuildAssignments(){
   waschiApplyTeamOverviewAssignments();
