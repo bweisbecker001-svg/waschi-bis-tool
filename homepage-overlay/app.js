@@ -132,8 +132,24 @@ async function load(card){
     if(m&&d.mythicPlus&&d.mythicPlus.score!=null)m.textContent=new Intl.NumberFormat("de-DE",{maximumFractionDigits:1}).format(d.mythicPlus.score);
   }catch(e){fallback(card,p)}
 }
+function normalizeMemberProfileCharacters(){
+  const page=document.querySelector(".member-profile-page");
+  if(!page)return;
+  const cards=[...page.querySelectorAll(".character-directory .character-entry[data-character]")];
+  const seen=new Set();
+  cards.forEach(function(card){
+    const name=(card.dataset.character||((card.querySelector("h3")||{}).textContent||"")).trim().toLocaleLowerCase("de-DE");
+    const realm=(card.dataset.realm||((card.querySelector(".character-realm")||{}).textContent||"")).replace(/^server:\s*/i,"").trim().toLowerCase();
+    const key=name+"|"+realm;
+    if(name&&seen.has(key)) card.remove();
+    else if(name) seen.add(key);
+  });
+  const count=page.querySelector(".character-count strong");
+  if(count) count.textContent=String(page.querySelectorAll(".character-directory .character-entry[data-character]").length);
+}
 function scan(){
   if(!document.querySelector(".member-profile-page"))return;
+  normalizeMemberProfileCharacters();
   document.querySelectorAll(".member-profile-page .character-entry[data-character]").forEach(load);
 }
 function forceHeaderLogoSize(){
