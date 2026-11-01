@@ -1,1 +1,0 @@
-console.log('waschi adrian image hotfix placeholder');
