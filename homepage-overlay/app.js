@@ -138,14 +138,18 @@ function normalizeMemberProfileCharacters(){
   const cards=[...page.querySelectorAll(".character-directory .character-entry[data-character]")];
   const seen=new Set();
   cards.forEach(function(card){
-    const name=(card.dataset.character||((card.querySelector("h3")||{}).textContent||"")).trim().toLocaleLowerCase("de-DE");
+    const rawName=(card.dataset.character||((card.querySelector("h3")||{}).textContent||"")).trim();
+    const name=rawName.normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLocaleLowerCase("de-DE");
     const realm=(card.dataset.realm||((card.querySelector(".character-realm")||{}).textContent||"")).replace(/^server:\s*/i,"").trim().toLowerCase();
     const key=name+"|"+realm;
     if(name&&seen.has(key)) card.remove();
     else if(name) seen.add(key);
   });
   const count=page.querySelector(".character-count strong");
-  if(count) count.textContent=String(page.querySelectorAll(".character-directory .character-entry[data-character]").length);
+  if(count){
+    const actual=String(page.querySelectorAll(".character-directory .character-entry[data-character]").length);
+    if(count.textContent.trim()!==actual) count.textContent=actual;
+  }
 }
 function scan(){
   if(!document.querySelector(".member-profile-page"))return;
