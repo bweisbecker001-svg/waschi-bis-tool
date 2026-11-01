@@ -2565,7 +2565,23 @@ function updateProfile(){
   /* WoW-Cockpit controller: intentionally inside the main dashboard closure so it can access liveCharacter, activeProfile, characterStats and comparisonCache. */
 (function(){
   const q=id=>document.getElementById(id);
-  const tabClick=key=>document.querySelector(`#questTabs .quest-tab[data-tab-target="${key}"]`)?.click();
+  const tabClick=key=>{
+    const target=String(key||'overview');
+    document.querySelectorAll('#questTabs .quest-tab').forEach(btn=>{
+      const active=btn.dataset.tabTarget===target;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-selected',active?'true':'false');
+    });
+    document.querySelectorAll('[data-quest-tab]').forEach(el=>{
+      el.classList.toggle('quest-hidden',el.dataset.questTab!==target);
+    });
+    document.querySelectorAll('[data-open-tab]').forEach(btn=>{
+      btn.classList.toggle('active',btn.dataset.openTab===target);
+    });
+    try{localStorage.setItem('wow-midnight-active-tab',target)}catch{}
+    const top=document.querySelector('.wow-epic-ui .hero')?.getBoundingClientRect().bottom||0;
+    if(window.scrollY>top+120)window.scrollTo({top:Math.max(0,top),behavior:'smooth'});
+  };
   const shortLabels={crit:'Kritisch',haste:'Tempo',mastery:'Meisterschaft',versatility:'Vielseitigkeit',leech:'Lebensraub',avoidance:'Vermeidung',speed:'Geschwindigkeit'};
   const statGlyph={crit:'⚔',haste:'✹',mastery:'✦',versatility:'◆',leech:'♻',avoidance:'◈',speed:'➤'};
   const leftSlots=['head','neck','shoulder','back','chest','wrist','hands'];
@@ -2978,6 +2994,10 @@ function updateProfile(){
   function init(){
     initLocalItemTooltips();
     document.querySelectorAll('[data-open-tab]').forEach(btn=>btn.addEventListener('click',()=>tabClick(btn.dataset.openTab)));
+    q('wcCharacterFallback')?.addEventListener('click',()=>tabClick('character'));
+    q('wcCharacterFallback')?.setAttribute('role','button');
+    q('wcCharacterFallback')?.setAttribute('tabindex','0');
+    q('wcCharacterFallback')?.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();tabClick('character')}});
     q('wcProfileSelect')?.addEventListener('change',e=>{const src=q('profileSelect');if(src){src.value=e.target.value;src.dispatchEvent(new Event('change',{bubbles:true}))}});
     const ids=['characterName','characterMeta','characterIlvl','characterScore','characterMatches','statGrid','gearBody','mplusSuccessfulCount','mplusHighestScore','mplusHighestKey','mplusSeasonTotalRuns','mplusSeasonTimedRuns','mplusSeasonOuttimeRuns','profileSelect'];
     const observer=new MutationObserver(()=>requestAnimationFrame(updateCockpit));
@@ -2995,21 +3015,20 @@ function updateProfile(){
 </script><script async="" src="https://wow.zamimg.com/widgets/power.js"></script>
 <script>
 (function(){
+  function activateMidnightTab(key){
+    const target=String(key||'overview');
+    document.querySelectorAll('#questTabs .quest-tab').forEach(btn=>{
+      const active=btn.dataset.tabTarget===target;
+      btn.classList.toggle('active',active);
+      btn.setAttribute('aria-selected',active?'true':'false');
+    });
+    document.querySelectorAll('[data-quest-tab]').forEach(el=>el.classList.toggle('quest-hidden',el.dataset.questTab!==target));
+    try{localStorage.setItem('wow-midnight-active-tab',target)}catch{}
+  }
+  window.__waschiActivateTab=activateMidnightTab;
   function initMidnightTabs(){
-    const buttons=Array.from(document.querySelectorAll('#questTabs .quest-tab'));
-    const content=Array.from(document.querySelectorAll('[data-quest-tab]'));
-    function activate(key){
-      buttons.forEach(btn=>{
-        const active=btn.dataset.tabTarget===key;
-        btn.classList.toggle('active',active);
-        btn.setAttribute('aria-selected',active?'true':'false');
-      });
-      content.forEach(el=>el.classList.toggle('quest-hidden',el.dataset.questTab!==key));
-      try{localStorage.setItem('wow-midnight-active-tab',key)}catch{}
-    }
-    buttons.forEach(btn=>btn.addEventListener('click',()=>activate(btn.dataset.tabTarget)));
-    const start='overview';
-    activate(start);
+    document.querySelectorAll('#questTabs .quest-tab').forEach(btn=>btn.addEventListener('click',()=>activateMidnightTab(btn.dataset.tabTarget)));
+    activateMidnightTab('overview');
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initMidnightTabs);
   else initMidnightTabs();
@@ -3203,6 +3222,13 @@ function updateProfile(){
   .wc-panel{
     -webkit-user-select:auto;
   }
+}
+</style>
+
+<style id="waschi-mobile-nav-direct-fix">
+@media(max-width:820px){
+  #wcCharacterFallback{pointer-events:auto!important;cursor:pointer!important;z-index:15!important;touch-action:manipulation!important}
+  [data-open-tab]{cursor:pointer!important}
 }
 </style>
 </body></html>
