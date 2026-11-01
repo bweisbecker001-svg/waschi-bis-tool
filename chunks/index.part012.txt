@@ -3119,4 +3119,90 @@ function updateProfile(){
   .wc-donut::before{width:70px!important;height:70px!important}
 }
 </style>
+
+<style id="waschi-mobile-touch-fix">
+/* Touch-Fix: rein dekorative WoW-Ebenen duerfen auf Mobilgeraeten keine Eingaben abfangen. */
+@media (max-width: 820px){
+  .wow-epic-ui .hero::before,
+  .wow-epic-ui .hero::after,
+  .wow-frame::before,
+  .wow-frame::after,
+  .wc-panel::before,
+  .wc-panel::after,
+  .wc-armory-stage::before,
+  .wc-armory-stage::after,
+  .wc-character-render-wrap::before,
+  .wc-character-render-wrap::after,
+  .wc-character-aura,
+  .wow-corner,
+  .wow-corner::before,
+  .wow-corner::after{
+    pointer-events:none!important;
+  }
+
+  .wow-cockpit,
+  .wc-cockpit-grid,
+  .wc-column,
+  .wc-character-panel,
+  .wc-center-column,
+  .wc-right-column,
+  .wc-panel,
+  .wc-armory-stage{
+    pointer-events:auto!important;
+  }
+
+  button,
+  .btn,
+  a,
+  select,
+  input,
+  textarea,
+  label,
+  summary,
+  .wc-nav-button,
+  .wc-gold-button,
+  .detail-back-button,
+  .wc-panel-title button,
+  .wc-gear-slot,
+  .wc-gear-slot>a,
+  .wc-bis-item-link,
+  [data-open-tab]{
+    pointer-events:auto!important;
+    touch-action:manipulation!important;
+    -webkit-tap-highlight-color:rgba(255,190,80,.18);
+  }
+
+  .wc-nav-button,
+  .wc-gold-button,
+  .detail-back-button,
+  .wc-panel-title button,
+  [data-open-tab],
+  .character-form,
+  .favorites-bar,
+  .wc-profile-label,
+  .wc-build-row,
+  .wc-ilvl,
+  .wc-gear-slot,
+  .wc-weapon-row{
+    position:relative!important;
+    z-index:20!important;
+  }
+
+  .wc-gear-slot>a{z-index:21!important}
+  .wc-character-silhouette{pointer-events:none!important}
+  #wcCharacterRender{pointer-events:none!important}
+
+  /* Tooltips duerfen auf Touch nie die Seite blockieren. */
+  #wcItemTooltip{
+    pointer-events:none!important;
+  }
+
+  /* iOS/Samsung: keine unsichtbare Auswahl-/Drag-Schicht ueber Buttons. */
+  .wc-character-render-wrap,
+  .wc-character-panel,
+  .wc-panel{
+    -webkit-user-select:auto;
+  }
+}
+</style>
 </body></html>
