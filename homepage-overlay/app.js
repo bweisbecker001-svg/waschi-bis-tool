@@ -1,5 +1,5 @@
 (function(){
-const upstream="https://waschi-ekdq613p6-bernd-9907.vercel.app/app.js";
+const upstream="/base-app.js";
 const realFetch=window.fetch.bind(window);
 const reqCache=new Map();
 function ensureDownloadsCss(){
