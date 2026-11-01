@@ -356,8 +356,8 @@ const waschiGuildAssignments={
   "/team/corni/":{player:"Corni",chars:[["Arcanon","todeswache"],["Corni","todeswache"],["Nastyangel","todeswache"]]},
   "/team/curtis-curt/":{player:"Curtis / Curt",chars:[["Trapbotx","eredar"],["Poisonbotx","blackmoore"],["Carriefisher","eredar"],["Cleavelandz","eredar"],["Decaybotx","blackrock"],["Jønnå","eredar"],["Cheapsheep","blackrock"],["Shamnsfun","blackrock"],["Høtbøtx","eredar"],["Sparrowlolz","blackmoore"],["Shieldbotx","silvermoon"]]},
   "/team/dennis/":{player:"Dennis",chars:[["Telgrim","blackhand"]]},
-  "/team/dima/":{player:"Dima",chars:[["Bohunt","blackhand"],["Bokireg","blackhand"],["Borabo","blackhand"]]},
-  "/team/dimi/":{player:"Dimi",chars:[["Râspûtî","blackhand"]]},
+  "/team/dima/":{player:"Dima / Dimi",chars:[["Bohunt","blackhand"],["Bokireg","blackhand"],["Borabo","blackhand"],["Râspûtî","blackhand"]]},
+  "/team/dimi/":{player:"Dima / Dimi",chars:[["Bohunt","blackhand"],["Bokireg","blackhand"],["Borabo","blackhand"],["Râspûtî","blackhand"]]},
   "/team/fabian-shootmex/":{player:"Fabian / Shootmex",chars:[["Shootmex","blackhand"]]},
   "/team/florian/":{player:"Florian",chars:[["Mystikmonk","blackrock"]]},
   "/team/junstin-bragol/":{player:"Justin / Bragol",chars:[["Bragol","blackmoore"]]},
@@ -403,6 +403,10 @@ function waschiRenderAuthoritativeProfile(){
   dir.innerHTML=cfg.chars.map(x=>waschiCharacterCard(x[0],x[1])).join("");
   const count=page.querySelector(".character-count strong,[data-character-count]");
   if(count)count.textContent=String(cfg.chars.length);
+  if(waschiNormTeamPath()==="/team/dimi/"||waschiNormTeamPath()==="/team/dima/"){
+    const h1=page.querySelector(".profile-heading h1");if(h1)h1.innerHTML='Dima <span>/ Dimi</span>';
+    const bc=page.querySelector(".breadcrumbs strong");if(bc)bc.textContent="Dima / Dimi";
+  }
   if(waschiNormTeamPath()==="/team/sahra-boesesmaedchen/"){
     const h1=page.querySelector(".profile-heading h1");if(h1)h1.innerHTML='Sara <span>/ Bösesmädchen</span>';
     const bc=page.querySelector(".breadcrumbs strong");if(bc)bc.textContent="Sara / Bösesmädchen";
@@ -415,7 +419,6 @@ function waschiRenderAuthoritativeProfile(){
 }
 const waschiExtraPlayers=[
   {href:"/team/dennis/",name:"Dennis",sub:"World of Warcraft · Blackhand"},
-  {href:"/team/dima/",name:"Dima",sub:"World of Warcraft · Blackhand"},
   {href:"/team/florian/",name:"Florian",sub:"World of Warcraft · Blackrock"},
   {href:"/team/patrik/",name:"Patrik",sub:"World of Warcraft · Mal'Ganis"},
   {href:"/team/tanner/",name:"Tanner",sub:"World of Warcraft · Blackmoore"}
@@ -430,8 +433,9 @@ function waschiMemberCard(def){
 function waschiApplyTeamOverviewAssignments(){
   if(waschiNormTeamPath()!=="/team/")return;
   const grid=document.querySelector(".member-grid");if(!grid)return;
-  ["/team/kurt/","/team/patrick-paddy/"].forEach(function(h){const el=grid.querySelector('a[href="'+h+'"]');if(el)el.remove()});
+  ["/team/kurt/","/team/patrick-paddy/","/team/dima/"].forEach(function(h){const el=grid.querySelector('a[href="'+h+'"]');if(el)el.remove()});
   const sara=grid.querySelector('a[href="/team/sahra-boesesmaedchen/"] h2');if(sara)sara.innerHTML='Sara <small>/ Bösesmädchen</small>';
+  const dimi=grid.querySelector('a[href="/team/dimi/"] h2');if(dimi)dimi.innerHTML='Dima <small>/ Dimi</small>';
   const anchor=grid.querySelector(".unassigned-character-directory,.unassigned-divider");
   waschiExtraPlayers.forEach(function(def){if(!grid.querySelector('a[href="'+def.href+'"]'))grid.insertBefore(waschiMemberCard(def),anchor||null)});
   const assigned=new Set();
