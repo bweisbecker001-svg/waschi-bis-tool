@@ -444,7 +444,7 @@ function waschiApplyTeamOverviewAssignments(){
   Object.values(waschiGuildAssignments).forEach(function(cfg){cfg.chars.forEach(function(ch){assigned.add(ch[0].normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase())})});
   grid.querySelectorAll(".unassigned-live-card").forEach(function(card){
     const n=(card.dataset.character||"").normalize("NFD").replace(/[\u0300-\u036f]/g,"").toLowerCase();
-    if(assigned.has(n))card.remove();
+    if(assigned.has(n)||n==="lubion")card.remove();
   });
   const left=grid.querySelectorAll(".unassigned-live-card").length;
   grid.querySelectorAll(".unassigned-divider small").forEach(function(el){const next="("+left+")";if(el.textContent!==next)el.textContent=next});
