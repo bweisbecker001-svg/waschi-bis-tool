@@ -1,17 +1,3 @@
 {
-  "$schema": "https://openapi.vercel.sh/vercel.json",
-  "daemons": {
-    "discord-voice": {
-      "root": "discord-voice/",
-      "entrypoint": "Dockerfile",
-      "instances": {
-        "fra1": 1
-      },
-      "resources": {
-        "requests": {
-          "memory": "1Gi"
-        }
-      }
-    }
-  }
+  "$schema": "https://openapi.vercel.sh/vercel.json"
 }
