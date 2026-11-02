@@ -459,3 +459,11 @@ if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",
 new MutationObserver(function(){enhanceDownloads();configureExternalLinks();forceHeaderLogoSize();applyGuildAssignments();scan();applyHalloweenTheme()}).observe(document.documentElement,{childList:true,subtree:true});
 const s=document.createElement("script");s.src=upstream;s.async=true;document.head.appendChild(s);
 })();
+(function(){
+  if(!document.querySelector('script[src="/site-content.js"]')){
+    const script=document.createElement('script');
+    script.src='/site-content.js';
+    script.defer=true;
+    document.head.appendChild(script);
+  }
+})();
