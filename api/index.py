@@ -18,6 +18,8 @@ import webbrowser
 import zlib
 import zipfile
 from pathlib import Path
+from flask import Flask, request, jsonify, Response, send_file, make_response, redirect
+app = Flask(__name__)
 
 HOST = '127.0.0.1'
 PORT = 8765
@@ -1472,8 +1474,6 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
     return _cache_put(WARCRAFTLOGS_CACHE, cache_key, result)
 
 
-from flask import Flask, request, jsonify, Response, send_file, make_response, redirect
-app = Flask(__name__)
 try:
     from vercel.blob import sync as vercel_blob
 except Exception:
