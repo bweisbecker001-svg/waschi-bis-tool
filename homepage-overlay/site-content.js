@@ -1,0 +1,69 @@
+(function(){
+'use strict';
+const S={auth:null,content:{calendar:[],news:[]},month:new Date()};
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function fmtDate(v){if(!v)return'';const d=new Date(v+'T12:00:00');return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'long',year:'numeric'}).format(d)}
+function safeLink(v){try{const u=new URL(v,location.origin);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return''}}
+async function api(url,opt){const r=await fetch(url,{credentials:'same-origin',...(opt||{})});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j}
+function addNav(){
+ document.querySelectorAll('.nav').forEach(n=>{if(!n.querySelector('a[href="/calendar/"]')){const a=document.createElement('a');a.href='/calendar/';a.innerHTML='<span class="ico">▦</span><span>Kalender</span>';n.appendChild(a)}});
+ const rn=document.querySelector('.rightnav');if(rn&&!rn.querySelector('[data-site-login]')){const b=document.createElement('button');b.type='button';b.dataset.siteLogin='1';b.className='site-login-btn';rn.appendChild(b);b.addEventListener('click',async()=>{if(S.auth&&S.auth.user){await api('/api/site-auth/logout',{method:'POST'});location.reload()}else{location.href='/api/site-auth/login?next='+encodeURIComponent(location.pathname+location.search)}})}
+}
+function updateLogin(){
+ const b=document.querySelector('[data-site-login]');if(!b)return;
+ if(S.auth&&S.auth.user){b.textContent='Discord: '+(S.auth.user.globalName||S.auth.user.username)+' · Abmelden'}else b.textContent='Mit Discord anmelden';
+}
+function renderHomeNews(){
+ const list=document.querySelector('.news-list');if(!list)return;
+ const rows=(S.content.news||[]).slice(0,4);
+ list.innerHTML=rows.map(n=>'<a class="news" href="/news/?id='+encodeURIComponent(n.id)+'" style="text-decoration:none;color:inherit"><div class="news-thumb"></div><div><span class="date">'+esc(fmtDate(n.date))+'</span><strong>'+esc(n.title)+'</strong></div><div class="arrow">›</div></a>').join('');
+ const head=list.closest('.panel')?.querySelector('.panel-head');if(head&&S.auth?.canNews&&!head.querySelector('[data-news-manage]')){const a=document.createElement('a');a.href='/news/?admin=1';a.dataset.newsManage='1';a.className='panel-link';a.textContent='News verwalten →';head.appendChild(a)}
+}
+function newsForm(existing){
+ const n=existing||{};const box=document.createElement('section');box.className='article-panel site-admin-panel';
+ box.innerHTML='<h2>'+(n.id?'News bearbeiten':'Neue News erstellen')+'</h2><form data-news-form><input type="hidden" name="id" value="'+esc(n.id||'')+'"><label>Titel<input name="title" required maxlength="180" value="'+esc(n.title||'')+'"></label><label>Datum<input name="date" type="date" required value="'+esc(n.date||new Date().toISOString().slice(0,10))+'"></label><label>Kurztext<textarea name="summary" rows="3" maxlength="700">'+esc(n.summary||'')+'</textarea></label><label>Vollständiger Text<textarea name="body" rows="8" maxlength="8000">'+esc(n.body||'')+'</textarea></label><label class="check"><input name="published" type="checkbox" '+(n.published===false?'':'checked')+'> Veröffentlichen</label><div class="article-actions"><button class="btn gold" type="submit">Speichern</button>'+(n.id?'<button class="btn dark" type="button" data-delete-news>Löschen</button>':'')+'</div><p class="site-form-status" data-status></p></form>';
+ const form=box.querySelector('form');form.addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(form),data=Object.fromEntries(fd.entries());data.published=fd.get('published')==='on';const st=form.querySelector('[data-status]');try{st.textContent='Speichere…';await api('/api/site-news',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});location.href='/news/'}catch(err){st.textContent=err.message}});
+ box.querySelector('[data-delete-news]')?.addEventListener('click',async()=>{if(!confirm('Diese News wirklich löschen?'))return;await api('/api/site-news?id='+encodeURIComponent(n.id),{method:'DELETE'});location.href='/news/'});
+ return box
+}
+function renderNews(){
+ const grid=document.querySelector('.news-index-grid');if(!grid)return;
+ const id=new URLSearchParams(location.search).get('id');
+ if(id){const n=(S.content.news||[]).find(x=>x.id===id);if(n){grid.style.display='block';grid.innerHTML='<article class="article-panel"><span class="article-date">'+esc(fmtDate(n.date))+'</span><h2>'+esc(n.title)+'</h2><p>'+esc(n.body||n.summary||'')+'</p></article>';if(S.auth?.canNews)grid.appendChild(newsForm(n))}return}
+ grid.innerHTML=(S.content.news||[]).map(n=>'<a class="news-index-card" href="/news/?id='+encodeURIComponent(n.id)+'"><span class="date">'+esc(fmtDate(n.date))+'</span><h2>'+esc(n.title)+'</h2><p>'+esc(n.summary||n.body||'')+'</p></a>').join('');
+ if(S.auth?.canNews&&(new URLSearchParams(location.search).get('admin')==='1'||true)){const main=document.querySelector('.news-page');if(main&&!main.querySelector('[data-news-form]')){main.insertBefore(newsForm(),main.querySelector('.news-back'))}}
+}
+function catLabel(c){return({holiday:'Feiertag',wow:'WoW',waschi:'Waschi','patch-season':'Patch & Saison'})[c]||'Waschi'}
+function eventCard(e){return '<button class="cal-event cat-'+esc(e.category||'waschi')+'" data-event-id="'+esc(e.id)+'"><strong>'+esc(e.time?e.time+' ':'')+esc(e.title)+'</strong></button>'}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
+function renderCalendar(){
+ const root=document.querySelector('[data-calendar-root]');if(!root)return;
+ const y=S.month.getFullYear(),m=S.month.getMonth();document.querySelector('[data-calendar-title]').textContent=new Intl.DateTimeFormat('de-DE',{month:'long',year:'numeric'}).format(S.month);
+ const first=(new Date(y,m,1).getDay()+6)%7;const total=daysInMonth(y,m);let cells='';
+ for(let i=0;i<42;i++){const d=i-first+1;const inMonth=d>=1&&d<=total;let date='';let events=[];if(inMonth){date=[y,String(m+1).padStart(2,'0'),String(d).padStart(2,'0')].join('-');events=(S.content.calendar||[]).filter(e=>e.date===date)}cells+='<div class="cal-day '+(inMonth?'':'muted')+'" '+(inMonth?'data-date="'+date+'"':'')+'><span class="cal-num">'+(inMonth?d:'')+'</span>'+events.map(eventCard).join('')+'</div>'}
+ root.innerHTML=cells;
+ root.querySelectorAll('.cal-day[data-date]').forEach(c=>c.addEventListener('dblclick',()=>{if(S.auth?.canCalendar)openEventForm({date:c.dataset.date})}));
+ root.querySelectorAll('[data-event-id]').forEach(b=>b.addEventListener('click',()=>{const e=S.content.calendar.find(x=>x.id===b.dataset.eventId);showEvent(e)}));
+ renderUpcoming();
+}
+function renderUpcoming(){const box=document.querySelector('[data-upcoming]');if(!box)return;const today=new Date().toISOString().slice(0,10);const rows=(S.content.calendar||[]).filter(e=>e.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,4);box.innerHTML=rows.length?rows.map(e=>'<button data-event-id="'+esc(e.id)+'"><span>'+esc(fmtDate(e.date))+'</span><strong>'+esc(e.title)+'</strong></button>').join(''):'<p>Keine kommenden Termine eingetragen.</p>';box.querySelectorAll('[data-event-id]').forEach(b=>b.onclick=()=>showEvent(S.content.calendar.find(x=>x.id===b.dataset.eventId))}
+function showEvent(e){if(!e)return;const box=document.querySelector('[data-event-detail]');if(!box)return;box.innerHTML='<h3>'+esc(e.title)+'</h3><p><strong>'+esc(fmtDate(e.date))+(e.time?' · '+esc(e.time):'')+'</strong></p><p>'+esc(e.description||'')+'</p>'+(safeLink(e.link)?'<p><a class="btn dark" target="_blank" rel="noopener" href="'+esc(safeLink(e.link))+'">Link öffnen</a></p>':'')+(S.auth?.canCalendar?'<div class="article-actions"><button class="btn gold" data-edit>Bearbeiten</button><button class="btn dark" data-delete>Löschen</button></div>':'');box.querySelector('[data-edit]')?.addEventListener('click',()=>openEventForm(e));box.querySelector('[data-delete]')?.addEventListener('click',()=>deleteEvent(e.id))}
+function openEventForm(e){if(!S.auth?.canCalendar)return;const dlg=document.querySelector('[data-event-dialog]');const f=dlg.querySelector('form');['id','title','date','endDate','time','endTime','category','description','link'].forEach(k=>{if(f.elements[k])f.elements[k].value=e?.[k]||''});dlg.showModal()}
+async function deleteEvent(id){if(!confirm('Termin wirklich löschen?'))return;await api('/api/site-calendar?id='+encodeURIComponent(id),{method:'DELETE'});await loadContent();renderCalendar();document.querySelector('[data-event-detail]').innerHTML=''}
+function initCalendarAdmin(){
+ const dlg=document.querySelector('[data-event-dialog]');if(!dlg)return;
+ document.querySelector('[data-add-event]')?.addEventListener('click',()=>openEventForm({date:new Date().toISOString().slice(0,10)}));dlg.querySelector('[data-close]')?.addEventListener('click',()=>dlg.close());
+ dlg.querySelector('form').addEventListener('submit',async ev=>{ev.preventDefault();const f=ev.currentTarget,data=Object.fromEntries(new FormData(f).entries());try{await api('/api/site-calendar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});dlg.close();await loadContent();renderCalendar()}catch(err){f.querySelector('[data-status]').textContent=err.message}});
+ const p=document.querySelector('[data-calendar-perms]');if(p&&S.auth?.canNews){p.hidden=false;const input=p.querySelector('input');input.value=(S.auth.calendarAdmins||[]).join(', ');p.querySelector('form').onsubmit=async ev=>{ev.preventDefault();const admins=input.value.split(',').map(x=>x.trim()).filter(Boolean);const r=await api('/api/site-calendar-admins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({admins})});input.value=r.calendarAdmins.join(', ');p.querySelector('[data-status]').textContent='Gespeichert.'}}
+ if(S.auth?.canCalendar)document.querySelector('[data-add-event]')?.removeAttribute('hidden')
+}
+async function loadContent(){try{S.content=await api('/api/site-content')}catch(e){console.warn(e)}}
+async function boot(){
+ addNav();
+ try{S.auth=await api('/api/site-auth/status')}catch(e){S.auth={configured:false,user:null}}updateLogin();
+ await loadContent();renderHomeNews();renderNews();
+ if(document.querySelector('[data-calendar-root]')){S.month=new Date();S.month.setDate(1);renderCalendar();initCalendarAdmin();document.querySelector('[data-prev]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()-1);renderCalendar()});document.querySelector('[data-next]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()+1);renderCalendar()})}
+ const q=new URLSearchParams(location.search);if(q.get('auth')==='setup'){const m=document.querySelector('[data-auth-message]');if(m){m.hidden=false;m.textContent='Discord-Login ist technisch vorbereitet. Es fehlen noch Discord Client-ID und Client-Secret in Vercel.'}}
+}
+document.addEventListener('DOMContentLoaded',boot);
+})();
