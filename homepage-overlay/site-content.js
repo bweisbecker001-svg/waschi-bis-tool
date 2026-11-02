@@ -14,6 +14,21 @@ function updateLogin(){
  const b=document.querySelector('[data-site-login]');if(!b)return;
  if(S.auth&&S.auth.user){b.textContent='Discord: '+(S.auth.user.globalName||S.auth.user.username)+' · Abmelden'}else b.textContent='Mit Discord anmelden';
 }
+async function renderDiscordOnline(){
+ const box=document.querySelector('[data-discord-online]'),count=document.querySelector('[data-discord-count]');
+ if(!box)return;
+ try{
+   const data=await api('/api/discord-online');
+   if(!data.ok){box.innerHTML='<span class="hero-discord-empty">Discord-Status derzeit nicht verfügbar.</span>';if(count)count.textContent='Offline-Daten nicht verfügbar';return}
+   if(count)count.textContent=(data.online||0)+' Mitglied'+((data.online||0)===1?'':'er')+' online';
+   const rows=(data.members||[]).slice(0,5);
+   if(!rows.length){box.innerHTML='<span class="hero-discord-empty">Gerade niemand sichtbar online.</span>';return}
+   box.innerHTML=rows.map(m=>{const avatar=safeLink(m.avatar);const img=avatar?'<img class="hero-discord-avatar" src="'+esc(avatar)+'" alt="">':'<span class="hero-discord-avatar hero-discord-fallback">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span>';return '<div class="hero-discord-member">'+img+'<span class="hero-discord-member-name">'+esc(m.name||m.username||'Discord-Mitglied')+'</span><span class="hero-discord-status '+esc(m.status||'online')+'" aria-label="'+esc(m.status||'online')+'"></span></div>'}).join('')+((data.online||0)>rows.length?'<div class="hero-discord-more">+'+esc((data.online||0)-rows.length)+' weitere online</div>':'');
+ }catch(e){
+   box.innerHTML='<span class="hero-discord-empty">Discord-Status derzeit nicht verfügbar.</span>';
+   if(count)count.textContent='Verbindung nicht verfügbar';
+ }
+}
 function renderHomeNews(){
  const list=document.querySelector('.news-list');if(!list)return;
  const rows=(S.content.news||[]).slice(0,4);
@@ -68,10 +83,11 @@ function initCalendarAdmin(){
 }
 async function loadContent(){try{S.content=await api('/api/site-content')}catch(e){console.warn(e)}}
 async function boot(){
- injectStyles();addNav();
+ injectStyles();addNav();renderDiscordOnline();
  try{S.auth=await api('/api/site-auth/status')}catch(e){S.auth={configured:false,user:null}}updateLogin();
  await loadContent();renderHomeNews();renderHomeCalendarPreview();renderNews();
  if(document.querySelector('[data-calendar-root]')){S.month=new Date();S.month.setDate(1);renderCalendar();initCalendarAdmin();document.querySelector('[data-prev]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()-1);renderCalendar()});document.querySelector('[data-next]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()+1);renderCalendar()});document.querySelectorAll('[data-calendar-filters] [data-filter]').forEach(btn=>btn.addEventListener('click',()=>{S.calendarFilter=btn.dataset.filter||'all';document.querySelectorAll('[data-calendar-filters] [data-filter]').forEach(x=>x.classList.toggle('active',x===btn));renderCalendar()}))}
+ if(document.querySelector('[data-discord-online]'))setInterval(renderDiscordOnline,60000);
  const q=new URLSearchParams(location.search);if(q.get('auth')==='setup'){const m=document.querySelector('[data-auth-message]');if(m){m.hidden=false;m.textContent='Discord-Login ist technisch vorbereitet. Es fehlen noch Discord Client-ID und Client-Secret in Vercel.'}}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
