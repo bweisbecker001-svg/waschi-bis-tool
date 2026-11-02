@@ -28,6 +28,11 @@ async function renderDiscordOnline(){
    const online=Number(data.online||0),total=Number(data.total||0),voice=Number(data.voiceMembers||0);
    if(count)count.textContent=online+' Mitglied'+(online===1?'':'er')+' online'+(total?' · '+total+' insgesamt':'');
 
+   if(data.botScheduleActive===false){
+     box.innerHTML='<span class="hero-discord-empty">'+esc(data.pauseText||'Auch ein Waschi muss mal Pause machen 🐾 – ab 11:00 Uhr geht es weiter.')+'</span>';
+     return;
+   }
+
    const channels=(data.voiceChannels||[]).filter(c=>Array.isArray(c.members)&&c.members.length);
    if(data.voiceAvailable&&channels.length){
      box.innerHTML=channels.slice(0,4).map(c=>{
