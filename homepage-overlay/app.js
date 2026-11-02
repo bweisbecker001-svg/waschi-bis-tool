@@ -27,7 +27,17 @@ function enhanceDownloads(){
     if(bis&&bis.nextSibling)grid.insertBefore(a,bis.nextSibling);else grid.appendChild(a);
   }
 }
+function routeBisExternally(){
+  const bisUrl="https://waschi-bis-tool.vercel.app/";
+  document.querySelectorAll('a[href="/bis/"],a[href="/bis"]').forEach(function(a){
+    a.href=bisUrl;
+    a.target="_blank";
+    a.rel="noopener noreferrer";
+    a.dataset.waschiBisNewTab="1";
+  });
+}
 function configureExternalLinks(){
+  routeBisExternally();
   document.querySelectorAll('a[href]').forEach(function(a){
     const href=a.getAttribute('href')||'';
     if(!href||href.charAt(0)==='#'||/^(mailto:|tel:|javascript:)/i.test(href))return;
