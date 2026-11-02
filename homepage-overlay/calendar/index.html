@@ -8,159 +8,203 @@
 <title>Kalender | Waschi.fun</title>
 <link rel="stylesheet" href="/styles.css">
 <style>
-body.calendar-view{background:#04070b}
-body.calendar-view .site-bg{
-  background:
-    linear-gradient(90deg,rgba(2,4,7,.80) 0%,rgba(2,4,7,.18) 16%,rgba(2,4,7,.15) 84%,rgba(2,4,7,.82) 100%),
-    url('/assets/site-art.webp') center 24%/cover no-repeat;
-}
-.calendar-page{position:relative;z-index:2;width:min(calc(100% - 28px),1380px);margin:auto;padding:18px 0 54px}
+.calendar-page{position:relative;z-index:2;width:min(calc(100% - 28px),1380px);margin:auto;padding:22px 0 58px}
 .calendar-stage{position:relative;padding:0 0 14px}
-.calendar-stage:before,.calendar-stage:after{
-  content:"";position:fixed;top:62px;bottom:0;width:82px;pointer-events:none;z-index:-1;opacity:.78
-}
-.calendar-stage:before{left:0;background:linear-gradient(90deg,rgba(23,72,126,.48),rgba(18,26,35,.08),transparent);border-right:1px solid rgba(214,151,43,.22)}
-.calendar-stage:after{right:0;background:linear-gradient(270deg,rgba(126,37,22,.48),rgba(18,26,35,.08),transparent);border-left:1px solid rgba(214,151,43,.22)}
 
-.calendar-title-wrap{display:flex;justify-content:center;margin:2px 0 10px}
+.calendar-title-wrap{display:flex;justify-content:center;margin:2px 0 13px}
 .calendar-title-badge{
-  position:relative;display:inline-flex;align-items:center;gap:15px;padding:9px 58px 11px;
-  border:2px solid #b77d26;
-  background:linear-gradient(180deg,#17283b 0%,#0b1420 55%,#081019 100%);
-  clip-path:polygon(8% 0,92% 0,96% 18%,100% 50%,96% 82%,92% 100%,8% 100%,4% 82%,0 50%,4% 18%);
-  box-shadow:inset 0 0 0 2px rgba(255,214,109,.09),inset 0 0 24px rgba(33,109,188,.30),0 10px 25px #000b,0 0 22px rgba(35,139,235,.30)
+  position:relative;display:inline-flex;align-items:center;gap:14px;padding:10px 62px 12px;
+  background:
+    linear-gradient(180deg,#1a2d40 0%,#0d1926 53%,#071019 100%);
+  border:2px solid #b97c25;
+  clip-path:polygon(8% 0,92% 0,96% 16%,100% 50%,96% 84%,92% 100%,8% 100%,4% 84%,0 50%,4% 16%);
+  box-shadow:
+    inset 0 0 0 2px rgba(255,214,107,.08),
+    inset 0 0 26px rgba(27,103,172,.25),
+    0 9px 26px rgba(0,0,0,.72),
+    0 0 16px rgba(38,133,220,.22)
 }
-.calendar-title-badge:before,.calendar-title-badge:after{content:"";position:absolute;top:50%;width:115px;height:2px;background:linear-gradient(90deg,transparent,#3aa2ff,#e5a83c);box-shadow:0 0 12px #268de7}
-.calendar-title-badge:before{right:100%}.calendar-title-badge:after{left:100%;transform:scaleX(-1)}
-.cal-main-icon{font-size:31px;color:#ffc34d;filter:drop-shadow(0 0 7px #e7a62d)}
-.calendar-title-badge h1{margin:0;color:#f6cf68;font:800 clamp(32px,4vw,47px) Georgia,serif;letter-spacing:.015em;text-shadow:0 2px 2px #000,0 0 8px rgba(239,171,48,.58)}
+.calendar-title-badge:before,.calendar-title-badge:after{
+  content:"";position:absolute;top:50%;width:118px;height:3px;
+  background:linear-gradient(90deg,transparent,#2b8bd8 38%,#f0bf51 72%,#8f621f 100%);
+  box-shadow:0 0 13px rgba(44,151,238,.62)
+}
+.calendar-title-badge:before{right:100%}
+.calendar-title-badge:after{left:100%;transform:scaleX(-1)}
+.cal-main-icon{font-size:31px;color:#ffc84f;filter:drop-shadow(0 0 7px rgba(238,168,43,.82))}
+.calendar-title-badge h1{margin:0;color:#f6ce67;font:800 clamp(34px,4vw,48px) Georgia,serif;letter-spacing:.018em;text-shadow:0 2px 2px #000,0 0 9px rgba(239,172,50,.55)}
 .calendar-subtitle{display:none}
 
 .calendar-filterbar{
-  display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 14px;margin:0 0 10px;
-  border:1px solid #7c5520;
-  background:linear-gradient(180deg,rgba(19,31,44,.98),rgba(7,12,18,.98));
-  box-shadow:inset 0 0 0 1px rgba(255,213,111,.08),0 7px 22px #0007
+  position:relative;display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  padding:11px 16px;margin:0 0 13px;
+  border:1px solid #8d6425;
+  background:linear-gradient(180deg,rgba(18,28,39,.96),rgba(8,13,19,.97));
+  box-shadow:
+    inset 0 0 0 2px rgba(243,193,73,.055),
+    inset 0 -16px 28px rgba(0,0,0,.14),
+    0 7px 20px rgba(0,0,0,.52)
 }
-.calendar-filterbar strong{color:#f3cd6b;font:800 16px Georgia,serif;margin-right:6px}
+.calendar-filterbar:before,.calendar-filterbar:after{
+  content:"";position:absolute;top:7px;bottom:7px;width:10px;border-top:2px solid #c58a2d;border-bottom:2px solid #c58a2d
+}
+.calendar-filterbar:before{left:-4px;border-left:2px solid #c58a2d}
+.calendar-filterbar:after{right:-4px;border-right:2px solid #c58a2d}
+.calendar-filterbar strong{color:#f1c966;font:800 17px Georgia,serif;margin-right:6px;text-shadow:0 1px #000}
 .cal-filter{
-  display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:7px 18px;
-  border:1px solid #8b6631;border-radius:8px;
-  background:linear-gradient(#293440,#10161d);
-  color:#f2eadf;cursor:pointer;font-weight:800;
-  box-shadow:inset 0 1px rgba(255,255,255,.10),0 3px 8px #0008
+  position:relative;display:inline-flex;align-items:center;gap:8px;min-height:42px;padding:8px 18px;
+  border:1px solid #8f6a35;border-radius:7px;
+  background:linear-gradient(#2d3742,#10161d);
+  color:#f3ebdf;cursor:pointer;font-weight:800;
+  box-shadow:inset 0 1px rgba(255,255,255,.09),inset 0 -9px 16px rgba(0,0,0,.22),0 3px 8px rgba(0,0,0,.55)
 }
-.cal-filter:hover{border-color:#d6a445;filter:brightness(1.08)}
-.cal-filter.active{border-color:#40c9ff;color:#fff;background:linear-gradient(#1c8bc3,#073553);box-shadow:0 0 16px rgba(44,188,255,.58),inset 0 0 12px rgba(120,215,255,.28)}
+.cal-filter:before{content:"";position:absolute;inset:3px;border:1px solid rgba(246,201,96,.09);border-radius:4px;pointer-events:none}
+.cal-filter:hover{border-color:#d7a542;filter:brightness(1.08)}
+.cal-filter.active{
+  border-color:#36c6ff;color:#fff;background:linear-gradient(#208ec4,#083754);
+  box-shadow:0 0 17px rgba(43,188,255,.55),inset 0 0 12px rgba(113,213,255,.28),inset 0 1px rgba(255,255,255,.16)
+}
 
 .auth-message{padding:10px 14px;margin-bottom:10px;border:1px solid #956925;background:rgba(211,154,50,.08);color:#dbcda9}
-.calendar-actions{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+.calendar-actions{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 11px}
 .calendar-actions:has([hidden]){margin:0}
 .calendar-actions [hidden]{display:none!important}
+.calendar-actions .btn{clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%)}
 
-.calendar-layout{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(300px,.92fr);gap:15px;align-items:start}
+.calendar-layout{display:grid;grid-template-columns:minmax(0,2.18fr) minmax(310px,.9fr);gap:16px;align-items:start}
+
 .calendar-panel,.calendar-box,.site-admin-panel{
-  position:relative;border:1px solid #a87425;
-  background:linear-gradient(180deg,rgba(11,18,26,.98),rgba(5,9,14,.98));
-  box-shadow:inset 0 0 0 2px rgba(255,207,96,.055),inset 0 0 36px rgba(35,99,157,.08),0 15px 38px #000a;
+  position:relative;
+  border:2px solid #9d6a20;
+  background:
+    linear-gradient(180deg,rgba(13,20,29,.96),rgba(6,10,15,.97));
+  box-shadow:
+    inset 0 0 0 2px rgba(246,198,77,.055),
+    inset 0 0 38px rgba(33,90,143,.065),
+    0 15px 38px rgba(0,0,0,.68)
 }
-.calendar-panel{overflow:hidden;border-radius:3px}
+.calendar-panel,.calendar-box{clip-path:polygon(10px 0,calc(100% - 10px) 0,100% 10px,100% calc(100% - 10px),calc(100% - 10px) 100%,10px 100%,0 calc(100% - 10px),0 10px)}
 .calendar-panel:before,.calendar-box:before{
-  content:"";position:absolute;inset:4px;border:1px solid rgba(236,178,64,.20);pointer-events:none;z-index:3
+  content:"";position:absolute;inset:5px;border:1px solid rgba(239,178,57,.26);pointer-events:none;z-index:5;
+  clip-path:polygon(7px 0,calc(100% - 7px) 0,100% 7px,100% calc(100% - 7px),calc(100% - 7px) 100%,7px 100%,0 calc(100% - 7px),0 7px)
 }
-.calendar-toolbar{
-  display:grid;grid-template-columns:58px 1fr 58px;align-items:center;gap:9px;
-  min-height:58px;padding:7px 10px;
-  border-bottom:1px solid #8a6324;
-  background:linear-gradient(180deg,#1c2c3d,#0b141e);
+.calendar-panel:after,.calendar-box:after{
+  content:"";position:absolute;left:24px;right:24px;top:4px;height:2px;
+  background:linear-gradient(90deg,transparent,#d6a13d,#fff0a6,#d6a13d,transparent);opacity:.55;pointer-events:none;z-index:6
 }
-.calendar-toolbar h2{margin:0;text-align:center;color:#f5cb62;font:800 clamp(25px,3vw,34px) Georgia,serif;text-transform:capitalize;text-shadow:0 2px #000,0 0 8px rgba(255,196,68,.22)}
-.calendar-toolbar button{
-  width:54px;height:44px;padding:0;border:1px solid #c08626;
-  background:linear-gradient(#25394c,#08131d);color:#f5c85d;font-size:32px;line-height:1;
-  box-shadow:inset 0 0 10px rgba(55,126,184,.38),0 3px 8px #0009;cursor:pointer
-}
-.calendar-toolbar button:hover{border-color:#f0c45a;filter:brightness(1.13)}
+.calendar-panel{overflow:hidden}
 
-.calendar-week{display:grid;grid-template-columns:repeat(7,1fr);background:#0f1a25;border-bottom:1px solid #8d6729}
-.calendar-week span{text-align:center;padding:8px 4px;color:#f2cf70;font:800 16px Georgia,serif;border-right:1px solid #5a472a;text-shadow:0 1px #000}
+.calendar-toolbar{
+  position:relative;display:grid;grid-template-columns:62px 1fr 62px;align-items:center;gap:10px;
+  min-height:63px;padding:8px 11px;
+  border-bottom:1px solid #8d6627;
+  background:
+    linear-gradient(180deg,#1d3043 0%,#101d2a 55%,#0a141d 100%);
+  box-shadow:inset 0 -12px 20px rgba(0,0,0,.18)
+}
+.calendar-toolbar h2{margin:0;text-align:center;color:#f7cc62;font:800 clamp(27px,3vw,35px) Georgia,serif;text-transform:capitalize;text-shadow:0 2px #000,0 0 8px rgba(255,199,69,.25)}
+.calendar-toolbar h2:before,.calendar-toolbar h2:after{content:"✦";font-size:13px;color:#dca438;margin:0 16px;vertical-align:middle;opacity:.9}
+.calendar-toolbar button{
+  position:relative;width:56px;height:46px;padding:0;border:1px solid #c58a2b;
+  background:linear-gradient(#2b4053,#0a151f);color:#f5c95e;font-size:34px;line-height:1;cursor:pointer;
+  clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%);
+  box-shadow:inset 0 0 10px rgba(54,123,184,.40),0 3px 9px rgba(0,0,0,.62)
+}
+.calendar-toolbar button:hover{filter:brightness(1.13)}
+
+.calendar-week{display:grid;grid-template-columns:repeat(7,1fr);background:linear-gradient(180deg,#111d29,#0b141d);border-bottom:1px solid #986e2b}
+.calendar-week span{text-align:center;padding:9px 4px;color:#f2cf70;font:800 17px Georgia,serif;border-right:1px solid #59472d;text-shadow:0 1px #000}
 .calendar-week span:last-child{border-right:0}
+
 .calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);background:#0a0f15}
 .cal-day{
-  position:relative;min-height:92px;padding:6px 7px;
-  border-right:1px solid #444a50;border-bottom:1px solid #444a50;
-  background:linear-gradient(145deg,rgba(26,30,37,.96),rgba(16,20,25,.98));overflow:hidden
+  position:relative;min-height:98px;padding:7px 8px;
+  border-right:1px solid #454c53;border-bottom:1px solid #454c53;
+  background:
+    radial-gradient(circle at 18% 10%,rgba(255,255,255,.025),transparent 35%),
+    linear-gradient(145deg,rgba(25,30,37,.96),rgba(15,19,24,.98));
+  overflow:hidden
 }
+.cal-day:before{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(135deg,rgba(232,177,61,.035),transparent 18%,transparent 82%,rgba(37,104,164,.03))}
 .cal-day:nth-child(7n){border-right:0}
-.cal-day.muted{opacity:.45;background:#0c1015}
-.cal-num{display:block;color:#f4efe6;font:800 17px Georgia,serif;margin-bottom:4px;text-shadow:0 1px #000}
-.cal-day.muted .cal-num{color:#a4a4a4}
+.cal-day.muted{opacity:.45;background:#0b0f14}
+.cal-num{position:relative;z-index:1;display:block;color:#f5eee3;font:800 17px Georgia,serif;margin-bottom:5px;text-shadow:0 1px #000}
+.cal-day.muted .cal-num{color:#aaa}
 
 .cal-event{
-  position:relative;display:block;width:100%;min-height:42px;border:1px solid #6d5326;border-radius:7px;
-  margin:3px 0;padding:5px 6px 5px 8px;text-align:left;color:#fff;font-size:10px;line-height:1.12;
-  cursor:pointer;box-shadow:inset 0 0 12px #0005,0 2px 5px #0008;overflow:hidden
+  position:relative;display:block;width:100%;min-height:44px;margin:4px 0;padding:6px 7px 6px 9px;
+  border:1px solid #7a5a28;border-radius:7px;text-align:left;color:#fff;font-size:10px;line-height:1.12;cursor:pointer;
+  box-shadow:inset 0 0 13px rgba(0,0,0,.40),0 2px 5px rgba(0,0,0,.60);
+  overflow:hidden;transition:transform .13s ease,filter .13s ease
 }
-.cal-event:hover{filter:brightness(1.14);transform:translateY(-1px)}
-.cal-event .event-mini{display:grid;grid-template-columns:1fr auto;gap:4px;align-items:start}
+.cal-event:before{content:"";position:absolute;inset:3px;border:1px solid rgba(255,255,255,.08);border-radius:4px;pointer-events:none}
+.cal-event:after{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:rgba(255,255,255,.30)}
+.cal-event:hover{filter:brightness(1.15);transform:translateY(-1px)}
+.cal-event .event-mini{position:relative;z-index:1;display:grid;grid-template-columns:1fr auto;gap:5px;align-items:start}
 .cal-event .event-mini-copy{min-width:0}
-.cal-event .event-mini-time{display:block;color:#fff6cf;font-size:9px;font-weight:800;margin-bottom:2px}
+.cal-event .event-mini-time{display:block;color:#fff5ce;font-size:9px;font-weight:900;margin-bottom:2px}
 .cal-event .event-mini-title{display:block;font-weight:900;overflow:hidden;text-overflow:ellipsis}
-.cal-event .event-mini-icon{font-size:17px;line-height:1;filter:drop-shadow(0 1px 2px #000)}
-.cal-event.cat-holiday{border-color:#ee4d58;background:linear-gradient(135deg,#8b2431,#3a1018)}
-.cal-event.cat-wow{border-color:#e0b321;background:linear-gradient(135deg,#80620d,#302607)}
-.cal-event.cat-waschi{border-color:#ac61e6;background:linear-gradient(135deg,#653195,#251435)}
-.cal-event.cat-patch-season{border-color:#4cb8ef;background:linear-gradient(135deg,#1c607f,#0c2633)}
+.cal-event .event-mini-icon{font-size:18px;line-height:1;filter:drop-shadow(0 1px 2px #000)}
+.cal-event.cat-holiday{border-color:#ef4d59;background:linear-gradient(135deg,#942936,#47111a)}
+.cal-event.cat-wow{border-color:#e3b31d;background:linear-gradient(135deg,#87670d,#322707)}
+.cal-event.cat-waschi{border-color:#ae63e7;background:linear-gradient(135deg,#6b349a,#281438)}
+.cal-event.cat-patch-season{border-color:#4bb9f0;background:linear-gradient(135deg,#1c637f,#0b2937)}
 
-.calendar-side{display:flex;flex-direction:column;gap:13px}
-.calendar-box{overflow:hidden;border-radius:3px}
+.calendar-side{display:flex;flex-direction:column;gap:14px}
+.calendar-box{overflow:hidden}
 .calendar-box-head{
-  display:flex;align-items:center;gap:11px;padding:11px 15px;
-  border-bottom:1px solid #906621;background:linear-gradient(#192a3a,#0b151f);
-  color:#f2c95f;font:800 22px Georgia,serif;text-shadow:0 1px #000
+  position:relative;display:flex;align-items:center;gap:11px;padding:12px 16px;
+  border-bottom:1px solid #956a23;
+  background:linear-gradient(180deg,#1b2d3e,#0c1721);
+  color:#f2c961;font:800 22px Georgia,serif;text-shadow:0 1px #000
 }
-.calendar-box-head .box-icon{font-size:24px;color:#ffc84d}
+.calendar-box-head:after{content:"";position:absolute;left:16px;right:16px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#f0bb4d,transparent)}
+.calendar-box-head .box-icon{font-size:24px;color:#ffc84d;filter:drop-shadow(0 0 5px rgba(255,188,58,.35))}
 
-.upcoming{padding:7px 11px 11px}
+.upcoming{padding:9px 12px 12px}
 .upcoming button{
-  width:100%;display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;text-align:left;
-  min-height:58px;padding:7px 9px;margin:6px 0;border:1px solid #48515b;
-  background:linear-gradient(180deg,#1b222a,#0c1116);color:#ece5db;border-radius:7px;cursor:pointer
+  position:relative;width:100%;display:grid;grid-template-columns:56px 1fr auto;gap:10px;align-items:center;text-align:left;
+  min-height:61px;padding:8px 10px;margin:7px 0;border:1px solid #505963;border-radius:7px;
+  background:linear-gradient(180deg,#1c242c,#0d1218);color:#ece5db;cursor:pointer;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025),0 3px 7px rgba(0,0,0,.40)
 }
-.upcoming button:hover{border-color:#c48b31;background:#17222c}
-.upcoming .upcoming-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;font-size:23px;border:1px solid currentColor;background:rgba(255,255,255,.025);box-shadow:inset 0 0 12px #0006}
+.upcoming button:before{content:"";position:absolute;left:0;top:8px;bottom:8px;width:3px;background:#bb842c;box-shadow:0 0 6px rgba(230,173,68,.42)}
+.upcoming button:hover{border-color:#ca9132;background:#19252f}
+.upcoming .upcoming-icon{width:46px;height:46px;display:grid;place-items:center;border-radius:11px;font-size:23px;border:1px solid #a67a35;background:radial-gradient(circle at 50% 40%,rgba(255,209,94,.09),rgba(7,13,19,.85));box-shadow:inset 0 0 14px rgba(0,0,0,.55)}
 .upcoming .upcoming-copy{min-width:0}
-.upcoming .upcoming-date{display:block;color:#f2c65e;font:900 12px Georgia,serif;margin-bottom:2px}
+.upcoming .upcoming-date{display:block;color:#f2c65e;font:900 12px Georgia,serif;margin-bottom:3px}
 .upcoming .upcoming-title{display:block;color:#f5efe4;font-size:13px;font-weight:800;line-height:1.2}
-.upcoming .upcoming-arrow{color:#c6a45b;font-size:20px}
+.upcoming .upcoming-arrow{color:#d4ad5b;font-size:21px}
 .upcoming-empty{padding:10px;color:#afa797}
 
 .event-detail{
-  min-height:205px;padding:18px 18px 19px;color:#d9cfbf;line-height:1.5;
+  min-height:210px;padding:19px;color:#d9cfbf;line-height:1.5;
   background:
-    radial-gradient(circle at 86% 16%,rgba(53,113,190,.28),transparent 34%),
-    linear-gradient(150deg,rgba(8,14,21,.96),rgba(10,13,20,.96));
+    radial-gradient(circle at 85% 15%,rgba(51,110,184,.24),transparent 32%),
+    linear-gradient(150deg,rgba(8,14,21,.97),rgba(10,13,20,.97));
 }
-.event-detail .detail-kicker{display:flex;align-items:center;gap:10px;color:#f1c75e;margin-bottom:9px}
-.event-detail .detail-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;border:1px solid #b9842e;background:#142131;font-size:27px;box-shadow:0 0 16px rgba(63,146,221,.22)}
-.event-detail h3{margin:0;color:#f3c962;font:800 21px Georgia,serif}
+.event-detail .detail-kicker{display:flex;align-items:center;gap:11px;color:#f1c75e;margin-bottom:10px}
+.event-detail .detail-icon{width:50px;height:50px;display:grid;place-items:center;border-radius:50%;border:2px solid #b8832d;background:radial-gradient(circle,#203951,#0d1823);font-size:27px;box-shadow:inset 0 0 11px rgba(255,200,76,.08),0 0 16px rgba(63,146,221,.22)}
+.event-detail h3{margin:0;color:#f4ca63;font:800 22px Georgia,serif;text-shadow:0 1px #000}
 .event-detail .detail-date{color:#fff1c9;font-weight:800}
 .event-detail p{margin:8px 0}
 .event-detail .detail-description{font-size:14px;color:#ddd2c1}
 
 .calendar-legend{
-  display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;
-  margin-top:13px;padding:10px 16px;border:1px solid #906521;
-  background:linear-gradient(180deg,#111c27,#080e14);box-shadow:inset 0 0 0 1px rgba(241,192,78,.07),0 8px 22px #0007
+  position:relative;display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;
+  margin-top:14px;padding:11px 17px;border:2px solid #906321;
+  background:linear-gradient(180deg,#121f2b,#080f15);
+  box-shadow:inset 0 0 0 2px rgba(243,193,73,.05),0 8px 22px rgba(0,0,0,.52);
+  clip-path:polygon(9px 0,calc(100% - 9px) 0,100% 9px,100% calc(100% - 9px),calc(100% - 9px) 100%,9px 100%,0 calc(100% - 9px),0 9px)
 }
+.calendar-legend:before{content:"";position:absolute;left:22px;right:22px;top:3px;height:1px;background:linear-gradient(90deg,transparent,#e9b64b,transparent);opacity:.7}
 .calendar-legend strong{color:#f2c85f;font:800 18px Georgia,serif}
 .legend-item{display:flex;align-items:center;gap:8px;color:#e6dccb;font-size:13px}
-.legend-dot{width:31px;height:31px;border-radius:7px;display:grid;place-items:center;font-weight:900;border:1px solid;font-size:17px}
+.legend-dot{width:32px;height:32px;border-radius:7px;display:grid;place-items:center;font-weight:900;border:1px solid;font-size:17px;box-shadow:inset 0 0 8px rgba(0,0,0,.45)}
 .legend-holiday{background:#6c1e29;border-color:#ed4d57}.legend-wow{background:#66500d;border-color:#e0b321}.legend-waschi{background:#502776;border-color:#aa62df}.legend-patch{background:#15485f;border-color:#50b3e3}
 
 .site-admin-panel{padding:18px;margin-top:0;border-radius:4px}
 .site-admin-panel h3{color:#f0c45a;font-family:Georgia,serif}
-.auth-message{padding:12px 15px;margin-bottom:14px;border:1px solid #956925;background:rgba(211,154,50,.08);color:#dbcda9}
 .site-login-btn{border:1px solid #725523;background:#0d141c;color:#eacb77;padding:7px 10px;border-radius:4px;cursor:pointer}
 .site-admin-panel label{display:block;color:#d6cbb9;margin:10px 0;font-size:13px}
 .site-admin-panel input,.site-admin-panel textarea,.site-admin-panel select{width:100%;box-sizing:border-box;margin-top:5px;padding:10px;border:1px solid #4b5660;border-radius:4px;background:#0a1017;color:#eee}
@@ -178,21 +222,22 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
   .permissions-box{grid-column:1/-1}
 }
 @media(max-width:760px){
-  .calendar-page{width:min(calc(100% - 14px),1380px);padding-top:12px}
+  .calendar-page{width:min(calc(100% - 14px),1380px);padding-top:14px}
   .calendar-title-badge{padding:8px 28px}
   .calendar-title-badge:before,.calendar-title-badge:after{display:none}
   .calendar-filterbar{gap:6px}.cal-filter{padding:7px 10px;font-size:11px}
   .calendar-side{display:flex}
-  .cal-day{min-height:76px;padding:4px}.cal-num{font-size:12px}
-  .cal-event{font-size:8px;padding:4px;min-height:34px}
+  .cal-day{min-height:78px;padding:4px}.cal-num{font-size:12px}
+  .cal-event{font-size:8px;padding:4px;min-height:35px}
   .cal-event .event-mini-icon{display:none}
   .calendar-week span{font-size:11px}
+  .calendar-toolbar h2:before,.calendar-toolbar h2:after{display:none}
   .calendar-legend{gap:9px;justify-content:flex-start}
   .form-row{grid-template-columns:1fr}
 }
 </style>
 </head>
-<body class="calendar-view">
+<body>
 <div class="site-bg"></div>
 <header class="header"><div class="container navwrap"><a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span><strong>WASCHI</strong></a><button class="menu" aria-label="Menü">☰</button><nav class="nav"><a href="/"><span class="ico">⌂</span><span>Startseite</span></a><a href="/team/"><span class="ico">♟</span><span>Waschi Gilde</span></a><a href="/mythic/"><span class="ico">⚔</span><span>M+ Team</span></a><a href="/addons/"><span class="ico">⚙</span><span>Erweiterungen</span></a><a href="/bis/"><span class="ico">♣</span><span>BIS-Tools</span></a><a href="/streams/"><span class="ico">▣</span><span>Streams</span></a><a href="/community/"><span class="ico">◉</span><span>Community</span></a><a class="active" href="/calendar/"><span class="ico">▦</span><span>Kalender</span></a></nav><div class="rightnav"></div></div></header>
 
