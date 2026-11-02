@@ -7,8 +7,6 @@ import re
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from flask import Flask, jsonify, make_response, redirect, request
 from vercel.blob import sync as blob
@@ -310,10 +308,6 @@ def discord_bot_guild(token):
 
 @app.get("/api/discord-online")
 def discord_online():
-    now=datetime.now(ZoneInfo("Europe/Berlin"))
-    active=11 <= now.hour < 24
-    pause_text="Auch ein Waschi muss mal die Pfoten hochlegen 🐾 – ab 11:00 Uhr sind wir wieder für euch da."
-
     token=os.environ.get("DISCORD_BOT_TOKEN","").strip()
     if not token:
         return jsonify({"ok":False,"online":0,"members":[],"error":"Waschi-Bot ist nicht konfiguriert"}),200
@@ -323,29 +317,10 @@ def discord_online():
         guild=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}?with_counts=true",token)
         online=int(guild.get("approximate_presence_count") or 0)
         total=int(guild.get("approximate_member_count") or guild.get("member_count") or 0)
-
-        if not active:
-            return jsonify({
-                "ok":True,
-                "source":"waschi-bot",
-                "server":guild.get("name") or guild_ref.get("name") or "Waschi",
-                "online":online,
-                "total":total,
-                "members":[],
-                "memberListAvailable":False,
-                "voiceAvailable":False,
-                "voiceMembers":0,
-                "voiceChannels":[],
-                "botScheduleActive":False,
-                "botSchedule":"11:00-00:00 Europe/Berlin",
-                "pauseText":pause_text,
-                "statusText":"Waschi-Bot in geplanter Pause"
-            })
-
-        voice=load_voice_snapshot()
+        voice=load_voice_snapshot(max_age=120)
         return jsonify({
             "ok":True,
-            "source":"waschi-bot",
+            "source":"altare-gateway",
             "server":guild.get("name") or guild_ref.get("name") or "Waschi",
             "online":online,
             "total":total,
@@ -356,10 +331,8 @@ def discord_online():
             "voiceMembers":int(voice.get("voiceMembers") or 0),
             "voiceChannels":voice.get("channels") or [],
             "voiceUpdatedAt":voice.get("updatedAt"),
-            "botScheduleActive":True,
-            "botSchedule":"11:00-00:00 Europe/Berlin",
-            "pauseText":pause_text,
-            "statusText":"Online-Status und Voice-Kanäle direkt über den Waschi-Bot"
+            "botAlwaysOn":True,
+            "statusText":"Voice-Kanäle live über den Waschi-Bot auf Altare"
         })
     except Exception as exc:
         return jsonify({
