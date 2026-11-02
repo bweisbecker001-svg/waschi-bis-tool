@@ -84,7 +84,7 @@ function renderNews(){
  if(S.auth?.canNews&&(new URLSearchParams(location.search).get('admin')==='1'||true)){const main=document.querySelector('.news-page');if(main&&!main.querySelector('[data-news-form]')){main.insertBefore(newsForm(),main.querySelector('.news-back'))}}
 }
 function catLabel(c){return({holiday:'Feiertag',wow:'WoW',waschi:'Waschi','patch-season':'Patch & Saison'})[c]||'Waschi'}
-function catIcon(c){return({holiday:'▣',wow:'W',waschi:'🐾','patch-season':'⚒'})[c]||'•'})[c]||'•'}
+function catIcon(c){return ({holiday:'▣',wow:'W',waschi:'🐾','patch-season':'⚒'})[c]||'•'}
 function eventCard(e){
  const icon=catIcon(e.category),time=e.time?e.time:'';
  return '<button class="cal-event cat-'+esc(e.category||'waschi')+'" data-event-id="'+esc(e.id)+'"><span class="event-mini"><span class="event-mini-copy">'+(time?'<span class="event-mini-time">'+esc(time)+'</span>':'')+'<span class="event-mini-title">'+esc(e.title)+'</span></span><span class="event-mini-icon">'+esc(icon)+'</span></span></button>'
