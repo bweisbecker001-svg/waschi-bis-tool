@@ -1,95 +1,237 @@
-<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#050708"><meta name="description" content="Waschi.fun Gilden- und WoW-Kalender"><title>Kalender | Waschi.fun</title><link rel="stylesheet" href="/styles.css"><style>
-.calendar-page{position:relative;z-index:2;padding:28px 0 64px}
-.calendar-shell{position:relative;padding:22px;border:1px solid #8c6427;background:linear-gradient(180deg,rgba(8,12,18,.94),rgba(5,8,12,.97));box-shadow:0 28px 80px #000b,inset 0 0 70px rgba(32,92,148,.08);border-radius:10px}
-.calendar-shell:before,.calendar-shell:after{content:"";position:absolute;pointer-events:none}
-.calendar-shell:before{inset:7px;border:1px solid rgba(240,196,90,.28);border-radius:7px}
-.calendar-shell:after{left:11%;right:11%;top:-1px;height:2px;background:linear-gradient(90deg,transparent,#2c86d7,#f0c45a,#2c86d7,transparent);box-shadow:0 0 18px #2c86d788}
-.calendar-title-wrap{text-align:center;margin-bottom:16px}
-.calendar-title-badge{display:inline-flex;align-items:center;gap:14px;padding:10px 42px;border:1px solid #9c7027;background:linear-gradient(180deg,#162333,#0a1018);clip-path:polygon(5% 0,95% 0,100% 50%,95% 100%,5% 100%,0 50%);box-shadow:inset 0 0 22px rgba(46,123,203,.13),0 8px 22px #0008}
-.calendar-title-badge .cal-main-icon{font-size:31px;color:#f0b94c;filter:drop-shadow(0 0 8px #d69b3188)}
-.calendar-title-badge h1{margin:0;color:#f7d576;font:800 clamp(32px,4vw,48px) Georgia,serif;text-shadow:0 2px 2px #000,0 0 8px #d39a3266}
-.calendar-subtitle{margin:8px 0 0;color:#bfb4a3;font-size:13px}
-.calendar-filterbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 13px;margin:0 0 14px;border:1px solid #76521e;background:linear-gradient(180deg,rgba(18,25,34,.96),rgba(8,12,17,.96));box-shadow:inset 0 1px rgba(255,255,255,.04)}
-.calendar-filterbar strong{color:#e9ca78;font:700 15px Georgia,serif;margin-right:8px}
-.cal-filter{display:inline-flex;align-items:center;gap:7px;border:1px solid #625035;background:linear-gradient(#202832,#0d1218);color:#eee2cc;padding:8px 14px;border-radius:8px;cursor:pointer;font-weight:700;box-shadow:inset 0 1px rgba(255,255,255,.08)}
-.cal-filter:hover{border-color:#b98632}
-.cal-filter.active{border-color:#2cbcff;color:#fff;background:linear-gradient(#176f9f,#082d47);box-shadow:0 0 14px #2cbcff66,inset 0 0 12px #78d7ff33}
-.calendar-actions{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 14px}
-.calendar-layout{display:grid;grid-template-columns:minmax(0,2.25fr) minmax(300px,.9fr);gap:16px}
-.calendar-panel,.calendar-box,.site-admin-panel{border:1px solid #8b6428;background:linear-gradient(180deg,rgba(12,17,24,.96),rgba(6,9,13,.97));box-shadow:0 14px 38px #0009,inset 0 0 28px rgba(19,69,111,.08);border-radius:7px}
-.calendar-panel{overflow:hidden}
-.calendar-toolbar{display:grid;grid-template-columns:56px 1fr 56px;align-items:center;gap:10px;padding:10px;border-bottom:1px solid #775720;background:linear-gradient(180deg,#182432,#0b1119)}
-.calendar-toolbar h2{margin:0;text-align:center;color:#f1c85c;font:800 28px Georgia,serif;text-transform:capitalize;text-shadow:0 2px #000}
-.calendar-toolbar button{width:50px;height:42px;padding:0;border:1px solid #b47c22;background:linear-gradient(#263444,#0a1118);color:#f4c85b;font-size:28px;box-shadow:inset 0 0 10px #2c6da544}
-.calendar-week{display:grid;grid-template-columns:repeat(7,1fr);background:#111923;border-bottom:1px solid #8a6428}
-.calendar-week span{text-align:center;padding:9px 4px;color:#f0cf76;font:700 15px Georgia,serif;border-right:1px solid #4d452f}
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#050708">
+<meta name="description" content="Waschi.fun Gilden- und WoW-Kalender">
+<title>Kalender | Waschi.fun</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+body.calendar-view{background:#04070b}
+body.calendar-view .site-bg{
+  background:
+    linear-gradient(90deg,rgba(2,4,7,.80) 0%,rgba(2,4,7,.18) 16%,rgba(2,4,7,.15) 84%,rgba(2,4,7,.82) 100%),
+    url('/assets/site-art.webp') center 24%/cover no-repeat;
+}
+.calendar-page{position:relative;z-index:2;width:min(calc(100% - 28px),1380px);margin:auto;padding:18px 0 54px}
+.calendar-stage{position:relative;padding:0 0 14px}
+.calendar-stage:before,.calendar-stage:after{
+  content:"";position:fixed;top:62px;bottom:0;width:82px;pointer-events:none;z-index:-1;opacity:.78
+}
+.calendar-stage:before{left:0;background:linear-gradient(90deg,rgba(23,72,126,.48),rgba(18,26,35,.08),transparent);border-right:1px solid rgba(214,151,43,.22)}
+.calendar-stage:after{right:0;background:linear-gradient(270deg,rgba(126,37,22,.48),rgba(18,26,35,.08),transparent);border-left:1px solid rgba(214,151,43,.22)}
+
+.calendar-title-wrap{display:flex;justify-content:center;margin:2px 0 10px}
+.calendar-title-badge{
+  position:relative;display:inline-flex;align-items:center;gap:15px;padding:9px 58px 11px;
+  border:2px solid #b77d26;
+  background:linear-gradient(180deg,#17283b 0%,#0b1420 55%,#081019 100%);
+  clip-path:polygon(8% 0,92% 0,96% 18%,100% 50%,96% 82%,92% 100%,8% 100%,4% 82%,0 50%,4% 18%);
+  box-shadow:inset 0 0 0 2px rgba(255,214,109,.09),inset 0 0 24px rgba(33,109,188,.30),0 10px 25px #000b,0 0 22px rgba(35,139,235,.30)
+}
+.calendar-title-badge:before,.calendar-title-badge:after{content:"";position:absolute;top:50%;width:115px;height:2px;background:linear-gradient(90deg,transparent,#3aa2ff,#e5a83c);box-shadow:0 0 12px #268de7}
+.calendar-title-badge:before{right:100%}.calendar-title-badge:after{left:100%;transform:scaleX(-1)}
+.cal-main-icon{font-size:31px;color:#ffc34d;filter:drop-shadow(0 0 7px #e7a62d)}
+.calendar-title-badge h1{margin:0;color:#f6cf68;font:800 clamp(32px,4vw,47px) Georgia,serif;letter-spacing:.015em;text-shadow:0 2px 2px #000,0 0 8px rgba(239,171,48,.58)}
+.calendar-subtitle{display:none}
+
+.calendar-filterbar{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 14px;margin:0 0 10px;
+  border:1px solid #7c5520;
+  background:linear-gradient(180deg,rgba(19,31,44,.98),rgba(7,12,18,.98));
+  box-shadow:inset 0 0 0 1px rgba(255,213,111,.08),0 7px 22px #0007
+}
+.calendar-filterbar strong{color:#f3cd6b;font:800 16px Georgia,serif;margin-right:6px}
+.cal-filter{
+  display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:7px 18px;
+  border:1px solid #8b6631;border-radius:8px;
+  background:linear-gradient(#293440,#10161d);
+  color:#f2eadf;cursor:pointer;font-weight:800;
+  box-shadow:inset 0 1px rgba(255,255,255,.10),0 3px 8px #0008
+}
+.cal-filter:hover{border-color:#d6a445;filter:brightness(1.08)}
+.cal-filter.active{border-color:#40c9ff;color:#fff;background:linear-gradient(#1c8bc3,#073553);box-shadow:0 0 16px rgba(44,188,255,.58),inset 0 0 12px rgba(120,215,255,.28)}
+
+.auth-message{padding:10px 14px;margin-bottom:10px;border:1px solid #956925;background:rgba(211,154,50,.08);color:#dbcda9}
+.calendar-actions{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px}
+.calendar-actions:has([hidden]){margin:0}
+.calendar-actions [hidden]{display:none!important}
+
+.calendar-layout{display:grid;grid-template-columns:minmax(0,2.15fr) minmax(300px,.92fr);gap:15px;align-items:start}
+.calendar-panel,.calendar-box,.site-admin-panel{
+  position:relative;border:1px solid #a87425;
+  background:linear-gradient(180deg,rgba(11,18,26,.98),rgba(5,9,14,.98));
+  box-shadow:inset 0 0 0 2px rgba(255,207,96,.055),inset 0 0 36px rgba(35,99,157,.08),0 15px 38px #000a;
+}
+.calendar-panel{overflow:hidden;border-radius:3px}
+.calendar-panel:before,.calendar-box:before{
+  content:"";position:absolute;inset:4px;border:1px solid rgba(236,178,64,.20);pointer-events:none;z-index:3
+}
+.calendar-toolbar{
+  display:grid;grid-template-columns:58px 1fr 58px;align-items:center;gap:9px;
+  min-height:58px;padding:7px 10px;
+  border-bottom:1px solid #8a6324;
+  background:linear-gradient(180deg,#1c2c3d,#0b141e);
+}
+.calendar-toolbar h2{margin:0;text-align:center;color:#f5cb62;font:800 clamp(25px,3vw,34px) Georgia,serif;text-transform:capitalize;text-shadow:0 2px #000,0 0 8px rgba(255,196,68,.22)}
+.calendar-toolbar button{
+  width:54px;height:44px;padding:0;border:1px solid #c08626;
+  background:linear-gradient(#25394c,#08131d);color:#f5c85d;font-size:32px;line-height:1;
+  box-shadow:inset 0 0 10px rgba(55,126,184,.38),0 3px 8px #0009;cursor:pointer
+}
+.calendar-toolbar button:hover{border-color:#f0c45a;filter:brightness(1.13)}
+
+.calendar-week{display:grid;grid-template-columns:repeat(7,1fr);background:#0f1a25;border-bottom:1px solid #8d6729}
+.calendar-week span{text-align:center;padding:8px 4px;color:#f2cf70;font:800 16px Georgia,serif;border-right:1px solid #5a472a;text-shadow:0 1px #000}
 .calendar-week span:last-child{border-right:0}
-.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr)}
-.cal-day{position:relative;min-height:106px;padding:7px;border-right:1px solid #3a414a;border-bottom:1px solid #3a414a;background:linear-gradient(145deg,rgba(25,29,36,.92),rgba(17,20,26,.95));overflow:hidden}
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);background:#0a0f15}
+.cal-day{
+  position:relative;min-height:92px;padding:6px 7px;
+  border-right:1px solid #444a50;border-bottom:1px solid #444a50;
+  background:linear-gradient(145deg,rgba(26,30,37,.96),rgba(16,20,25,.98));overflow:hidden
+}
 .cal-day:nth-child(7n){border-right:0}
-.cal-day.muted{opacity:.32;background:#0c0f13}
-.cal-num{display:block;color:#f2eee6;font:700 15px Georgia,serif;margin-bottom:6px}
-.cal-event{display:block;width:100%;border:1px solid #6d5326;border-radius:6px;margin:4px 0;padding:6px 7px;text-align:left;color:#fff;font-size:10px;line-height:1.15;cursor:pointer;box-shadow:inset 0 0 12px #0005,0 2px 4px #0008}
-.cal-event strong{font-weight:800}
-.cal-event.cat-holiday{border-color:#e34b55;background:linear-gradient(135deg,#6f1b27,#2a1117)}
-.cal-event.cat-wow{border-color:#d7aa27;background:linear-gradient(135deg,#6a520c,#231d08)}
-.cal-event.cat-waschi{border-color:#a661df;background:linear-gradient(135deg,#51257a,#1d1229)}
-.cal-event.cat-patch-season{border-color:#4da9de;background:linear-gradient(135deg,#154c69,#0d1c25)}
-.calendar-side{display:flex;flex-direction:column;gap:14px}
-.calendar-box{padding:0;overflow:hidden}
-.calendar-box-head{display:flex;align-items:center;gap:10px;padding:11px 15px;border-bottom:1px solid #805b20;background:linear-gradient(#172331,#0d141d);color:#f0c85f;font:800 20px Georgia,serif}
-.calendar-box-head .box-icon{font-size:22px}
-.upcoming{padding:8px 12px 12px}
-.upcoming button{width:100%;display:grid;grid-template-columns:48px 1fr;gap:10px;text-align:left;padding:9px 10px;margin:7px 0;border:1px solid #3f4852;background:linear-gradient(180deg,#171d24,#0d1117);color:#e8e1d8;border-radius:6px;cursor:pointer}
-.upcoming button:hover{border-color:#b47d29;background:#171f29}
-.upcoming span{display:grid;place-items:center;color:#f2c65e;font:800 11px Georgia,serif;border-right:1px solid #56452c;padding-right:8px}
-.upcoming strong{display:flex;align-items:center;color:#f2eee6;font-size:12px}
-.event-detail{min-height:180px;padding:15px 17px;color:#d2c8b9;line-height:1.55;background:radial-gradient(circle at 85% 15%,rgba(64,80,148,.22),transparent 38%)}
-.event-detail h3{margin:0 0 8px;color:#f3c962;font:800 21px Georgia,serif}
+.cal-day.muted{opacity:.45;background:#0c1015}
+.cal-num{display:block;color:#f4efe6;font:800 17px Georgia,serif;margin-bottom:4px;text-shadow:0 1px #000}
+.cal-day.muted .cal-num{color:#a4a4a4}
+
+.cal-event{
+  position:relative;display:block;width:100%;min-height:42px;border:1px solid #6d5326;border-radius:7px;
+  margin:3px 0;padding:5px 6px 5px 8px;text-align:left;color:#fff;font-size:10px;line-height:1.12;
+  cursor:pointer;box-shadow:inset 0 0 12px #0005,0 2px 5px #0008;overflow:hidden
+}
+.cal-event:hover{filter:brightness(1.14);transform:translateY(-1px)}
+.cal-event .event-mini{display:grid;grid-template-columns:1fr auto;gap:4px;align-items:start}
+.cal-event .event-mini-copy{min-width:0}
+.cal-event .event-mini-time{display:block;color:#fff6cf;font-size:9px;font-weight:800;margin-bottom:2px}
+.cal-event .event-mini-title{display:block;font-weight:900;overflow:hidden;text-overflow:ellipsis}
+.cal-event .event-mini-icon{font-size:17px;line-height:1;filter:drop-shadow(0 1px 2px #000)}
+.cal-event.cat-holiday{border-color:#ee4d58;background:linear-gradient(135deg,#8b2431,#3a1018)}
+.cal-event.cat-wow{border-color:#e0b321;background:linear-gradient(135deg,#80620d,#302607)}
+.cal-event.cat-waschi{border-color:#ac61e6;background:linear-gradient(135deg,#653195,#251435)}
+.cal-event.cat-patch-season{border-color:#4cb8ef;background:linear-gradient(135deg,#1c607f,#0c2633)}
+
+.calendar-side{display:flex;flex-direction:column;gap:13px}
+.calendar-box{overflow:hidden;border-radius:3px}
+.calendar-box-head{
+  display:flex;align-items:center;gap:11px;padding:11px 15px;
+  border-bottom:1px solid #906621;background:linear-gradient(#192a3a,#0b151f);
+  color:#f2c95f;font:800 22px Georgia,serif;text-shadow:0 1px #000
+}
+.calendar-box-head .box-icon{font-size:24px;color:#ffc84d}
+
+.upcoming{padding:7px 11px 11px}
+.upcoming button{
+  width:100%;display:grid;grid-template-columns:54px 1fr auto;gap:10px;align-items:center;text-align:left;
+  min-height:58px;padding:7px 9px;margin:6px 0;border:1px solid #48515b;
+  background:linear-gradient(180deg,#1b222a,#0c1116);color:#ece5db;border-radius:7px;cursor:pointer
+}
+.upcoming button:hover{border-color:#c48b31;background:#17222c}
+.upcoming .upcoming-icon{width:44px;height:44px;display:grid;place-items:center;border-radius:12px;font-size:23px;border:1px solid currentColor;background:rgba(255,255,255,.025);box-shadow:inset 0 0 12px #0006}
+.upcoming .upcoming-copy{min-width:0}
+.upcoming .upcoming-date{display:block;color:#f2c65e;font:900 12px Georgia,serif;margin-bottom:2px}
+.upcoming .upcoming-title{display:block;color:#f5efe4;font-size:13px;font-weight:800;line-height:1.2}
+.upcoming .upcoming-arrow{color:#c6a45b;font-size:20px}
+.upcoming-empty{padding:10px;color:#afa797}
+
+.event-detail{
+  min-height:205px;padding:18px 18px 19px;color:#d9cfbf;line-height:1.5;
+  background:
+    radial-gradient(circle at 86% 16%,rgba(53,113,190,.28),transparent 34%),
+    linear-gradient(150deg,rgba(8,14,21,.96),rgba(10,13,20,.96));
+}
+.event-detail .detail-kicker{display:flex;align-items:center;gap:10px;color:#f1c75e;margin-bottom:9px}
+.event-detail .detail-icon{width:48px;height:48px;display:grid;place-items:center;border-radius:50%;border:1px solid #b9842e;background:#142131;font-size:27px;box-shadow:0 0 16px rgba(63,146,221,.22)}
+.event-detail h3{margin:0;color:#f3c962;font:800 21px Georgia,serif}
+.event-detail .detail-date{color:#fff1c9;font-weight:800}
 .event-detail p{margin:8px 0}
-.calendar-legend{display:flex;align-items:center;justify-content:center;gap:24px;flex-wrap:wrap;margin-top:16px;padding:11px 16px;border:1px solid #805b20;background:linear-gradient(180deg,#111923,#090e14);border-radius:6px}
-.calendar-legend strong{color:#f0c85f;font-family:Georgia,serif}
-.legend-item{display:flex;align-items:center;gap:7px;color:#ddd3c2;font-size:12px}
-.legend-dot{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;font-weight:900;border:1px solid}
-.legend-holiday{background:#5b1b27;border-color:#e34b55}.legend-wow{background:#5b470d;border-color:#d7aa27}.legend-waschi{background:#482269;border-color:#a661df}.legend-patch{background:#123f57;border-color:#4da9de}
+.event-detail .detail-description{font-size:14px;color:#ddd2c1}
+
+.calendar-legend{
+  display:flex;align-items:center;justify-content:center;gap:22px;flex-wrap:wrap;
+  margin-top:13px;padding:10px 16px;border:1px solid #906521;
+  background:linear-gradient(180deg,#111c27,#080e14);box-shadow:inset 0 0 0 1px rgba(241,192,78,.07),0 8px 22px #0007
+}
+.calendar-legend strong{color:#f2c85f;font:800 18px Georgia,serif}
+.legend-item{display:flex;align-items:center;gap:8px;color:#e6dccb;font-size:13px}
+.legend-dot{width:31px;height:31px;border-radius:7px;display:grid;place-items:center;font-weight:900;border:1px solid;font-size:17px}
+.legend-holiday{background:#6c1e29;border-color:#ed4d57}.legend-wow{background:#66500d;border-color:#e0b321}.legend-waschi{background:#502776;border-color:#aa62df}.legend-patch{background:#15485f;border-color:#50b3e3}
+
+.site-admin-panel{padding:18px;margin-top:0;border-radius:4px}
+.site-admin-panel h3{color:#f0c45a;font-family:Georgia,serif}
 .auth-message{padding:12px 15px;margin-bottom:14px;border:1px solid #956925;background:rgba(211,154,50,.08);color:#dbcda9}
 .site-login-btn{border:1px solid #725523;background:#0d141c;color:#eacb77;padding:7px 10px;border-radius:4px;cursor:pointer}
-.site-admin-panel{padding:20px;margin-top:14px}.site-admin-panel label{display:block;color:#d6cbb9;margin:10px 0;font-size:13px}.site-admin-panel input,.site-admin-panel textarea,.site-admin-panel select{width:100%;box-sizing:border-box;margin-top:5px;padding:10px;border:1px solid #4b5660;border-radius:4px;background:#0a1017;color:#eee}.site-admin-panel .check{display:flex;gap:8px;align-items:center}.site-admin-panel .check input{width:auto;margin:0}.site-form-status{color:#e4c575}.permissions-box p{color:#bfb6a7;line-height:1.5}
-dialog{width:min(620px,92vw);border:1px solid #896329;border-radius:7px;background:#090e14;color:#eee;padding:0}dialog::backdrop{background:rgba(0,0,0,.72)}dialog .site-admin-panel{margin:0;border:0;box-shadow:none}.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:1000px){.calendar-layout{grid-template-columns:1fr}.calendar-side{display:grid;grid-template-columns:1fr 1fr}.permissions-box{grid-column:1/-1}}
-@media(max-width:720px){.calendar-page{padding-top:18px}.calendar-shell{padding:12px}.calendar-title-badge{padding:8px 22px}.calendar-filterbar{gap:6px}.cal-filter{padding:7px 9px;font-size:11px}.calendar-side{display:flex}.cal-day{min-height:82px;padding:4px}.cal-num{font-size:12px}.cal-event{font-size:8px;padding:4px}.calendar-week span{font-size:11px}.calendar-legend{gap:10px;justify-content:flex-start}.form-row{grid-template-columns:1fr}}
-</style></head><body><div class="site-bg"></div><header class="header"><div class="container navwrap"><a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span><strong>WASCHI</strong></a><button class="menu" aria-label="Menü">☰</button><nav class="nav"><a href="/"><span class="ico">⌂</span><span>Startseite</span></a><a href="/team/"><span class="ico">♟</span><span>Waschi Gilde</span></a><a href="/mythic/"><span class="ico">⚔</span><span>M+ Team</span></a><a href="/addons/"><span class="ico">⚙</span><span>Erweiterungen</span></a><a href="/bis/"><span class="ico">♣</span><span>BIS-Tools</span></a><a href="/streams/"><span class="ico">▣</span><span>Streams</span></a><a href="/community/"><span class="ico">◉</span><span>Community</span></a><a class="active" href="/calendar/"><span class="ico">▦</span><span>Kalender</span></a></nav><div class="rightnav"></div></div></header>
-<main class="container calendar-page">
-<section class="calendar-shell">
+.site-admin-panel label{display:block;color:#d6cbb9;margin:10px 0;font-size:13px}
+.site-admin-panel input,.site-admin-panel textarea,.site-admin-panel select{width:100%;box-sizing:border-box;margin-top:5px;padding:10px;border:1px solid #4b5660;border-radius:4px;background:#0a1017;color:#eee}
+.site-admin-panel .check{display:flex;gap:8px;align-items:center}.site-admin-panel .check input{width:auto;margin:0}
+.site-form-status{color:#e4c575}.permissions-box p{color:#bfb6a7;line-height:1.5}
+
+dialog{width:min(620px,92vw);border:1px solid #896329;border-radius:7px;background:#090e14;color:#eee;padding:0}
+dialog::backdrop{background:rgba(0,0,0,.72)}
+dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+@media(max-width:1050px){
+  .calendar-layout{grid-template-columns:1fr}
+  .calendar-side{display:grid;grid-template-columns:1fr 1fr}
+  .permissions-box{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .calendar-page{width:min(calc(100% - 14px),1380px);padding-top:12px}
+  .calendar-title-badge{padding:8px 28px}
+  .calendar-title-badge:before,.calendar-title-badge:after{display:none}
+  .calendar-filterbar{gap:6px}.cal-filter{padding:7px 10px;font-size:11px}
+  .calendar-side{display:flex}
+  .cal-day{min-height:76px;padding:4px}.cal-num{font-size:12px}
+  .cal-event{font-size:8px;padding:4px;min-height:34px}
+  .cal-event .event-mini-icon{display:none}
+  .calendar-week span{font-size:11px}
+  .calendar-legend{gap:9px;justify-content:flex-start}
+  .form-row{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body class="calendar-view">
+<div class="site-bg"></div>
+<header class="header"><div class="container navwrap"><a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span><strong>WASCHI</strong></a><button class="menu" aria-label="Menü">☰</button><nav class="nav"><a href="/"><span class="ico">⌂</span><span>Startseite</span></a><a href="/team/"><span class="ico">♟</span><span>Waschi Gilde</span></a><a href="/mythic/"><span class="ico">⚔</span><span>M+ Team</span></a><a href="/addons/"><span class="ico">⚙</span><span>Erweiterungen</span></a><a href="/bis/"><span class="ico">♣</span><span>BIS-Tools</span></a><a href="/streams/"><span class="ico">▣</span><span>Streams</span></a><a href="/community/"><span class="ico">◉</span><span>Community</span></a><a class="active" href="/calendar/"><span class="ico">▦</span><span>Kalender</span></a></nav><div class="rightnav"></div></div></header>
+
+<main class="calendar-page">
+<section class="calendar-stage">
   <div class="calendar-title-wrap">
     <div class="calendar-title-badge"><span class="cal-main-icon">▣</span><h1>Kalender</h1></div>
-    <p class="calendar-subtitle">Feiertage, WoW-Events, Patchtermine und wichtige Waschi-Termine auf einen Blick.</p>
   </div>
+
   <div class="calendar-filterbar" data-calendar-filters>
     <strong>Filter:</strong>
     <button class="cal-filter active" type="button" data-filter="all">Alle</button>
     <button class="cal-filter" type="button" data-filter="holiday">▣ Feiertage</button>
-    <button class="cal-filter" type="button" data-filter="wow">◉ WoW</button>
+    <button class="cal-filter" type="button" data-filter="wow">ⓦ WoW</button>
     <button class="cal-filter" type="button" data-filter="waschi">🐾 Waschi</button>
     <button class="cal-filter" type="button" data-filter="patch-season">⚒ Patch &amp; Saison</button>
   </div>
+
   <div class="auth-message" data-auth-message hidden></div>
   <div class="calendar-actions"><button class="btn gold" type="button" data-add-event hidden>+ Neuer Termin</button></div>
+
   <div class="calendar-layout">
     <section class="calendar-panel">
-      <div class="calendar-toolbar"><button type="button" data-prev>‹</button><h2 data-calendar-title>Kalender</h2><button type="button" data-next>›</button></div>
+      <div class="calendar-toolbar"><button type="button" data-prev aria-label="Vorheriger Monat">‹</button><h2 data-calendar-title>Kalender</h2><button type="button" data-next aria-label="Nächster Monat">›</button></div>
       <div class="calendar-week"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
       <div class="calendar-grid" data-calendar-root></div>
     </section>
+
     <aside class="calendar-side">
       <section class="calendar-box">
         <div class="calendar-box-head"><span class="box-icon">⌛</span><span>Nächste Termine</span></div>
         <div class="upcoming" data-upcoming></div>
       </section>
+
       <section class="calendar-box">
         <div class="calendar-box-head"><span class="box-icon">✦</span><span>Termindetails</span></div>
         <div class="event-detail" data-event-detail><p>Wähle einen Termin im Kalender oder unter „Nächste Termine“ aus.</p></div>
       </section>
+
       <section class="permissions-box site-admin-panel" data-calendar-perms hidden>
         <h3>Kalender-Rechte</h3>
         <p>Nur Lentor (Discord: berndw) kann diese Liste ändern. Eingetragene Discord-Namen dürfen Kalendertermine erstellen, bearbeiten und löschen.</p>
@@ -97,14 +239,18 @@ dialog{width:min(620px,92vw);border:1px solid #896329;border-radius:7px;backgrou
       </section>
     </aside>
   </div>
+
   <div class="calendar-legend">
     <strong>Legende:</strong>
-    <span class="legend-item"><span class="legend-dot legend-holiday">▣</span>Feiertage</span>
-    <span class="legend-item"><span class="legend-dot legend-wow">W</span>WoW-Events</span>
-    <span class="legend-item"><span class="legend-dot legend-waschi">🐾</span>Waschi-Termine</span>
-    <span class="legend-item"><span class="legend-dot legend-patch">⚒</span>Patch &amp; Saison</span>
+    <span class="legend-item"><span class="legend-dot legend-holiday">▣</span>= Feiertage</span>
+    <span class="legend-item"><span class="legend-dot legend-wow">W</span>= WoW-Events</span>
+    <span class="legend-item"><span class="legend-dot legend-waschi">🐾</span>= Waschi-Termine</span>
+    <span class="legend-item"><span class="legend-dot legend-patch">⚒</span>= Patch &amp; Saison</span>
   </div>
 </section>
 </main>
+
 <dialog data-event-dialog><section class="site-admin-panel"><h2>Termin bearbeiten</h2><form><input type="hidden" name="id"><label>Titel<input name="title" required maxlength="160"></label><div class="form-row"><label>Datum<input type="date" name="date" required></label><label>Enddatum<input type="date" name="endDate"></label></div><div class="form-row"><label>Uhrzeit<input type="time" name="time"></label><label>Endzeit<input type="time" name="endTime"></label></div><label>Kategorie<select name="category"><option value="holiday">Feiertag</option><option value="wow">WoW</option><option value="waschi" selected>Waschi</option><option value="patch-season">Patch & Saison</option></select></label><label>Beschreibung<textarea name="description" rows="5" maxlength="3000"></textarea></label><label>Link (optional)<input name="link" type="url" placeholder="https://..."></label><div class="article-actions"><button class="btn gold" type="submit">Speichern</button><button class="btn dark" type="button" data-close>Abbrechen</button></div><p data-status></p></form></section></dialog>
-<script src="/app.js"></script></body></html>
+<script src="/app.js"></script>
+</body>
+</html>
