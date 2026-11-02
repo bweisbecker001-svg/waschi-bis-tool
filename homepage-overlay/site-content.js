@@ -24,15 +24,30 @@ async function renderDiscordOnline(){
      if(count)count.textContent='Verbindung nicht verfügbar';
      return;
    }
-   const online=Number(data.online||0),total=Number(data.total||0);
+
+   const online=Number(data.online||0),total=Number(data.total||0),voice=Number(data.voiceMembers||0);
    if(count)count.textContent=online+' Mitglied'+(online===1?'':'er')+' online'+(total?' · '+total+' insgesamt':'');
-   if(data.memberListAvailable===false){
-     box.innerHTML='<span class="hero-discord-empty">Live-Status direkt über den Waschi-Bot.<br>Einzelne Online-Namen werden von Discord über die Bot-REST-API nicht bereitgestellt.</span>';
+
+   const channels=(data.voiceChannels||[]).filter(c=>Array.isArray(c.members)&&c.members.length);
+   if(data.voiceAvailable&&channels.length){
+     box.innerHTML=channels.slice(0,4).map(c=>{
+       const members=c.members.slice(0,8).map(m=>{
+         const avatar=safeLink(m.avatar);
+         const img=avatar?'<img class="hero-discord-avatar" src="'+esc(avatar)+'" alt="">':'<span class="hero-discord-avatar hero-discord-fallback">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span>';
+         return '<div class="hero-discord-member">'+img+'<span class="hero-discord-member-name">'+esc(m.name||m.username||'Discord-Mitglied')+'</span><span class="hero-discord-voice-dot" title="Im Sprachkanal">🎙</span></div>';
+       }).join('');
+       const extra=c.members.length>8?'<div class="hero-discord-more">+'+esc(c.members.length-8)+' weitere</div>':'';
+       return '<section class="hero-discord-channel"><div class="hero-discord-channel-name">🔊 '+esc(c.name)+'</div>'+members+extra+'</section>';
+     }).join('')+(voice?'<div class="hero-discord-more">'+esc(voice)+' Mitglied'+(voice===1?'':'er')+' gerade im Voice</div>':'');
      return;
    }
-   const rows=(data.members||[]).slice(0,5);
-   if(!rows.length){box.innerHTML='<span class="hero-discord-empty">Aktuell keine einzelnen Online-Namen verfügbar.</span>';return}
-   box.innerHTML=rows.map(m=>{const avatar=safeLink(m.avatar);const img=avatar?'<img class="hero-discord-avatar" src="'+esc(avatar)+'" alt="">':'<span class="hero-discord-avatar hero-discord-fallback">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span>';return '<div class="hero-discord-member">'+img+'<span class="hero-discord-member-name">'+esc(m.name||m.username||'Discord-Mitglied')+'</span><span class="hero-discord-status '+esc(m.status||'online')+'" aria-label="'+esc(m.status||'online')+'"></span></div>'}).join('')+((online)>rows.length?'<div class="hero-discord-more">+'+esc(online-rows.length)+' weitere online</div>':'');
+
+   if(data.voiceAvailable){
+     box.innerHTML='<span class="hero-discord-empty">Aktuell ist niemand in einem Sprachkanal.</span>';
+     return;
+   }
+
+   box.innerHTML='<span class="hero-discord-empty">Online-Zahl verfügbar. Voice-Status wird vom Waschi-Bot noch aufgebaut.</span>';
  }catch(e){
    box.innerHTML='<span class="hero-discord-empty">Discord-Status derzeit nicht verfügbar.</span>';
    if(count)count.textContent='Verbindung nicht verfügbar';
