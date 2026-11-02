@@ -5,6 +5,7 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&l
 function fmtDate(v){if(!v)return'';const d=new Date(v+'T12:00:00');return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'long',year:'numeric'}).format(d)}
 function safeLink(v){try{const u=new URL(v,location.origin);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return''}}
 async function api(url,opt){const r=await fetch(url,{credentials:'same-origin',...(opt||{})});let j={};try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.error||('HTTP '+r.status));return j}
+function injectStyles(){if(document.getElementById('site-content-style'))return;const st=document.createElement('style');st.id='site-content-style';st.textContent='.site-login-btn{border:1px solid #725523;background:#0d141c;color:#eacb77;padding:7px 10px;border-radius:4px;cursor:pointer;white-space:nowrap}.site-admin-panel label{display:block;color:#d6cbb9;margin:10px 0;font-size:13px}.site-admin-panel input,.site-admin-panel textarea,.site-admin-panel select{width:100%;box-sizing:border-box;margin-top:5px;padding:10px;border:1px solid #4b5660;border-radius:4px;background:#0a1017;color:#eee}.site-admin-panel .check{display:flex;gap:8px;align-items:center}.site-admin-panel .check input{width:auto;margin:0}.site-form-status{color:#e4c575}';document.head.appendChild(st)}
 function addNav(){
  document.querySelectorAll('.nav').forEach(n=>{if(!n.querySelector('a[href="/calendar/"]')){const a=document.createElement('a');a.href='/calendar/';a.innerHTML='<span class="ico">▦</span><span>Kalender</span>';n.appendChild(a)}});
  const rn=document.querySelector('.rightnav');if(rn&&!rn.querySelector('[data-site-login]')){const b=document.createElement('button');b.type='button';b.dataset.siteLogin='1';b.className='site-login-btn';rn.appendChild(b);b.addEventListener('click',async()=>{if(S.auth&&S.auth.user){await api('/api/site-auth/logout',{method:'POST'});location.reload()}else{location.href='/api/site-auth/login?next='+encodeURIComponent(location.pathname+location.search)}})}
@@ -59,11 +60,11 @@ function initCalendarAdmin(){
 }
 async function loadContent(){try{S.content=await api('/api/site-content')}catch(e){console.warn(e)}}
 async function boot(){
- addNav();
+ injectStyles();addNav();
  try{S.auth=await api('/api/site-auth/status')}catch(e){S.auth={configured:false,user:null}}updateLogin();
  await loadContent();renderHomeNews();renderNews();
  if(document.querySelector('[data-calendar-root]')){S.month=new Date();S.month.setDate(1);renderCalendar();initCalendarAdmin();document.querySelector('[data-prev]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()-1);renderCalendar()});document.querySelector('[data-next]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()+1);renderCalendar()})}
  const q=new URLSearchParams(location.search);if(q.get('auth')==='setup'){const m=document.querySelector('[data-auth-message]');if(m){m.hidden=false;m.textContent='Discord-Login ist technisch vorbereitet. Es fehlen noch Discord Client-ID und Client-Secret in Vercel.'}}
 }
-document.addEventListener('DOMContentLoaded',boot);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
 })();
