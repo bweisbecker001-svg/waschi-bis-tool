@@ -124,7 +124,7 @@ function renderUpcoming(){
  if(!rows.length){box.innerHTML='<p class="upcoming-empty">Keine kommenden Termine für diesen Filter.</p>';return}
  box.innerHTML=rows.map(e=>{
    const date=(e.date||'').slice(8,10)+'.'+(e.date||'').slice(5,7)+'.';
-   return '<button data-event-id="'+esc(e.id)+'"><span class="upcoming-icon">'+esc(catIcon(e.category))+'</span><span class="upcoming-copy"><span class="upcoming-date">'+esc(date)+'</span><span class="upcoming-title">'+esc(e.title)+'</span></span><span class="upcoming-arrow">›</span></button>'
+   return '<button class="upcoming-cat-'+esc(e.category||'waschi')+'" data-event-id="'+esc(e.id)+'"><span class="upcoming-icon">'+esc(catIcon(e.category))+'</span><span class="upcoming-copy"><span class="upcoming-date">'+esc(date)+'</span><span class="upcoming-title">'+esc(e.title)+'</span></span><span class="upcoming-arrow">›</span></button>'
  }).join('');
  box.querySelectorAll('[data-event-id]').forEach(b=>b.onclick=()=>showEvent(S.content.calendar.find(x=>x.id===b.dataset.eventId)));
  const detail=document.querySelector('[data-event-detail]');
@@ -135,6 +135,7 @@ function showEvent(e,automatic){
  const box=document.querySelector('[data-event-detail]');if(!box)return;
  if(!automatic)box.dataset.hasSelection='1';
  const icon=catIcon(e.category);
+ box.className='event-detail detail-cat-'+(e.category||'waschi');
  box.innerHTML='<div class="detail-kicker"><span class="detail-icon">'+esc(icon)+'</span><div><h3>'+esc(e.title)+'</h3><span class="detail-date">'+esc(fmtDate(e.date))+(e.time?' · '+esc(e.time):'')+'</span></div></div><p class="detail-description">'+esc(e.description||'Für diesen Termin ist noch keine Beschreibung hinterlegt.')+'</p>'+(safeLink(e.link)?'<p><a class="btn dark" target="_blank" rel="noopener" href="'+esc(safeLink(e.link))+'">Link öffnen</a></p>':'')+(S.auth?.canCalendar?'<div class="article-actions"><button class="btn gold" data-edit>Bearbeiten</button><button class="btn dark" data-delete>Löschen</button></div>':'');
  box.querySelector('[data-edit]')?.addEventListener('click',()=>openEventForm(e));
  box.querySelector('[data-delete]')?.addEventListener('click',()=>deleteEvent(e.id));
