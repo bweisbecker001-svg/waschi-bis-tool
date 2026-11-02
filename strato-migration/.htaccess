@@ -1,6 +1,14 @@
 Options -Indexes
 RewriteEngine On
+
+# STRATO PHP API
 RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
+
+# Vorhandene lokale Dateien und Ordner direkt ausliefern
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
+
+# Uebergang: noch nicht lokal migrierte Bilder aus dem bisherigen Vercel-Bestand laden
+RewriteRule ^assets/(.*)$ https://waschi-ekdq613p6-bernd-9907.vercel.app/assets/$1 [R=302,L,NE]
+RewriteRule ^favicon\.ico$ https://waschi-ekdq613p6-bernd-9907.vercel.app/favicon.ico [R=302,L,NE]
