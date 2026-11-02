@@ -14,35 +14,89 @@ jobs:
   export:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout saved site state
+      - name: Checkout current source
         uses: actions/checkout@v4
         with:
-          ref: waschi-fun-current
+          ref: main
           persist-credentials: false
 
-      - name: Prepare backup folder
+      - name: Prepare complete PC backup
+        shell: bash
         run: |
-          mkdir -p backup
-          cp -a homepage-overlay backup/waschi.fun
-          cat > backup/README.txt <<'EOF'
-          Waschi.fun - lokale Sicherung
-          Referenzstand: Branch waschi-fun-current
-          Commit: e3c28a9e93bb2b2d53a29f60043b10ee085a3932
+          set -euo pipefail
+          mkdir -p backup/01_Homepage_STRATO
+          mkdir -p backup/02_BiS_Tool_Quellcode
+          mkdir -p backup/03_BiS_Tool_Download
+          mkdir -p backup/04_Live_Daten
 
-          Inhalt:
-          - komplette Homepage unter backup/waschi.fun
-          - HTML, CSS, JavaScript und alle lokalen Assets
+          # Aktuelle Homepage so aufbauen, wie sie fuer STRATO gedacht ist.
+          cp -a homepage-overlay/. backup/01_Homepage_STRATO/
+          rm -f backup/01_Homepage_STRATO/vercel.json
+          cp strato-migration/.htaccess backup/01_Homepage_STRATO/.htaccess
+          cp -a strato-migration/api backup/01_Homepage_STRATO/
+          cp -a strato-migration/private backup/01_Homepage_STRATO/
 
-          Hinweis:
-          Externe Links und externe Inhalte benötigen weiterhin eine Internetverbindung.
+          # Kompletter aktueller Quellstand des Projekts inklusive BiS-Tool.
+          cp -a api backup/02_BiS_Tool_Quellcode/
+          cp -a chunks backup/02_BiS_Tool_Quellcode/
+          cp -a homepage-overlay backup/02_BiS_Tool_Quellcode/
+          cp -a site-admin-backend backup/02_BiS_Tool_Quellcode/
+          cp -a strato-migration backup/02_BiS_Tool_Quellcode/
+          cp -a build_index.py Dockerfile requirements.txt README_WEB.md vercel.json .env.example .dockerignore backup/02_BiS_Tool_Quellcode/
+
+          # Die auf Waschi.fun angebotene PC-Download-Datei des BiS-Tools.
+          curl --fail --location --retry 3 \
+            https://waschi-bis-tool.vercel.app/downloads/Waschi_WoW_BiS_Tool.zip \
+            --output backup/03_BiS_Tool_Download/Waschi_WoW_BiS_Tool.zip
+
+          # Oeffentliche Live-Inhalte als zusaetzlicher Daten-Snapshot.
+          curl --fail --location --retry 3 https://waschi.fun/api/site-content \
+            --output backup/04_Live_Daten/site-content.json || true
+          curl --fail --location --retry 3 https://waschi.fun/api/health \
+            --output backup/04_Live_Daten/health.json || true
+
+          cat > backup/README_BACKUP.txt <<'EOF'
+          WASCHI.FUN - KOMPLETTBACKUP FUER DEN PC
+
+          Inhalt
+          ======
+          01_Homepage_STRATO
+            Aktueller Homepage-Stand fuer STRATO inklusive .htaccess,
+            PHP-API und privater Ordnerstruktur.
+
+          02_BiS_Tool_Quellcode
+            Aktueller Quellstand des Waschi/BiS-Projekts aus GitHub.
+
+          03_BiS_Tool_Download
+            Waschi_WoW_BiS_Tool.zip - die auf der Homepage angebotene
+            PC-Download-Datei des BiS-Tools.
+
+          04_Live_Daten
+            Snapshot der aktuell oeffentlich erreichbaren News- und
+            Kalenderdaten sowie API-Healthcheck.
+
+          WICHTIG
+          =======
+          Sicherheitsgeheimnisse werden absichtlich NICHT aus STRATO oder
+          Altare exportiert. Die im GitHub-Quellstand vorhandene
+          strato-migration/private/config.php ist die Vorlage und enthaelt
+          keine echten Produktions-Secrets.
+
+          Fuer eine vollstaendige Wiederherstellung der Live-Anmeldung und
+          des Discord-Bots muessen die Produktions-Secrets separat sicher
+          aufbewahrt werden:
+          - Discord Client ID / Client Secret
+          - Session Secret
+          - Voice Push Secret
+          - Discord Bot Token
+
+          Dieses Backup enthaelt keine .git-Historie.
           EOF
 
-      - name: Upload backup
+      - name: Upload complete backup
         uses: actions/upload-artifact@v4
         with:
-          name: Waschi_fun_kompletter_Stand_2026-10-31
+          name: Waschi_fun_Komplettbackup_PC_2026-11-02
           path: backup/
           if-no-files-found: error
           retention-days: 7
-
-# export trigger
