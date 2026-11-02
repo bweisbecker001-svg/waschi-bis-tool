@@ -1689,11 +1689,12 @@ def site_content_get():
 @app.post('/api/site-calendar')
 def site_calendar_save():
     user,content,perms,error = _site_require('calendar')
-    if error: return error
+    if error:
+        return error
     data = request.get_json(silent=True) or {}
     event_id = _site_clean(data.get('id'),100)
     rows = content.setdefault('calendar',[])
-    row = next((x for x in rows if str(x.get('id'))==event_id), None) if event_id else None
+    row = next((x for x in rows if str(x.get('id')) == event_id), None) if event_id else None
     if row is None:
         row = {'id':_site_id('event',data.get('title')),'createdAt':int(time.time()),'createdBy':user.get('username')}
         rows.append(row)
@@ -1709,7 +1710,77 @@ def site_calendar_save():
         'updatedAt':int(time.time()),
         'updatedBy':user.get('username')
     })
-    if not row['title'] or not re.match(r'^\d{4}-\d{2}-\d{2}
+    if not row['title'] or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', row['date']):
+        return _json({'ok':False,'error':'Titel und gültiges Datum sind erforderlich.'},400)
+    _site_save(content)
+    return _json({'ok':True,'event':row})
+
+@app.delete('/api/site-calendar')
+def site_calendar_delete():
+    user,content,perms,error = _site_require('calendar')
+    if error:
+        return error
+    event_id = _site_clean(_q('id'),100)
+    before = len(content.get('calendar',[]))
+    content['calendar'] = [x for x in content.get('calendar',[]) if str(x.get('id')) != event_id]
+    if len(content['calendar']) == before:
+        return _json({'ok':False,'error':'Termin nicht gefunden'},404)
+    _site_save(content)
+    return _json({'ok':True})
+
+@app.post('/api/site-news')
+def site_news_save():
+    user,content,perms,error = _site_require('news')
+    if error:
+        return error
+    data = request.get_json(silent=True) or {}
+    news_id = _site_clean(data.get('id'),100)
+    rows = content.setdefault('news',[])
+    row = next((x for x in rows if str(x.get('id')) == news_id), None) if news_id else None
+    if row is None:
+        row = {'id':_site_id('news',data.get('title')),'createdAt':int(time.time()),'createdBy':user.get('username')}
+        rows.append(row)
+    row.update({
+        'title':_site_clean(data.get('title'),180),
+        'date':_site_clean(data.get('date'),10),
+        'summary':_site_clean(data.get('summary'),700),
+        'body':_site_clean(data.get('body'),8000),
+        'published':bool(data.get('published',True)),
+        'updatedAt':int(time.time()),
+        'updatedBy':user.get('username')
+    })
+    if not row['title'] or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', row['date']):
+        return _json({'ok':False,'error':'Titel und gültiges Datum sind erforderlich.'},400)
+    _site_save(content)
+    return _json({'ok':True,'news':row})
+
+@app.delete('/api/site-news')
+def site_news_delete():
+    user,content,perms,error = _site_require('news')
+    if error:
+        return error
+    news_id = _site_clean(_q('id'),100)
+    content['news'] = [x for x in content.get('news',[]) if str(x.get('id')) != news_id]
+    _site_save(content)
+    return _json({'ok':True})
+
+@app.post('/api/site-calendar-admins')
+def site_calendar_admins():
+    user,content,perms,error = _site_require('news')
+    if error:
+        return error
+    data = request.get_json(silent=True) or {}
+    admins = []
+    for value in data.get('admins') or []:
+        v = _site_clean(value,80).lower()
+        if v and v not in admins:
+            admins.append(v)
+    if 'lentor' not in admins:
+        admins.insert(0,'lentor')
+    content.setdefault('permissions',{})['calendarAdmins'] = admins[:30]
+    _site_save(content)
+    return _json({'ok':True,'calendarAdmins':admins[:30]})
+
 @app.get('/')
 def root_page():
     return send_file(DASHBOARD)
