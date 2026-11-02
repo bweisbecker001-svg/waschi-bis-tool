@@ -1,6 +1,10 @@
 Options -Indexes
 RewriteEngine On
 
+# www immer sauber auf die HTTPS-Hauptdomain umleiten
+RewriteCond %{HTTP_HOST} ^www\.waschi\.fun$ [NC]
+RewriteRule ^ https://waschi.fun%{REQUEST_URI} [R=301,L,NE]
+
 # STRATO PHP API
 RewriteRule ^api(?:/.*)?$ api/index.php [QSA,L]
 
