@@ -82,6 +82,7 @@ async def on_voice_state_update(member, before, after):
 
 async def periodic_push():
     await client.wait_until_ready()
+    await asyncio.sleep(30)
     while not client.is_closed():
         await safe_push()
         await asyncio.sleep(30)
