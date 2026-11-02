@@ -1,0 +1,38 @@
+name: Build STRATO Test ZIP
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/build-strato-zip.yml"
+      - "homepage-overlay/**"
+      - "strato-migration/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Assemble STRATO package
+        run: |
+          set -eu
+          rm -rf build-strato
+          mkdir -p build-strato
+          cp -a homepage-overlay/. build-strato/
+          rm -f build-strato/vercel.json
+          cp -a strato-migration/.htaccess build-strato/.htaccess
+          cp -a strato-migration/api build-strato/api
+          cp -a strato-migration/private build-strato/private
+          cd build-strato
+          zip -rq ../Waschi_STRATO_Test.zip .
+      - name: Upload ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: Waschi_STRATO_Test
+          path: Waschi_STRATO_Test.zip
+          if-no-files-found: error
+          retention-days: 7
