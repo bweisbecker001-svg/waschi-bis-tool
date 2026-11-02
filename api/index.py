@@ -1473,11 +1473,11 @@ def fetch_warcraftlogs_mplus_runs(region, realm, name, max_pages=10):
 
 
 from flask import Flask, request, jsonify, Response, send_file, make_response, redirect
+app = Flask(__name__)
 try:
     from vercel.blob import sync as vercel_blob
 except Exception:
     vercel_blob = None
-app = Flask(__name__)
 
 
 def _json(data, status=200):
