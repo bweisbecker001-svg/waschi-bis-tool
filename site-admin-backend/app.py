@@ -271,28 +271,43 @@ def discord_online():
         guild_id=str((invite.get("guild") or {}).get("id") or "")
         if not guild_id:
             raise RuntimeError("Discord-Server konnte nicht ermittelt werden")
-        widget=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/widget.json")
+
         members=[]
-        for member in (widget.get("members") or [])[:100]:
-            raw_name=str(member.get("username") or "").strip()
-            if not raw_name:
-                continue
-            members.append({
-                "name":resolve_server_display_name(guild_id,raw_name),
-                "username":raw_name,
-                "status":str(member.get("status") or "online"),
-                "avatar":str(member.get("avatar_url") or "")
-            })
+        widget={}
+        widget_available=True
+        widget_error=""
+        try:
+            widget=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/widget.json")
+            for member in (widget.get("members") or [])[:100]:
+                raw_name=str(member.get("username") or "").strip()
+                if not raw_name:
+                    continue
+                members.append({
+                    "name":resolve_server_display_name(guild_id,raw_name),
+                    "username":raw_name,
+                    "status":str(member.get("status") or "online"),
+                    "avatar":str(member.get("avatar_url") or "")
+                })
+        except Exception as exc:
+            widget_available=False
+            widget_error=str(exc)[:180]
+
+        invite_online=int(invite.get("approximate_presence_count") or 0)
+        widget_online=int(widget.get("presence_count") or 0) if widget_available else 0
+        online=widget_online or invite_online or len(members)
+
         return jsonify({
             "ok":True,
             "server":widget.get("name") or (invite.get("guild") or {}).get("name") or "Waschi",
-            "online":int(widget.get("presence_count") or len(members)),
+            "online":online,
             "members":members[:12],
-            "serverNamesComplete":bool(os.environ.get("DISCORD_BOT_TOKEN")),
+            "serverNamesComplete":bool(os.environ.get("DISCORD_BOT_TOKEN")) and widget_available,
+            "widgetAvailable":widget_available,
+            "widgetError":widget_error,
             "roleSync":role_sync
         })
     except Exception as exc:
-        return jsonify({"ok":False,"online":0,"members":[],"error":"Discord-Server-Widget nicht verfügbar","detail":str(exc)[:180]}),200
+        return jsonify({"ok":False,"online":0,"members":[],"error":"Discord-Status nicht verfügbar","detail":str(exc)[:180]}),200
 
 @app.get("/api/site-auth/login")
 def auth_login():
