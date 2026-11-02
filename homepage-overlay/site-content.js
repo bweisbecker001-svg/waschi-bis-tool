@@ -25,8 +25,11 @@ async function renderDiscordOnline(){
      return;
    }
 
-   const online=Number(data.online||0),total=Number(data.total||0),voice=Number(data.voiceMembers||0);
-   if(count)count.textContent=online+' Mitglied'+(online===1?'':'er')+' online'+(total?' · '+total+' insgesamt':'');
+   const online=data.online==null?null:Number(data.online||0),total=data.total==null?null:Number(data.total||0),voice=Number(data.voiceMembers||0);
+   if(count){
+     if(online!==null)count.textContent=online+' Mitglied'+(online===1?'':'er')+' online'+(total!==null?' · '+total+' insgesamt':'');
+     else count.textContent=voice+' Mitglied'+(voice===1?'':'er')+' gerade im Voice';
+   }
 
    const channels=(data.voiceChannels||[]).filter(c=>Array.isArray(c.members)&&c.members.length);
    if(data.voiceAvailable&&channels.length){
