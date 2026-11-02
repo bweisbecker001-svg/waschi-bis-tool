@@ -179,10 +179,94 @@ def resolve_server_display_name(guild_id, widget_username):
             pass
     return aliases.get(username.lower(),username)
 
+
+def discord_request(method, url, token, payload=None):
+    headers={"User-Agent":"Waschi.fun/1.0","Authorization":"Bot "+token}
+    data=None
+    if payload is not None:
+        data=json.dumps(payload,separators=(",",":")).encode("utf-8")
+        headers["Content-Type"]="application/json"
+    req=urllib.request.Request(url,data=data,headers=headers,method=method)
+    with urllib.request.urlopen(req,timeout=15) as r:
+        raw=r.read()
+        if not raw:
+            return None
+        return json.loads(raw.decode("utf-8"))
+
+def sync_discord_role_visibility_once():
+    marker_path="waschi/discord-role-sync-gilde-opfer-v1.json"
+    try:
+        marker=blob.get_blob(marker_path,access="private")
+        if marker and marker.body:
+            return {"ok":True,"alreadyDone":True}
+    except Exception:
+        pass
+
+    token=os.environ.get("DISCORD_BOT_TOKEN","").strip()
+    invite_code=os.environ.get("DISCORD_INVITE_CODE","KvstQWvYmC").strip()
+    if not token:
+        return {"ok":False,"error":"DISCORD_BOT_TOKEN fehlt"}
+
+    invite=discord_json("https://discord.com/api/v10/invites/"+urllib.parse.quote(invite_code)+"?with_counts=true")
+    guild_id=str((invite.get("guild") or {}).get("id") or "")
+    if not guild_id:
+        return {"ok":False,"error":"Discord-Server konnte nicht ermittelt werden"}
+
+    roles=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/roles",token)
+    source=next((r for r in roles if str(r.get("name") or "").strip().lower()=="gilde"),None)
+    target=next((r for r in roles if str(r.get("name") or "").strip().lower()=="opfer"),None)
+    if not source or not target:
+        return {"ok":False,"error":"Rolle Gilde oder Opfer wurde nicht gefunden"}
+
+    # Nur Berechtigungen spiegeln; Name, Farbe, Reihenfolge und Mitglieder bleiben unverändert.
+    discord_request("PATCH",f"https://discord.com/api/v10/guilds/{guild_id}/roles/{target['id']}",token,{
+        "permissions":str(source.get("permissions") or "0")
+    })
+
+    channels=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/channels",token)
+    changed=0
+    removed=0
+    source_id=str(source["id"])
+    target_id=str(target["id"])
+
+    for channel in channels if isinstance(channels,list) else []:
+        cid=str(channel.get("id") or "")
+        if not cid:
+            continue
+        overwrites=channel.get("permission_overwrites") or []
+        src=next((o for o in overwrites if str(o.get("id"))==source_id and int(o.get("type",0))==0),None)
+        dst=next((o for o in overwrites if str(o.get("id"))==target_id and int(o.get("type",0))==0),None)
+        if src:
+            allow=str(src.get("allow") or "0")
+            deny=str(src.get("deny") or "0")
+            if not dst or str(dst.get("allow") or "0")!=allow or str(dst.get("deny") or "0")!=deny:
+                discord_request("PUT",f"https://discord.com/api/v10/channels/{cid}/permissions/{target_id}",token,{
+                    "type":0,"allow":allow,"deny":deny
+                })
+                changed+=1
+        elif dst:
+            discord_request("DELETE",f"https://discord.com/api/v10/channels/{cid}/permissions/{target_id}",token)
+            removed+=1
+
+    result={
+        "ok":True,
+        "guildId":guild_id,
+        "sourceRole":"Gilde",
+        "targetRole":"Opfer",
+        "channelsUpdated":changed,
+        "obsoleteOverridesRemoved":removed,
+        "completedAt":int(time.time())
+    }
+    blob.put_blob(marker_path,json.dumps(result,separators=(",",":")).encode("utf-8"),
+                  access="private",content_type="application/json",
+                  allow_overwrite=True,cache_control_max_age=0)
+    return result
+
 @app.get("/api/discord-online")
 def discord_online():
     invite_code=os.environ.get("DISCORD_INVITE_CODE","KvstQWvYmC").strip()
     try:
+        role_sync=sync_discord_role_visibility_once()
         invite=discord_json("https://discord.com/api/v10/invites/"+urllib.parse.quote(invite_code)+"?with_counts=true")
         guild_id=str((invite.get("guild") or {}).get("id") or "")
         if not guild_id:
@@ -204,7 +288,8 @@ def discord_online():
             "server":widget.get("name") or (invite.get("guild") or {}).get("name") or "Waschi",
             "online":int(widget.get("presence_count") or len(members)),
             "members":members[:12],
-            "serverNamesComplete":bool(os.environ.get("DISCORD_BOT_TOKEN"))
+            "serverNamesComplete":bool(os.environ.get("DISCORD_BOT_TOKEN")),
+            "roleSync":role_sync
         })
     except Exception as exc:
         return jsonify({"ok":False,"online":0,"members":[],"error":"Discord-Server-Widget nicht verfügbar","detail":str(exc)[:180]}),200
