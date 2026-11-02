@@ -48,9 +48,15 @@ function read_json_file(string $path, array $fallback=[]): array {
 }
 function write_json_file(string $path, array $data): void {
     $dir=dirname($path); if (!is_dir($dir)) @mkdir($dir,0750,true);
-    $tmp=$path.'.tmp'; $raw=json_encode($data,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
-    if (@file_put_contents($tmp,$raw,LOCK_EX)===false || !@rename($tmp,$path)) {
+    $tmp=$path.'.tmp.'.bin2hex(random_bytes(6)); $raw=json_encode($data,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+    if (@file_put_contents($tmp,$raw,LOCK_EX)===false) {
         @unlink($tmp); throw new RuntimeException('Daten konnten nicht gespeichert werden.');
+    }
+    if (!@rename($tmp,$path)) {
+        if (@file_put_contents($path,$raw,LOCK_EX)===false) {
+            @unlink($tmp); throw new RuntimeException('Daten konnten nicht gespeichert werden.');
+        }
+        @unlink($tmp);
     }
 }
 function load_content(string $contentFile, array $defaults): array {
