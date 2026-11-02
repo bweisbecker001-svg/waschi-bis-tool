@@ -14,6 +14,7 @@ from vercel.blob import sync as blob
 app = Flask(__name__)
 
 CONTENT_PATH = "waschi/site-content.json"
+VOICE_PATH = "waschi/discord-voice-state-v1.json"
 SESSION_COOKIE = "waschi_session"
 NEWS_ADMIN = "berndw"
 DEFAULT_CALENDAR_ADMINS = ["cathalon1989", "berndw", "schluffyfelixnowa"]
@@ -262,6 +263,37 @@ def sync_discord_role_visibility_once():
                   allow_overwrite=True,cache_control_max_age=0)
     return result
 
+def load_voice_snapshot(max_age=90):
+    try:
+        result=blob.get_blob(VOICE_PATH,access="private")
+        data=json.loads(result.body.decode("utf-8"))
+        updated=int(data.get("updatedAt") or 0)
+        if not updated or int(time.time())-updated>max_age:
+            return {"available":False,"stale":True,"voiceMembers":0,"channels":[]}
+        channels=[]
+        for channel in data.get("channels") or []:
+            name=clean(channel.get("name"),100)
+            members=[]
+            for member in channel.get("members") or []:
+                members.append({
+                    "id":str(member.get("id") or ""),
+                    "name":clean(member.get("name"),100),
+                    "username":clean(member.get("username"),100),
+                    "avatar":str(member.get("avatar") or "")[:500]
+                })
+            if name and members:
+                channels.append({"id":str(channel.get("id") or ""),"name":name,"members":members[:25]})
+        return {
+            "available":True,
+            "stale":False,
+            "updatedAt":updated,
+            "voiceMembers":int(data.get("voiceMembers") or sum(len(c["members"]) for c in channels)),
+            "channels":channels[:20]
+        }
+    except Exception:
+        return {"available":False,"stale":False,"voiceMembers":0,"channels":[]}
+
+
 def discord_bot_guild(token):
     configured_id=os.environ.get("DISCORD_GUILD_ID","").strip()
     guilds=discord_json("https://discord.com/api/v10/users/@me/guilds",token)
@@ -285,6 +317,7 @@ def discord_online():
         guild=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}?with_counts=true",token)
         online=int(guild.get("approximate_presence_count") or 0)
         total=int(guild.get("approximate_member_count") or guild.get("member_count") or 0)
+        voice=load_voice_snapshot()
         return jsonify({
             "ok":True,
             "source":"waschi-bot",
@@ -293,13 +326,20 @@ def discord_online():
             "total":total,
             "members":[],
             "memberListAvailable":False,
-            "statusText":"Online-Status direkt über den Waschi-Bot"
+            "voiceAvailable":bool(voice.get("available")),
+            "voiceStale":bool(voice.get("stale")),
+            "voiceMembers":int(voice.get("voiceMembers") or 0),
+            "voiceChannels":voice.get("channels") or [],
+            "voiceUpdatedAt":voice.get("updatedAt"),
+            "statusText":"Online-Status und Voice-Kanäle direkt über den Waschi-Bot"
         })
     except Exception as exc:
         return jsonify({
             "ok":False,
             "online":0,
             "members":[],
+            "voiceAvailable":False,
+            "voiceChannels":[],
             "error":"Discord-Status über Waschi-Bot nicht verfügbar",
             "detail":str(exc)[:180]
         }),200
