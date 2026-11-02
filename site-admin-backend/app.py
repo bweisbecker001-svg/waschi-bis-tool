@@ -262,52 +262,47 @@ def sync_discord_role_visibility_once():
                   allow_overwrite=True,cache_control_max_age=0)
     return result
 
+def discord_bot_guild(token):
+    configured_id=os.environ.get("DISCORD_GUILD_ID","").strip()
+    guilds=discord_json("https://discord.com/api/v10/users/@me/guilds",token)
+    if not isinstance(guilds,list) or not guilds:
+        raise RuntimeError("Der Waschi-Bot ist mit keinem Discord-Server verbunden")
+    if configured_id:
+        found=next((g for g in guilds if str(g.get("id") or "")==configured_id),None)
+        if found:
+            return found
+    found=next((g for g in guilds if str(g.get("name") or "").strip().lower()=="waschi"),None)
+    return found or guilds[0]
+
 @app.get("/api/discord-online")
 def discord_online():
-    invite_code=os.environ.get("DISCORD_INVITE_CODE","KvstQWvYmC").strip()
+    token=os.environ.get("DISCORD_BOT_TOKEN","").strip()
+    if not token:
+        return jsonify({"ok":False,"online":0,"members":[],"error":"Waschi-Bot ist nicht konfiguriert"}),200
     try:
-        role_sync=sync_discord_role_visibility_once()
-        invite=discord_json("https://discord.com/api/v10/invites/"+urllib.parse.quote(invite_code)+"?with_counts=true")
-        guild_id=str((invite.get("guild") or {}).get("id") or "")
-        if not guild_id:
-            raise RuntimeError("Discord-Server konnte nicht ermittelt werden")
-
-        members=[]
-        widget={}
-        widget_available=True
-        widget_error=""
-        try:
-            widget=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/widget.json")
-            for member in (widget.get("members") or [])[:100]:
-                raw_name=str(member.get("username") or "").strip()
-                if not raw_name:
-                    continue
-                members.append({
-                    "name":resolve_server_display_name(guild_id,raw_name),
-                    "username":raw_name,
-                    "status":str(member.get("status") or "online"),
-                    "avatar":str(member.get("avatar_url") or "")
-                })
-        except Exception as exc:
-            widget_available=False
-            widget_error=str(exc)[:180]
-
-        invite_online=int(invite.get("approximate_presence_count") or 0)
-        widget_online=int(widget.get("presence_count") or 0) if widget_available else 0
-        online=widget_online or invite_online or len(members)
-
+        guild_ref=discord_bot_guild(token)
+        guild_id=str(guild_ref.get("id") or "")
+        guild=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}?with_counts=true",token)
+        online=int(guild.get("approximate_presence_count") or 0)
+        total=int(guild.get("approximate_member_count") or guild.get("member_count") or 0)
         return jsonify({
             "ok":True,
-            "server":widget.get("name") or (invite.get("guild") or {}).get("name") or "Waschi",
+            "source":"waschi-bot",
+            "server":guild.get("name") or guild_ref.get("name") or "Waschi",
             "online":online,
-            "members":members[:12],
-            "serverNamesComplete":bool(os.environ.get("DISCORD_BOT_TOKEN")) and widget_available,
-            "widgetAvailable":widget_available,
-            "widgetError":widget_error,
-            "roleSync":role_sync
+            "total":total,
+            "members":[],
+            "memberListAvailable":False,
+            "statusText":"Online-Status direkt über den Waschi-Bot"
         })
     except Exception as exc:
-        return jsonify({"ok":False,"online":0,"members":[],"error":"Discord-Status nicht verfügbar","detail":str(exc)[:180]}),200
+        return jsonify({
+            "ok":False,
+            "online":0,
+            "members":[],
+            "error":"Discord-Status über Waschi-Bot nicht verfügbar",
+            "detail":str(exc)[:180]
+        }),200
 
 @app.get("/api/site-auth/login")
 def auth_login():
