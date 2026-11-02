@@ -150,6 +150,65 @@ def discord_profile(code):
     with urllib.request.urlopen(req,timeout=20) as r:
         return json.loads(r.read().decode())
 
+
+def discord_json(url, token=""):
+    headers={"User-Agent":"Waschi.fun/1.0"}
+    if token:
+        headers["Authorization"]="Bot "+token
+    req=urllib.request.Request(url,headers=headers)
+    with urllib.request.urlopen(req,timeout=12) as r:
+        return json.loads(r.read().decode("utf-8"))
+
+def resolve_server_display_name(guild_id, widget_username):
+    username=str(widget_username or "").strip()
+    if not username:
+        return ""
+    # Known guild-side display name requested by the site owner.
+    aliases={"berndw":"Waschi-Lentor"}
+    bot_token=os.environ.get("DISCORD_BOT_TOKEN","").strip()
+    if bot_token:
+        try:
+            q=urllib.parse.quote(username)
+            rows=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/members/search?query={q}&limit=20",bot_token)
+            for member in rows if isinstance(rows,list) else []:
+                user=member.get("user") or {}
+                candidate=str(user.get("username") or "")
+                if candidate.lower()==username.lower():
+                    return str(member.get("nick") or user.get("global_name") or candidate or username)
+        except Exception:
+            pass
+    return aliases.get(username.lower(),username)
+
+@app.get("/api/discord-online")
+def discord_online():
+    invite_code=os.environ.get("DISCORD_INVITE_CODE","KvstQWvYmC").strip()
+    try:
+        invite=discord_json("https://discord.com/api/v10/invites/"+urllib.parse.quote(invite_code)+"?with_counts=true")
+        guild_id=str((invite.get("guild") or {}).get("id") or "")
+        if not guild_id:
+            raise RuntimeError("Discord-Server konnte nicht ermittelt werden")
+        widget=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/widget.json")
+        members=[]
+        for member in (widget.get("members") or [])[:100]:
+            raw_name=str(member.get("username") or "").strip()
+            if not raw_name:
+                continue
+            members.append({
+                "name":resolve_server_display_name(guild_id,raw_name),
+                "username":raw_name,
+                "status":str(member.get("status") or "online"),
+                "avatar":str(member.get("avatar_url") or "")
+            })
+        return jsonify({
+            "ok":True,
+            "server":widget.get("name") or (invite.get("guild") or {}).get("name") or "Waschi",
+            "online":int(widget.get("presence_count") or len(members)),
+            "members":members[:12],
+            "serverNamesComplete":bool(os.environ.get("DISCORD_BOT_TOKEN"))
+        })
+    except Exception as exc:
+        return jsonify({"ok":False,"online":0,"members":[],"error":"Discord-Server-Widget nicht verfügbar","detail":str(exc)[:180]}),200
+
 @app.get("/api/site-auth/login")
 def auth_login():
     cid=os.environ.get("DISCORD_CLIENT_ID","").strip()
