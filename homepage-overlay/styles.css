@@ -145,6 +145,4 @@ a.member-card:hover{transform:translateY(-3px);border-color:#d29a35}
   overflow-wrap:anywhere!important;
 }
 @media(max-width:1180px){.hero-discord{right:8px;width:260px;transform:translateY(-26%)}.hero-discord-head strong{font-size:15px}.hero-discord-member-name{font-size:11px}}
-@media(max-width:900px){.hero-discord{display:none}{
-  .char-detail .talent-tree{grid-auto-rows:minmax(64px,auto)!important}
-}
+@media(max-width:900px){.hero-discord{display:none}.char-detail .talent-tree{grid-auto-rows:minmax(64px,auto)!important}}
