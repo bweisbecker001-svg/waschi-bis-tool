@@ -1,11 +1,11 @@
 {
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/api/site-auth/(.*)", "dest": "https://waschi-bis-tool.vercel.app/api/site-auth/$1" },
-    { "src": "/api/site-content", "dest": "https://waschi-bis-tool.vercel.app/api/site-content" },
-    { "src": "/api/site-calendar", "dest": "https://waschi-bis-tool.vercel.app/api/site-calendar" },
-    { "src": "/api/site-news", "dest": "https://waschi-bis-tool.vercel.app/api/site-news" },
-    { "src": "/api/site-calendar-admins", "dest": "https://waschi-bis-tool.vercel.app/api/site-calendar-admins" },
+    { "src": "/api/site-auth/(.*)", "dest": "https://waschi-site-admin.vercel.app/api/site-auth/$1" },
+    { "src": "/api/site-content", "dest": "https://waschi-site-admin.vercel.app/api/site-content" },
+    { "src": "/api/site-calendar", "dest": "https://waschi-site-admin.vercel.app/api/site-calendar" },
+    { "src": "/api/site-news", "dest": "https://waschi-site-admin.vercel.app/api/site-news" },
+    { "src": "/api/site-calendar-admins", "dest": "https://waschi-site-admin.vercel.app/api/site-calendar-admins" },
     { "src": "/api/(.*)", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/api/$1" },
     { "src": "/assets/(.*)", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/assets/$1" },
     { "src": "/favicon.ico", "dest": "https://waschi-ekdq613p6-bernd-9907.vercel.app/favicon.ico" }
