@@ -1495,7 +1495,7 @@ def _configured():
 
 SITE_CONTENT_PATH = 'waschi/site-content.json'
 SITE_SESSION_COOKIE = 'waschi_session'
-SITE_NEWS_ADMIN = 'lentor'
+SITE_NEWS_ADMIN = 'berndw'
 
 def _site_default_content():
     return {
@@ -1524,7 +1524,7 @@ def _site_default_content():
             {'id':'hp-patch-01112026','date':'2026-11-01','title':'Homepage-Patch: Fehler behoben','summary':'Bei den letzten Arbeiten an Waschi.fun wurden mehrere Fehler entdeckt und behoben. Falls euch noch etwas auffällt, meldet euch bitte.','body':'Bei den letzten Arbeiten an Waschi.fun wurden mehrere Fehler entdeckt und behoben. Gleichzeitig wurden verschiedene Bereiche der Homepage technisch und optisch nachgebessert.','published':True},
             {'id':'bislisten-online','date':'2026-06-26','title':'Die BiS-Listen sind online','summary':'Unser BiS-Tool ist verfügbar. Hier erklären wir, wie ihr die Listen nutzt.','body':'Ab sofort steht unser BiS-Tool auf Waschi.fun zur Verfügung.','published':True}
         ],
-        'permissions': {'calendarAdmins':['lentor','cathalon1989','berndw','schluffyfelixnowa']},
+        'permissions': {'calendarAdmins':['cathalon1989','berndw','schluffyfelixnowa']},
         'updatedAt': int(time.time())
     }
 
@@ -1571,7 +1571,7 @@ def _site_load():
             return default
         data.setdefault('calendar', [])
         data.setdefault('news', default['news'])
-        data.setdefault('permissions', {'calendarAdmins':['lentor','cathalon1989','berndw','schluffyfelixnowa']})
+        data.setdefault('permissions', {'calendarAdmins':['cathalon1989','berndw','schluffyfelixnowa']})
         return data
     except Exception:
         try:
@@ -1775,8 +1775,8 @@ def site_calendar_admins():
         v = _site_clean(value,80).lower()
         if v and v not in admins:
             admins.append(v)
-    if 'lentor' not in admins:
-        admins.insert(0,'lentor')
+    if 'berndw' not in admins:
+        admins.insert(0,'berndw')
     content.setdefault('permissions',{})['calendarAdmins'] = admins[:30]
     _site_save(content)
     return _json({'ok':True,'calendarAdmins':admins[:30]})
