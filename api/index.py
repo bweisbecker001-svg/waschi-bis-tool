@@ -1500,7 +1500,24 @@ SITE_NEWS_ADMIN = 'lentor'
 def _site_default_content():
     return {
         'version': 1,
-        'calendar': [],
+        'calendar': [
+            {'id':'holiday-2026-newyear','date':'2026-01-01','title':'Neujahr','category':'holiday','description':'Gesetzlicher Feiertag in Deutschland.'},
+            {'id':'holiday-2026-good-friday','date':'2026-04-03','title':'Karfreitag','category':'holiday','description':'Gesetzlicher Feiertag in Nordrhein-Westfalen.'},
+            {'id':'holiday-2026-easter-monday','date':'2026-04-06','title':'Ostermontag','category':'holiday','description':'Gesetzlicher Feiertag in Nordrhein-Westfalen.'},
+            {'id':'holiday-2026-labor','date':'2026-05-01','title':'Tag der Arbeit','category':'holiday','description':'Gesetzlicher Feiertag in Deutschland.'},
+            {'id':'holiday-2026-ascension','date':'2026-05-14','title':'Christi Himmelfahrt','category':'holiday','description':'Gesetzlicher Feiertag in Nordrhein-Westfalen.'},
+            {'id':'holiday-2026-whit-monday','date':'2026-05-25','title':'Pfingstmontag','category':'holiday','description':'Gesetzlicher Feiertag in Nordrhein-Westfalen.'},
+            {'id':'holiday-2026-corpus-christi','date':'2026-06-04','title':'Fronleichnam','category':'holiday','description':'Gesetzlicher Feiertag in Nordrhein-Westfalen.'},
+            {'id':'holiday-2026-unity','date':'2026-10-03','title':'Tag der Deutschen Einheit','category':'holiday','description':'Gesetzlicher Feiertag in Deutschland.'},
+            {'id':'wow-2026-hallows-end','date':'2026-10-19','endDate':'2026-11-02','title':'Schlotternächte','category':'wow','description':'WoW-Feiertag vom 19. Oktober bis 2. November 2026.','link':'https://www.wowhead.com/guide/world-events/holidays/hallows-end'},
+            {'id':'holiday-2026-all-saints','date':'2026-11-01','title':'Allerheiligen','category':'holiday','description':'Gesetzlicher Feiertag in Nordrhein-Westfalen.'},
+            {'id':'wow-2026-day-dead','date':'2026-11-01','endDate':'2026-11-03','title':'Tag der Toten','category':'wow','description':'WoW-Feiertag vom 1. bis 3. November 2026.','link':'https://www.wowhead.com/events'},
+            {'id':'wow-2026-anniversary','date':'2026-11-17','endDate':'2026-12-08','title':'WoW – 22. Jubiläum','category':'wow','description':'World of Warcraft feiert sein 22. Jubiläum vom 17. November bis 8. Dezember 2026.','link':'https://www.wowhead.com/events'},
+            {'id':'wow-2026-pilgrim','date':'2026-11-22','endDate':'2026-11-29','title':'Pilgerfreuden','category':'wow','description':'WoW-Feiertag vom 22. bis 29. November 2026.','link':'https://www.wowhead.com/events'},
+            {'id':'wow-2026-winter-veil','date':'2026-12-15','endDate':'2027-01-02','title':'Winterhauchfest','category':'wow','description':'WoW-Feiertag vom 15. Dezember 2026 bis 2. Januar 2027.','link':'https://www.wowhead.com/events'},
+            {'id':'holiday-2026-christmas1','date':'2026-12-25','title':'1. Weihnachtstag','category':'holiday','description':'Gesetzlicher Feiertag in Deutschland.'},
+            {'id':'holiday-2026-christmas2','date':'2026-12-26','title':'2. Weihnachtstag','category':'holiday','description':'Gesetzlicher Feiertag in Deutschland.'}
+        ],
         'news': [
             {'id':'bis-tool-01112026','date':'2026-11-01','title':'BiS-Tool: Download & mobile Nutzung','summary':'Das Waschi-BiS-Tool gibt es nun auch im Downloadbereich als lokale Datei. Gleichzeitig wurde die Webversion für Smartphones überarbeitet.','body':'Das Waschi-BiS-Tool wurde weiter verbessert: Ihr könnt es jetzt auch als lokale Datei herunterladen und die Webversion wurde für die Nutzung auf Smartphones angepasst.','published':True},
             {'id':'charakterzuordnung-01112026','date':'2026-11-01','title':'Charaktere ihren Spielern zugeordnet','summary':'Fast alle Gildencharaktere sind inzwischen den richtigen Spielern zugeordnet. Wer sein Profil ergänzen möchte, kann sich bei Lentor im Discord melden.','body':'Fast alle Gildencharaktere sind inzwischen den richtigen Spielern zugeordnet. Wenn ihr euch auf eurem Spielerprofil zusätzlich mit einem Foto und einem kleinen persönlichen Text verewigen möchtet, meldet euch einfach bei Lentor im Discord.','published':True},
