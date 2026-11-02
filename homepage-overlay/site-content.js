@@ -19,11 +19,20 @@ async function renderDiscordOnline(){
  if(!box)return;
  try{
    const data=await api('/api/discord-online');
-   if(!data.ok){box.innerHTML='<span class="hero-discord-empty">Discord-Status derzeit nicht verfügbar.</span>';if(count)count.textContent='Offline-Daten nicht verfügbar';return}
-   if(count)count.textContent=(data.online||0)+' Mitglied'+((data.online||0)===1?'':'er')+' online';
+   if(!data.ok){
+     box.innerHTML='<span class="hero-discord-empty">Discord-Status derzeit nicht verfügbar.</span>';
+     if(count)count.textContent='Verbindung nicht verfügbar';
+     return;
+   }
+   const online=Number(data.online||0),total=Number(data.total||0);
+   if(count)count.textContent=online+' Mitglied'+(online===1?'':'er')+' online'+(total?' · '+total+' insgesamt':'');
+   if(data.memberListAvailable===false){
+     box.innerHTML='<span class="hero-discord-empty">Live-Status direkt über den Waschi-Bot.<br>Einzelne Online-Namen werden von Discord über die Bot-REST-API nicht bereitgestellt.</span>';
+     return;
+   }
    const rows=(data.members||[]).slice(0,5);
-   if(!rows.length){box.innerHTML='<span class="hero-discord-empty">Gerade niemand sichtbar online.</span>';return}
-   box.innerHTML=rows.map(m=>{const avatar=safeLink(m.avatar);const img=avatar?'<img class="hero-discord-avatar" src="'+esc(avatar)+'" alt="">':'<span class="hero-discord-avatar hero-discord-fallback">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span>';return '<div class="hero-discord-member">'+img+'<span class="hero-discord-member-name">'+esc(m.name||m.username||'Discord-Mitglied')+'</span><span class="hero-discord-status '+esc(m.status||'online')+'" aria-label="'+esc(m.status||'online')+'"></span></div>'}).join('')+((data.online||0)>rows.length?'<div class="hero-discord-more">+'+esc((data.online||0)-rows.length)+' weitere online</div>':'');
+   if(!rows.length){box.innerHTML='<span class="hero-discord-empty">Aktuell keine einzelnen Online-Namen verfügbar.</span>';return}
+   box.innerHTML=rows.map(m=>{const avatar=safeLink(m.avatar);const img=avatar?'<img class="hero-discord-avatar" src="'+esc(avatar)+'" alt="">':'<span class="hero-discord-avatar hero-discord-fallback">'+esc((m.name||'?').slice(0,1).toUpperCase())+'</span>';return '<div class="hero-discord-member">'+img+'<span class="hero-discord-member-name">'+esc(m.name||m.username||'Discord-Mitglied')+'</span><span class="hero-discord-status '+esc(m.status||'online')+'" aria-label="'+esc(m.status||'online')+'"></span></div>'}).join('')+((online)>rows.length?'<div class="hero-discord-more">+'+esc(online-rows.length)+' weitere online</div>':'');
  }catch(e){
    box.innerHTML='<span class="hero-discord-empty">Discord-Status derzeit nicht verfügbar.</span>';
    if(count)count.textContent='Verbindung nicht verfügbar';
