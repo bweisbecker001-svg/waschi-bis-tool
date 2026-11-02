@@ -308,42 +308,40 @@ def discord_bot_guild(token):
 
 @app.get("/api/discord-online")
 def discord_online():
-    token=os.environ.get("DISCORD_BOT_TOKEN","").strip()
-    if not token:
-        return jsonify({"ok":False,"online":0,"members":[],"error":"Waschi-Bot ist nicht konfiguriert"}),200
-    try:
-        guild_ref=discord_bot_guild(token)
-        guild_id=str(guild_ref.get("id") or "")
-        guild=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}?with_counts=true",token)
-        online=int(guild.get("approximate_presence_count") or 0)
-        total=int(guild.get("approximate_member_count") or guild.get("member_count") or 0)
-        voice=load_voice_snapshot(max_age=120)
+    voice=load_voice_snapshot(max_age=120)
+    if voice.get("available"):
         return jsonify({
             "ok":True,
             "source":"altare-gateway",
-            "server":guild.get("name") or guild_ref.get("name") or "Waschi",
-            "online":online,
-            "total":total,
+            "server":"Waschi",
+            "online":None,
+            "total":None,
             "members":[],
             "memberListAvailable":False,
-            "voiceAvailable":bool(voice.get("available")),
-            "voiceStale":bool(voice.get("stale")),
+            "voiceAvailable":True,
+            "voiceStale":False,
             "voiceMembers":int(voice.get("voiceMembers") or 0),
             "voiceChannels":voice.get("channels") or [],
             "voiceUpdatedAt":voice.get("updatedAt"),
             "botAlwaysOn":True,
             "statusText":"Voice-Kanäle live über den Waschi-Bot auf Altare"
         })
-    except Exception as exc:
-        return jsonify({
-            "ok":False,
-            "online":0,
-            "members":[],
-            "voiceAvailable":False,
-            "voiceChannels":[],
-            "error":"Discord-Status über Waschi-Bot nicht verfügbar",
-            "detail":str(exc)[:180]
-        }),200
+
+    return jsonify({
+        "ok":True,
+        "source":"altare-gateway",
+        "server":"Waschi",
+        "online":None,
+        "total":None,
+        "members":[],
+        "memberListAvailable":False,
+        "voiceAvailable":False,
+        "voiceStale":bool(voice.get("stale")),
+        "voiceMembers":0,
+        "voiceChannels":[],
+        "botAlwaysOn":True,
+        "statusText":"Waschi-Bot auf Altare verbunden; Voice-Snapshot derzeit nicht aktuell"
+    })
 
 @app.get("/api/site-auth/login")
 def auth_login():
