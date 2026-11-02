@@ -20,6 +20,13 @@ function renderHomeNews(){
  list.innerHTML=rows.map(n=>'<a class="news" href="/news/?id='+encodeURIComponent(n.id)+'" style="text-decoration:none;color:inherit"><div class="news-thumb"></div><div><span class="date">'+esc(fmtDate(n.date))+'</span><strong>'+esc(n.title)+'</strong></div><div class="arrow">›</div></a>').join('');
  const head=list.closest('.panel')?.querySelector('.panel-head');if(head&&S.auth?.canNews&&!head.querySelector('[data-news-manage]')){const a=document.createElement('a');a.href='/news/?admin=1';a.dataset.newsManage='1';a.className='panel-link';a.textContent='News verwalten →';head.appendChild(a)}
 }
+function renderHomeCalendarPreview(){
+ const box=document.querySelector('[data-home-calendar-preview]');if(!box)return;
+ const now=new Date();const today=[now.getFullYear(),String(now.getMonth()+1).padStart(2,'0'),String(now.getDate()).padStart(2,'0')].join('-');
+ const rows=(S.content.calendar||[]).filter(e=>(e.endDate||e.date)>=today).sort((a,b)=>(String(a.date||'')+String(a.time||'')).localeCompare(String(b.date||'')+String(b.time||''))).slice(0,4);
+ if(!rows.length){box.innerHTML='<p class="home-calendar-empty">Aktuell sind keine kommenden Termine eingetragen.</p>';return}
+ box.innerHTML=rows.map(e=>{const d=new Date((e.date||'')+'T12:00:00');const date=isNaN(d)?'':new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit'}).format(d);return '<a class="home-calendar-item" href="/calendar/"><span class="home-calendar-date">'+esc(date)+'</span><span class="home-calendar-copy"><strong>'+esc(e.title||'Termin')+'</strong><small>'+esc(catLabel(e.category))+(e.time?' · '+esc(e.time):'')+'</small></span></a>'}).join('');
+}
 function newsForm(existing){
  const n=existing||{};const box=document.createElement('section');box.className='article-panel site-admin-panel';
  box.innerHTML='<h2>'+(n.id?'News bearbeiten':'Neue News erstellen')+'</h2><form data-news-form><input type="hidden" name="id" value="'+esc(n.id||'')+'"><label>Titel<input name="title" required maxlength="180" value="'+esc(n.title||'')+'"></label><label>Datum<input name="date" type="date" required value="'+esc(n.date||new Date().toISOString().slice(0,10))+'"></label><label>Kurztext<textarea name="summary" rows="3" maxlength="700">'+esc(n.summary||'')+'</textarea></label><label>Vollständiger Text<textarea name="body" rows="8" maxlength="8000">'+esc(n.body||'')+'</textarea></label><label class="check"><input name="published" type="checkbox" '+(n.published===false?'':'checked')+'> Veröffentlichen</label><div class="article-actions"><button class="btn gold" type="submit">Speichern</button>'+(n.id?'<button class="btn dark" type="button" data-delete-news>Löschen</button>':'')+'</div><p class="site-form-status" data-status></p></form>';
@@ -62,7 +69,7 @@ async function loadContent(){try{S.content=await api('/api/site-content')}catch(
 async function boot(){
  injectStyles();addNav();
  try{S.auth=await api('/api/site-auth/status')}catch(e){S.auth={configured:false,user:null}}updateLogin();
- await loadContent();renderHomeNews();renderNews();
+ await loadContent();renderHomeNews();renderHomeCalendarPreview();renderNews();
  if(document.querySelector('[data-calendar-root]')){S.month=new Date();S.month.setDate(1);renderCalendar();initCalendarAdmin();document.querySelector('[data-prev]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()-1);renderCalendar()});document.querySelector('[data-next]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()+1);renderCalendar()})}
  const q=new URLSearchParams(location.search);if(q.get('auth')==='setup'){const m=document.querySelector('[data-auth-message]');if(m){m.hidden=false;m.textContent='Discord-Login ist technisch vorbereitet. Es fehlen noch Discord Client-ID und Client-Secret in Vercel.'}}
 }
