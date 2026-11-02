@@ -1,6 +1,6 @@
 (function(){
 'use strict';
-const S={auth:null,content:{calendar:[],news:[]},month:new Date()};
+const S={auth:null,content:{calendar:[],news:[]},month:new Date(),calendarFilter:'all'};
 function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function fmtDate(v){if(!v)return'';const d=new Date(v+'T12:00:00');return new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'long',year:'numeric'}).format(d)}
 function safeLink(v){try{const u=new URL(v,location.origin);return ['http:','https:'].includes(u.protocol)?u.href:''}catch(e){return''}}
@@ -42,19 +42,20 @@ function renderNews(){
  if(S.auth?.canNews&&(new URLSearchParams(location.search).get('admin')==='1'||true)){const main=document.querySelector('.news-page');if(main&&!main.querySelector('[data-news-form]')){main.insertBefore(newsForm(),main.querySelector('.news-back'))}}
 }
 function catLabel(c){return({holiday:'Feiertag',wow:'WoW',waschi:'Waschi','patch-season':'Patch & Saison'})[c]||'Waschi'}
-function eventCard(e){return '<button class="cal-event cat-'+esc(e.category||'waschi')+'" data-event-id="'+esc(e.id)+'"><strong>'+esc(e.time?e.time+' ':'')+esc(e.title)+'</strong></button>'}
+function catIcon(c){return({holiday:'▣',wow:'W',waschi:'🐾','patch-season':'⚒'})[c]||'•'}
+function eventCard(e){return '<button class="cal-event cat-'+esc(e.category||'waschi')+'" data-event-id="'+esc(e.id)+'"><strong>'+esc(catIcon(e.category))+' '+esc(e.time?e.time+' ':'')+esc(e.title)+'</strong></button>'}
 function daysInMonth(y,m){return new Date(y,m+1,0).getDate()}
 function renderCalendar(){
  const root=document.querySelector('[data-calendar-root]');if(!root)return;
  const y=S.month.getFullYear(),m=S.month.getMonth();document.querySelector('[data-calendar-title]').textContent=new Intl.DateTimeFormat('de-DE',{month:'long',year:'numeric'}).format(S.month);
  const first=(new Date(y,m,1).getDay()+6)%7;const total=daysInMonth(y,m);let cells='';
- for(let i=0;i<42;i++){const d=i-first+1;const inMonth=d>=1&&d<=total;let date='';let events=[];if(inMonth){date=[y,String(m+1).padStart(2,'0'),String(d).padStart(2,'0')].join('-');events=(S.content.calendar||[]).filter(e=>e.date===date)}cells+='<div class="cal-day '+(inMonth?'':'muted')+'" '+(inMonth?'data-date="'+date+'"':'')+'><span class="cal-num">'+(inMonth?d:'')+'</span>'+events.map(eventCard).join('')+'</div>'}
+ for(let i=0;i<42;i++){const d=i-first+1;const inMonth=d>=1&&d<=total;let date='';let events=[];if(inMonth){date=[y,String(m+1).padStart(2,'0'),String(d).padStart(2,'0')].join('-');events=(S.content.calendar||[]).filter(e=>e.date===date&&(S.calendarFilter==='all'||e.category===S.calendarFilter))}cells+='<div class="cal-day '+(inMonth?'':'muted')+'" '+(inMonth?'data-date="'+date+'"':'')+'><span class="cal-num">'+(inMonth?d:'')+'</span>'+events.map(eventCard).join('')+'</div>'}
  root.innerHTML=cells;
  root.querySelectorAll('.cal-day[data-date]').forEach(c=>c.addEventListener('dblclick',()=>{if(S.auth?.canCalendar)openEventForm({date:c.dataset.date})}));
  root.querySelectorAll('[data-event-id]').forEach(b=>b.addEventListener('click',()=>{const e=S.content.calendar.find(x=>x.id===b.dataset.eventId);showEvent(e)}));
  renderUpcoming();
 }
-function renderUpcoming(){const box=document.querySelector('[data-upcoming]');if(!box)return;const today=new Date().toISOString().slice(0,10);const rows=(S.content.calendar||[]).filter(e=>e.date>=today).sort((a,b)=>(a.date+a.time).localeCompare(b.date+b.time)).slice(0,4);box.innerHTML=rows.length?rows.map(e=>'<button data-event-id="'+esc(e.id)+'"><span>'+esc(fmtDate(e.date))+'</span><strong>'+esc(e.title)+'</strong></button>').join(''):'<p>Keine kommenden Termine eingetragen.</p>';box.querySelectorAll('[data-event-id]').forEach(b=>b.onclick=()=>showEvent(S.content.calendar.find(x=>x.id===b.dataset.eventId)))}
+function renderUpcoming(){const box=document.querySelector('[data-upcoming]');if(!box)return;const today=new Date().toISOString().slice(0,10);const rows=(S.content.calendar||[]).filter(e=>e.date>=today&&(S.calendarFilter==='all'||e.category===S.calendarFilter)).sort((a,b)=>(String(a.date||'')+String(a.time||'')).localeCompare(String(b.date||'')+String(b.time||''))).slice(0,4);box.innerHTML=rows.length?rows.map(e=>'<button data-event-id="'+esc(e.id)+'"><span>'+esc((e.date||'').slice(8,10)+'.'+(e.date||'').slice(5,7)+'.')+'</span><strong>'+esc(catIcon(e.category))+' '+esc(e.title)+'</strong></button>').join(''):'<p>Keine kommenden Termine für diesen Filter.</p>';box.querySelectorAll('[data-event-id]').forEach(b=>b.onclick=()=>showEvent(S.content.calendar.find(x=>x.id===b.dataset.eventId)))}
 function showEvent(e){if(!e)return;const box=document.querySelector('[data-event-detail]');if(!box)return;box.innerHTML='<h3>'+esc(e.title)+'</h3><p><strong>'+esc(fmtDate(e.date))+(e.time?' · '+esc(e.time):'')+'</strong></p><p>'+esc(e.description||'')+'</p>'+(safeLink(e.link)?'<p><a class="btn dark" target="_blank" rel="noopener" href="'+esc(safeLink(e.link))+'">Link öffnen</a></p>':'')+(S.auth?.canCalendar?'<div class="article-actions"><button class="btn gold" data-edit>Bearbeiten</button><button class="btn dark" data-delete>Löschen</button></div>':'');box.querySelector('[data-edit]')?.addEventListener('click',()=>openEventForm(e));box.querySelector('[data-delete]')?.addEventListener('click',()=>deleteEvent(e.id))}
 function openEventForm(e){if(!S.auth?.canCalendar)return;const dlg=document.querySelector('[data-event-dialog]');const f=dlg.querySelector('form');['id','title','date','endDate','time','endTime','category','description','link'].forEach(k=>{if(f.elements[k])f.elements[k].value=e?.[k]||''});dlg.showModal()}
 async function deleteEvent(id){if(!confirm('Termin wirklich löschen?'))return;await api('/api/site-calendar?id='+encodeURIComponent(id),{method:'DELETE'});await loadContent();renderCalendar();document.querySelector('[data-event-detail]').innerHTML=''}
@@ -70,7 +71,7 @@ async function boot(){
  injectStyles();addNav();
  try{S.auth=await api('/api/site-auth/status')}catch(e){S.auth={configured:false,user:null}}updateLogin();
  await loadContent();renderHomeNews();renderHomeCalendarPreview();renderNews();
- if(document.querySelector('[data-calendar-root]')){S.month=new Date();S.month.setDate(1);renderCalendar();initCalendarAdmin();document.querySelector('[data-prev]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()-1);renderCalendar()});document.querySelector('[data-next]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()+1);renderCalendar()})}
+ if(document.querySelector('[data-calendar-root]')){S.month=new Date();S.month.setDate(1);renderCalendar();initCalendarAdmin();document.querySelector('[data-prev]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()-1);renderCalendar()});document.querySelector('[data-next]')?.addEventListener('click',()=>{S.month.setMonth(S.month.getMonth()+1);renderCalendar()});document.querySelectorAll('[data-calendar-filters] [data-filter]').forEach(btn=>btn.addEventListener('click',()=>{S.calendarFilter=btn.dataset.filter||'all';document.querySelectorAll('[data-calendar-filters] [data-filter]').forEach(x=>x.classList.toggle('active',x===btn));renderCalendar()}))}
  const q=new URLSearchParams(location.search);if(q.get('auth')==='setup'){const m=document.querySelector('[data-auth-message]');if(m){m.hidden=false;m.textContent='Discord-Login ist technisch vorbereitet. Es fehlen noch Discord Client-ID und Client-Secret in Vercel.'}}
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',boot);else boot();
