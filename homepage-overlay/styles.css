@@ -176,3 +176,52 @@ textarea,
 option{
   letter-spacing:.02em;
 }
+
+
+/* WASCHI HEADER-LOGO SCHUTZZONE – SYMMETRISCH */
+:root{
+  --waschi-logo-clearance:38px;
+}
+
+/* Das große Headerlogo darf überstehen, ohne Inhalte darunter zu verdecken.
+   Es wird ausschließlich vertikal Platz geschaffen – keine seitliche Verschiebung. */
+@media (min-width:821px){
+  body > .header + .hero{
+    padding-top:var(--waschi-logo-clearance)!important;
+  }
+
+  body > .header + main.calendar-page{
+    padding-top:calc(20px + var(--waschi-logo-clearance))!important;
+  }
+
+  body > .header + main.subpage{
+    padding-top:calc(70px + var(--waschi-logo-clearance))!important;
+  }
+
+  body > .header + main.team-page,
+  body > .header + main.member-profile-page{
+    padding-top:calc(56px + var(--waschi-logo-clearance))!important;
+  }
+
+  body > .header + main.expansions-page{
+    padding-top:calc(64px + var(--waschi-logo-clearance))!important;
+  }
+}
+
+/* Auf kleineren Ansichten ebenfalls Abstand, aber etwas kompakter. */
+@media (max-width:820px){
+  body > .header + .hero{
+    padding-top:30px!important;
+  }
+
+  body > .header + main.calendar-page{
+    padding-top:42px!important;
+  }
+
+  body > .header + main.subpage,
+  body > .header + main.team-page,
+  body > .header + main.member-profile-page,
+  body > .header + main.expansions-page{
+    padding-top:68px!important;
+  }
+}
