@@ -27,7 +27,13 @@ function prepareEvent(ev){
   if(!ev || ev.dataset.waschiStyled==='1') return;
   const title=ev.querySelector('.event-mini-title');
   if(title){const full=title.textContent.trim();title.dataset.fullTitle=full;title.textContent=shortTitle(full);ev.title=full;}
-  const icon=ev.querySelector('.event-mini-icon');if(icon) icon.textContent='';
+  const icon=ev.querySelector('.event-mini-icon');
+  const copy=ev.querySelector('.event-mini-copy');
+  const mini=ev.querySelector('.event-mini');
+  if(icon){
+    icon.textContent='';
+    if(mini && copy && icon.previousElementSibling!==null) mini.insertBefore(icon,copy);
+  }
   ev.dataset.waschiStyled='1';
 }
 function prepareUpcoming(root){
@@ -62,6 +68,9 @@ function observe(){
   if(up)new MutationObserver(cb).observe(up,opts);
   if(detail)new MutationObserver(cb).observe(detail,opts);
 }
-function init(){moveAddButton();cleanLegend();styleCalendar();observe()}
+function removePermissions(){
+  document.querySelectorAll('[data-calendar-perms],.permissions-box').forEach(el=>el.remove());
+}
+function init(){removePermissions();moveAddButton();cleanLegend();styleCalendar();observe()}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
