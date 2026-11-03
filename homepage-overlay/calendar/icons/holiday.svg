@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240">
+<defs><radialGradient id="b"><stop stop-color="#174d7a"/><stop offset="1" stop-color="#07131f"/></radialGradient><linearGradient id="g"><stop stop-color="#ffe49a"/><stop offset=".45" stop-color="#c98a25"/><stop offset="1" stop-color="#6b4314"/></linearGradient></defs>
+<path d="M120 8l26 14 31-2 19 25 25 17-2 31 13 27-14 27 2 31-25 17-19 25-31-2-26 14-26-14-31 2-19-25-25-17 2-31-13-27 14-27-2-31 25-17 19-25 31 2z" fill="url(#g)" stroke="#fff0a8" stroke-width="3"/>
+<circle cx="120" cy="120" r="82" fill="url(#b)" stroke="#113451" stroke-width="6"/>
+<g transform="translate(49 52)"><rect x="18" y="28" width="106" height="92" rx="8" fill="#efe1bb" stroke="#8a541c" stroke-width="7"/><rect x="18" y="28" width="106" height="24" fill="#9e3328"/><path d="M38 21v25M67 21v25M96 21v25" stroke="#d99a34" stroke-width="8" stroke-linecap="round"/><g stroke="#a88b59" stroke-width="2"><path d="M30 68h82M30 87h82M30 106h82"/><path d="M50 57v58M72 57v58M94 57v58"/></g><circle cx="17" cy="112" r="12" fill="#f4c74d"/><circle cx="128" cy="112" r="12" fill="#f4c74d"/></g>
+<path d="M120 13l8 12-8 12-8-12z" fill="#2dd4ff" stroke="#fff0a8" stroke-width="3"/>
+</svg>
