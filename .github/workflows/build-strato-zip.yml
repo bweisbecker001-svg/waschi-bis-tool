@@ -2,7 +2,7 @@ name: Build STRATO Test ZIP
 
 on:
   push:
-    branches: [main]
+    branches: [main, calendar-phase1-five-concepts]
     paths:
       - ".github/workflows/build-strato-zip.yml"
       - "homepage-overlay/**"
@@ -17,6 +17,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate STRATO PHP backend
+        run: |
+          set -eu
+          php -l strato-migration/api/index.php
+          php -l strato-migration/private/config.php
+          test -f homepage-overlay/calendar/index.html
+          test -f homepage-overlay/assets/calendar-ui-corner.svg
+          test -f homepage-overlay/assets/calendar-ui-divider.svg
+          test -f homepage-overlay/assets/calendar-ui-plaque.svg
       - name: Assemble STRATO package
         run: |
           set -eu
@@ -32,7 +41,7 @@ jobs:
       - name: Upload ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: Waschi_STRATO_Test
+          name: Waschi_STRATO_Kalender_Test
           path: Waschi_STRATO_Test.zip
           if-no-files-found: error
           retention-days: 7
