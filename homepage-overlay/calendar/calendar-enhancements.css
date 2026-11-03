@@ -1,0 +1,47 @@
+/* Waschi Kalender – visuelle Termin-Embleme und zweispaltige Tagesbelegung */
+.calendar-side > .calendar-actions{width:100%;margin:0 0 14px;display:flex}
+.calendar-side > .calendar-actions:has([hidden]){display:none}
+.calendar-side > .calendar-actions .btn{width:100%;min-height:48px;justify-content:center}
+
+.cal-event-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;margin-top:4px}
+.cal-event-grid .cal-event{margin:0;min-width:0;min-height:58px;padding:3px 4px;border-radius:8px}
+.cal-event-grid .event-mini{display:grid!important;grid-template-columns:42px minmax(0,1fr)!important;gap:4px!important;align-items:center!important}
+.cal-event-grid .event-mini-icon{width:42px!important;height:42px!important;border:0!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;font-size:0!important;filter:drop-shadow(0 2px 4px #000a)}
+.cal-event-grid .event-mini-copy{min-width:0;position:relative;padding:5px 7px 6px;background:linear-gradient(180deg,#20242c,#0c0f14);border:1px solid #b77c27;clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%);box-shadow:inset 0 0 0 1px #f1cf6b22,0 2px 5px #0008;text-align:center}
+.cal-event-grid .event-mini-copy:after{content:"";position:absolute;left:14%;right:14%;bottom:2px;height:1px;background:linear-gradient(90deg,transparent,#e6b64e,transparent)}
+.cal-event-grid .event-mini-time{display:block;color:#f8d979!important;font-size:7px!important;font-weight:900;margin:0 0 1px!important;white-space:nowrap}
+.cal-event-grid .event-mini-title{display:block;color:#fff4d1!important;font:800 8px/1.05 Georgia,serif!important;white-space:nowrap;overflow:hidden;text-overflow:clip;text-shadow:0 1px 2px #000}
+
+.cal-event.cat-holiday .event-mini-icon{background-image:url('/calendar/icons/holiday.svg')!important}
+.cal-event.cat-wow .event-mini-icon{background-image:url('/calendar/icons/wow.svg')!important}
+.cal-event.cat-waschi .event-mini-icon{background-image:url('/calendar/icons/waschi.svg')!important}
+.cal-event.cat-patch-season .event-mini-icon{background-image:url('/calendar/icons/patch-season.svg')!important}
+
+.calendar-legend{align-items:stretch;gap:14px}
+.calendar-legend > strong{align-self:center}
+.legend-item{display:flex!important;flex-direction:column;justify-content:flex-end;align-items:center;gap:0!important;min-width:150px;padding:0!important;font-size:0!important}
+.legend-item .legend-dot{display:block!important;width:112px!important;height:92px!important;border:0!important;border-radius:0!important;background-color:transparent!important;background-repeat:no-repeat!important;background-position:center bottom!important;background-size:contain!important;box-shadow:none!important;font-size:0!important;filter:drop-shadow(0 4px 8px #000a)}
+.legend-item .legend-dot:after{display:block;position:relative;top:75px;left:50%;transform:translateX(-50%);width:145px;padding:7px 10px;color:#fff3d0;background:linear-gradient(#252832,#0e1015);border:1px solid #c58a2e;clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%);font:800 13px Georgia,serif;text-align:center;text-shadow:0 1px 2px #000;box-shadow:inset 0 0 0 1px #f5d77724,0 3px 8px #0009;white-space:nowrap}
+.legend-holiday{background-image:url('/calendar/icons/holiday.svg')!important}.legend-holiday:after{content:'Feiertage'}
+.legend-wow{background-image:url('/calendar/icons/wow.svg')!important}.legend-wow:after{content:'WoW-Events'}
+.legend-waschi{background-image:url('/calendar/icons/waschi.svg')!important}.legend-waschi:after{content:'Waschi-Termine'}
+.legend-patch{background-image:url('/calendar/icons/patch-season.svg')!important}.legend-patch:after{content:'Patch & Saison'}
+
+.upcoming-icon,.detail-icon{background-repeat:no-repeat!important;background-position:center!important;background-size:contain!important;font-size:0!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+.upcoming-cat-holiday .upcoming-icon,.detail-cat-holiday .detail-icon{background-image:url('/calendar/icons/holiday.svg')!important}
+.upcoming-cat-wow .upcoming-icon,.detail-cat-wow .detail-icon{background-image:url('/calendar/icons/wow.svg')!important}
+.upcoming-cat-waschi .upcoming-icon,.detail-cat-waschi .detail-icon{background-image:url('/calendar/icons/waschi.svg')!important}
+.upcoming-cat-patch-season .upcoming-icon,.detail-cat-patch-season .detail-icon{background-image:url('/calendar/icons/patch-season.svg')!important}
+
+@media(max-width:1050px){.calendar-side > .calendar-actions{grid-column:1/-1}}
+@media(max-width:760px){
+  .cal-day{min-height:96px!important}
+  .cal-event-grid{gap:3px}
+  .cal-event-grid .cal-event{min-height:44px;padding:2px}
+  .cal-event-grid .event-mini{grid-template-columns:26px minmax(0,1fr)!important;gap:2px!important}
+  .cal-event-grid .event-mini-icon{display:block!important;width:26px!important;height:26px!important}
+  .cal-event-grid .event-mini-copy{padding:4px 4px 5px}
+  .cal-event-grid .event-mini-title{font-size:6.5px!important}
+  .cal-event-grid .event-mini-time{font-size:6px!important}
+  .legend-item{min-width:120px}.legend-item .legend-dot{width:92px!important;height:78px!important}.legend-item .legend-dot:after{top:63px;width:118px;font-size:10px}
+}
