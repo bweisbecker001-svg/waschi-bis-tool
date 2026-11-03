@@ -283,6 +283,286 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
   .calendar-side{display:flex}
 }
 
+
+/* ===== Phase 3 – deutlich stärkerer Fantasy-/WoW-Look ===== */
+.calendar-page{
+  width:min(calc(100% - 34px),1510px);
+  padding-top:28px;
+}
+.calendar-page:before{
+  content:"";position:absolute;z-index:-1;left:50%;top:52px;width:min(1540px,98vw);height:calc(100% - 70px);
+  transform:translateX(-50%);
+  background:
+    radial-gradient(ellipse at 50% 8%,rgba(46,145,211,.20),transparent 38%),
+    radial-gradient(ellipse at 50% 92%,rgba(179,119,38,.10),transparent 34%),
+    linear-gradient(180deg,rgba(2,6,10,.15),rgba(2,5,8,.65));
+  filter:drop-shadow(0 30px 45px rgba(0,0,0,.65));
+  pointer-events:none
+}
+.calendar-hero-title{
+  position:relative;display:flex;flex-direction:column;align-items:center;
+  margin:0 0 8px;padding-top:64px
+}
+.calendar-crest{
+  position:absolute;z-index:4;top:-24px;left:50%;width:178px;height:auto;transform:translateX(-50%);
+  filter:drop-shadow(0 9px 12px #000c) drop-shadow(0 0 14px #33bfff66);
+  pointer-events:none
+}
+.calendar-title-plaque{
+  position:relative;z-index:3;width:min(930px,92vw);height:auto;min-height:154px;aspect-ratio:auto;
+  padding:54px 140px 22px;
+  display:flex;flex-direction:column;gap:2px;
+  background:
+    url('/assets/calendar-ui-plaque.svg') center/100% 100% no-repeat;
+  filter:drop-shadow(0 15px 18px #000d);
+}
+.calendar-title-main{
+  display:block;color:#f7dc82;font:900 clamp(30px,4.3vw,52px) Georgia,serif;
+  letter-spacing:.075em;line-height:1;text-transform:uppercase;
+  text-shadow:0 3px 2px #000,0 0 13px #ffc44a55
+}
+.calendar-title-sub{
+  display:block;margin-top:8px;color:#83dcff;font:800 10px/1.1 Arial,sans-serif;
+  letter-spacing:.32em;text-transform:uppercase;text-shadow:0 0 10px #3fc8ff
+}
+.calendar-ui:before{margin:-18px auto 12px;width:min(720px,78vw)}
+
+.calendar-filter-shell{
+  margin:0 36px 19px;padding:14px 34px;
+  border-width:2px;
+  background:
+    linear-gradient(90deg,transparent 0 5%,rgba(34,82,116,.15) 18% 82%,transparent 95%),
+    linear-gradient(180deg,#101a24f8,#060c12fb)
+}
+.calendar-filter-shell:before,.calendar-filter-shell:after{width:92px;height:92px;top:-17px}
+.calendar-filterbar{gap:11px}
+.calendar-filterbar>strong{
+  position:relative;padding-right:18px;font-size:20px
+}
+.calendar-filterbar>strong:after{
+  content:"";position:absolute;right:0;top:50%;width:7px;height:7px;transform:translateY(-50%) rotate(45deg);
+  background:#55d6ff;border:1px solid #f0ca6c;box-shadow:0 0 9px #55d6ff
+}
+.cal-filter{
+  min-height:42px;padding:8px 17px;border-radius:2px;
+  border-color:#74613f;
+  background:linear-gradient(180deg,#263847,#0d161f 70%,#080d12);
+  letter-spacing:.02em
+}
+.cal-filter:before{
+  content:"";width:17px;height:17px;display:inline-block;margin-right:7px;vertical-align:-3px;
+  background:center/contain no-repeat;filter:drop-shadow(0 0 4px #000)
+}
+.cal-filter[data-filter="holiday"]:before{background-image:url('/assets/calendar-icon-holiday.svg')}
+.cal-filter[data-filter="wow"]:before{background-image:url('/assets/calendar-icon-wow.svg')}
+.cal-filter[data-filter="waschi"]:before{background-image:url('/assets/calendar-icon-waschi.svg')}
+.cal-filter[data-filter="patch-season"]:before{background-image:url('/assets/calendar-icon-patch.svg')}
+.cal-filter[data-filter="all"]:before{
+  background-image:radial-gradient(circle,#8be7ff 0 25%,#356f92 27% 52%,#d0a650 54% 68%,transparent 70%)
+}
+
+.calendar-layout{gap:23px;padding:0 28px}
+.calendar-panel{
+  position:relative;overflow:visible;
+  border:5px solid #21170d;
+  outline:1px solid #9d783b;
+  background:#070c11;
+  box-shadow:
+    inset 0 0 0 2px #e5bc6338,
+    inset 0 0 0 9px #0e1821,
+    inset 0 0 42px #3ab4ff18,
+    0 22px 46px #000d
+}
+.calendar-panel:before,.calendar-panel:after{
+  width:118px;height:118px;top:-21px
+}
+.frame-rail{
+  position:absolute;z-index:10;top:55px;bottom:28px;width:54px;
+  background:url('/assets/calendar-ui-rail.svg') center/100% 100% no-repeat;
+  filter:drop-shadow(0 5px 9px #000b);
+  pointer-events:none
+}
+.frame-rail-left{left:-31px}
+.frame-rail-right{right:-31px;transform:scaleX(-1)}
+.frame-gem{
+  position:absolute;z-index:12;top:50%;width:22px;height:22px;border-radius:50%;
+  background:radial-gradient(circle at 38% 32%,#d8fbff,#55d4ff 25%,#175987 60%,#06121c 72%);
+  border:2px solid #d8af58;box-shadow:0 0 11px #48ceff,0 0 0 4px #171007
+}
+.frame-gem-left{left:-15px}.frame-gem-right{right:-15px}
+
+.calendar-monthbar{
+  min-height:92px;padding:13px 22px;
+  border-bottom:2px solid #9e7431;
+  background:
+    radial-gradient(ellipse at 50% -45%,rgba(98,205,255,.30),transparent 58%),
+    linear-gradient(180deg,#193a50 0,#102738 43%,#09131d 100%)
+}
+.calendar-monthbar:before{
+  content:"";position:absolute;left:21%;right:21%;top:9px;height:58px;
+  border:1px solid #ae8744;
+  background:linear-gradient(180deg,rgba(6,13,20,.40),rgba(8,17,26,.78));
+  clip-path:polygon(7% 0,93% 0,100% 50%,93% 100%,7% 100%,0 50%);
+  box-shadow:inset 0 0 18px #42c5ff1c
+}
+.calendar-monthbar h2{position:relative;z-index:2;font-size:clamp(30px,3.4vw,42px);letter-spacing:.07em}
+.month-arrow{
+  z-index:3;width:62px;height:54px;border-width:2px;
+  background:
+    radial-gradient(circle at 50% 50%,#183d57,#0c1822 68%),
+    linear-gradient(#31495d,#0b151e);
+  color:#ffe08a;text-shadow:0 0 9px #6cdfff
+}
+.calendar-week{
+  margin:0 14px;
+  border-left:1px solid #6b5432;border-right:1px solid #6b5432;
+  background:linear-gradient(#172a39,#0b151e)
+}
+.calendar-week span{
+  padding:11px 4px;font-size:16px;letter-spacing:.08em;text-transform:uppercase
+}
+.calendar-grid{
+  margin:0 14px 14px;padding:2px;gap:2px;
+  background:#5d4a30;
+  box-shadow:0 0 0 1px #111,inset 0 0 24px #000
+}
+.cal-day{
+  min-height:118px;
+  background:
+    linear-gradient(145deg,rgba(29,35,41,.98),rgba(13,18,23,.99)),
+    repeating-linear-gradient(135deg,#ffffff04 0 1px,transparent 1px 7px)
+}
+.cal-day:nth-child(7n),.cal-day:nth-child(7n-1){
+  background:
+    radial-gradient(circle at 85% 12%,#7b4a1720,transparent 34%),
+    linear-gradient(145deg,#24272a,#111519)
+}
+.cal-day:after{
+  content:"";position:absolute;inset:3px;border:1px solid #ffffff06;pointer-events:none
+}
+.cal-num{
+  min-width:31px;height:27px;
+  border:1px solid #8b703f;border-radius:50% 50% 42% 42%;
+  background:radial-gradient(circle,#263847,#0b1117 72%);
+  color:#f9dc86;box-shadow:0 0 0 2px #0007,0 2px 5px #0008
+}
+.cal-event{
+  min-height:49px;padding:6px 7px 6px 8px;border-width:1px;border-radius:2px;
+  clip-path:polygon(4px 0,calc(100% - 4px) 0,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0 calc(100% - 4px),0 4px)
+}
+.cal-event .event-mini-icon{
+  width:30px;height:30px;border:0;border-radius:0;
+  background:center/contain no-repeat!important;font-size:0;
+  filter:drop-shadow(0 2px 3px #000)
+}
+.cal-event.cat-holiday .event-mini-icon{background-image:url('/assets/calendar-icon-holiday.svg')!important}
+.cal-event.cat-wow .event-mini-icon{background-image:url('/assets/calendar-icon-wow.svg')!important}
+.cal-event.cat-waschi .event-mini-icon{background-image:url('/assets/calendar-icon-waschi.svg')!important}
+.cal-event.cat-patch-season .event-mini-icon{background-image:url('/assets/calendar-icon-patch.svg')!important}
+
+.calendar-side{gap:20px}
+.calendar-box{
+  border:3px solid #1c140c;
+  outline:1px solid #896a38;
+  box-shadow:inset 0 0 0 2px #d8ad5530,inset 0 0 0 8px #101923,0 18px 34px #000c
+}
+.calendar-box:before,.calendar-box:after{width:94px;height:94px;top:-16px}
+.calendar-box-head{
+  min-height:67px;padding:15px 17px 14px 68px;
+  background:
+    radial-gradient(circle at 16% 50%,#245a7c55,transparent 24%),
+    linear-gradient(180deg,#183347,#0b1924);
+  font-size:22px;letter-spacing:.025em
+}
+.calendar-box-head .box-icon{
+  left:15px;width:42px;height:42px;border-radius:50%;
+  background:url('/assets/calendar-ui-crest.svg') center 43%/88px auto no-repeat;
+  border:1px solid #b48b44;box-shadow:0 0 12px #3ecaff35,inset 0 0 9px #000
+}
+.box-icon-upcoming:after,.box-icon-detail:after{
+  content:"";position:absolute;inset:8px;background:center/contain no-repeat
+}
+.box-icon-upcoming:after{background-image:url('/assets/calendar-icon-wow.svg')}
+.box-icon-detail:after{background-image:url('/assets/calendar-icon-waschi.svg')}
+
+.upcoming{padding:13px 15px 17px}
+.upcoming button{
+  min-height:67px;margin:9px 0;padding:8px 10px;
+  border-radius:2px;border-color:#514c40;
+  clip-path:polygon(5px 0,100% 0,100% calc(100% - 5px),calc(100% - 5px) 100%,0 100%,0 5px)
+}
+.upcoming-icon{
+  width:46px;height:46px;border:0;border-radius:0;
+  background:center/contain no-repeat!important;font-size:0;
+  filter:drop-shadow(0 2px 4px #000)
+}
+.upcoming-cat-holiday .upcoming-icon{background-image:url('/assets/calendar-icon-holiday.svg')!important}
+.upcoming-cat-wow .upcoming-icon{background-image:url('/assets/calendar-icon-wow.svg')!important}
+.upcoming-cat-waschi .upcoming-icon{background-image:url('/assets/calendar-icon-waschi.svg')!important}
+.upcoming-cat-patch-season .upcoming-icon{background-image:url('/assets/calendar-icon-patch.svg')!important}
+
+.event-detail{
+  min-height:265px;padding:22px 22px 25px;
+  background:
+    radial-gradient(circle at 82% 15%,#2b78b04a,transparent 30%),
+    radial-gradient(circle at 20% 90%,#9b67251b,transparent 36%),
+    linear-gradient(150deg,#0b151e,#070b10)
+}
+.detail-icon{
+  width:62px;height:62px;border:0;border-radius:0;
+  background:center/contain no-repeat!important;font-size:0;
+  filter:drop-shadow(0 0 8px #35c7ff33)
+}
+.detail-cat-holiday .detail-icon{background-image:url('/assets/calendar-icon-holiday.svg')!important}
+.detail-cat-wow .detail-icon{background-image:url('/assets/calendar-icon-wow.svg')!important}
+.detail-cat-waschi .detail-icon{background-image:url('/assets/calendar-icon-waschi.svg')!important}
+.detail-cat-patch-season .detail-icon{background-image:url('/assets/calendar-icon-patch.svg')!important}
+.event-detail h3{font-size:24px;letter-spacing:.025em}
+
+.calendar-legend{
+  margin:22px 40px 0;padding:15px 24px;
+  border-width:2px;background:linear-gradient(180deg,#101923,#070d13)
+}
+.legend-dot{
+  width:38px;height:38px;border:0;border-radius:0;
+  background:center/contain no-repeat!important
+}
+.legend-holiday{background-image:url('/assets/calendar-icon-holiday.svg')!important}
+.legend-wow{background-image:url('/assets/calendar-icon-wow.svg')!important}
+.legend-waschi{background-image:url('/assets/calendar-icon-waschi.svg')!important}
+.legend-patch{background-image:url('/assets/calendar-icon-patch.svg')!important}
+.legend-item{font-weight:800;color:#efe4d0}
+
+@media(max-width:1050px){
+  .calendar-layout{padding:0 18px}
+  .frame-rail{display:none}
+  .frame-gem{display:none}
+}
+@media(max-width:760px){
+  .calendar-page{width:min(calc(100% - 10px),1510px);padding-top:16px}
+  .calendar-hero-title{padding-top:46px}
+  .calendar-crest{width:124px;top:-20px}
+  .calendar-title-plaque{width:96vw;min-height:112px;padding:40px 65px 14px}
+  .calendar-title-main{font-size:clamp(22px,7.6vw,34px)}
+  .calendar-title-sub{font-size:7px;letter-spacing:.20em;margin-top:5px}
+  .calendar-filter-shell{margin:0 4px 12px;padding:12px 10px}
+  .calendar-layout{padding:0 4px;gap:12px}
+  .calendar-panel{border-width:3px;outline:none}
+  .calendar-panel:before,.calendar-panel:after{width:74px;height:74px;top:-12px}
+  .calendar-monthbar{min-height:66px;padding:8px 9px}
+  .calendar-monthbar:before{left:16%;right:16%;height:44px}
+  .calendar-monthbar h2{font-size:clamp(20px,6vw,28px)}
+  .calendar-week,.calendar-grid{margin-left:6px;margin-right:6px}
+  .calendar-grid{margin-bottom:6px}
+  .cal-day{min-height:76px;padding:4px}
+  .cal-num{min-width:22px;height:21px;font-size:10px;border-radius:50%}
+  .cal-event{min-height:34px;padding:3px 4px;font-size:7px}
+  .cal-event .event-mini-icon{display:none}
+  .calendar-box:before,.calendar-box:after{width:64px;height:64px}
+  .calendar-legend{margin:12px 4px 0}
+  .legend-dot{width:30px;height:30px}
+}
+
 </style>
 </head>
 <body>
@@ -292,7 +572,8 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
 <main class="calendar-page">
 <section class="calendar-ui">
   <div class="calendar-hero-title">
-    <div class="calendar-title-plaque"><span class="calendar-title-icon">✦</span><span>Waschi Kalender</span></div>
+    <img class="calendar-crest" src="/assets/calendar-ui-crest.svg" alt="">
+    <div class="calendar-title-plaque"><span class="calendar-title-main">Waschi Kalender</span><span class="calendar-title-sub">Gilde · Raids · Azeroth</span></div>
   </div>
 
   <section class="calendar-filter-shell ornate-frame" data-calendar-filters>
@@ -311,6 +592,10 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
 
   <div class="calendar-layout">
     <section class="calendar-panel ornate-frame">
+      <span class="frame-rail frame-rail-left" aria-hidden="true"></span>
+      <span class="frame-rail frame-rail-right" aria-hidden="true"></span>
+      <span class="frame-gem frame-gem-left" aria-hidden="true"></span>
+      <span class="frame-gem frame-gem-right" aria-hidden="true"></span>
       <div class="calendar-monthbar">
         <button class="month-arrow" type="button" data-prev aria-label="Vorheriger Monat">‹</button>
         <h2 data-calendar-title>Kalender</h2>
@@ -322,12 +607,12 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
 
     <aside class="calendar-side">
       <section class="calendar-box ornate-frame">
-        <div class="calendar-box-head"><span class="box-icon">⌛</span><span>Nächste Termine</span></div>
+        <div class="calendar-box-head"><span class="box-icon box-icon-upcoming"></span><span>Nächste Termine</span></div>
         <div class="upcoming" data-upcoming></div>
       </section>
 
       <section class="calendar-box ornate-frame">
-        <div class="calendar-box-head"><span class="box-icon">✦</span><span>Termindetails</span></div>
+        <div class="calendar-box-head"><span class="box-icon box-icon-detail"></span><span>Termindetails</span></div>
         <div class="event-detail" data-event-detail><p>Wähle einen Termin im Kalender oder unter „Nächste Termine“ aus.</p></div>
       </section>
 
@@ -341,10 +626,10 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
 
   <div class="calendar-legend ornate-frame">
     <strong>Legende:</strong>
-    <span class="legend-item"><span class="legend-dot legend-holiday">▣</span>= Feiertage</span>
-    <span class="legend-item"><span class="legend-dot legend-wow">W</span>= WoW-Events</span>
-    <span class="legend-item"><span class="legend-dot legend-waschi">🐾</span>= Waschi-Termine</span>
-    <span class="legend-item"><span class="legend-dot legend-patch">⚒</span>= Patch &amp; Saison</span>
+    <span class="legend-item"><span class="legend-dot legend-holiday"></span>Feiertage</span>
+    <span class="legend-item"><span class="legend-dot legend-wow"></span>WoW-Events</span>
+    <span class="legend-item"><span class="legend-dot legend-waschi"></span>Waschi-Termine</span>
+    <span class="legend-item"><span class="legend-dot legend-patch"></span>Patch &amp; Saison</span>
   </div>
 </section>
 </main>
