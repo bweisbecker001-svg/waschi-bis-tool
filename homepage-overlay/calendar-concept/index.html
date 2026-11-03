@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Waschi Kalender – Grafikprototyp</title>
+<link rel="stylesheet" href="/styles.css">
+<style>
+:root{--cal-gold:#d5a347;--cal-gold2:#f4d77e;--cal-blue:#4ec7ff;--cal-panel:#07101a;--cal-line:#57462d}
+body{background:#030507;color:#f2eadc}
+.prototype{position:relative;z-index:2;width:min(calc(100% - 28px),1480px);margin:auto;padding:20px 0 64px}
+.prototype-note{width:max-content;max-width:100%;margin:0 auto 8px;padding:6px 14px;border:1px solid #775c2a;background:#09111bde;color:#c7b27b;border-radius:999px;font-size:11px;font-weight:900;letter-spacing:.12em;text-transform:uppercase}
+.wow-title{position:relative;width:min(820px,88vw);margin:0 auto 8px;aspect-ratio:1000/190}
+.wow-title img{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 12px 22px #000a)}
+.wow-title-inner{position:absolute;inset:0;display:grid;place-items:center;padding-top:2px;text-align:center}
+.wow-title small{display:block;margin-bottom:4px;color:#8fdfff;font-size:10px;font-weight:900;letter-spacing:.28em;text-transform:uppercase;text-shadow:0 0 10px #42b9ff}
+.wow-title strong{display:block;color:#f3d273;font:900 clamp(28px,4vw,48px) Georgia,serif;letter-spacing:.055em;text-transform:uppercase;text-shadow:0 3px 2px #000,0 0 14px #d9a13c66}
+.title-divider{display:block;width:min(610px,72vw);height:auto;margin:-11px auto 12px;filter:drop-shadow(0 0 7px #3bbfff44)}
+.filter-frame{position:relative;margin:0 16px 14px;padding:14px 22px;border:1px solid #72572d;background:linear-gradient(180deg,#101a24f5,#071018f5);box-shadow:inset 0 0 0 2px #f1cb6a10,inset 0 0 24px #1d6f9e18,0 11px 24px #0007}
+.filter-frame:before,.filter-frame:after{content:"";position:absolute;width:74px;height:74px;background:url('/assets/calendar-ui-corner.svg') center/contain no-repeat;pointer-events:none}
+.filter-frame:before{left:-12px;top:-12px}.filter-frame:after{right:-12px;top:-12px;transform:scaleX(-1)}
+.filters{position:relative;z-index:2;display:flex;align-items:center;justify-content:center;gap:9px;flex-wrap:wrap}
+.filters b{color:#ecd079;font:800 17px Georgia,serif;margin-right:8px}
+.fbutton{min-height:38px;padding:8px 15px;border:1px solid #6e5936;background:linear-gradient(#2b3945,#101821);color:#eee3d4;border-radius:4px;box-shadow:inset 0 1px #ffffff16,inset 0 -8px 12px #0006}
+.fbutton.active{border-color:#e0b758;background:linear-gradient(#1d6792,#0b2d45);color:#fff2c6;box-shadow:0 0 14px #2ac6ff55,inset 0 0 12px #5fd7ff2e}
+
+.master-frame{position:relative;padding:22px;margin:0 16px;background:linear-gradient(180deg,#0a121af5,#05090df8);border:1px solid #7c5c2b;box-shadow:inset 0 0 0 2px #f4ce6d16,inset 0 0 0 9px #101923b5,inset 0 0 40px #246a9822,0 20px 46px #000c}
+.master-frame:before,.master-frame:after,.master-corner-br,.master-corner-bl{content:"";position:absolute;z-index:4;width:112px;height:112px;background:url('/assets/calendar-ui-corner.svg') center/contain no-repeat;pointer-events:none}
+.master-frame:before{left:-18px;top:-18px}.master-frame:after{right:-18px;top:-18px;transform:scaleX(-1)}
+.master-corner-bl{left:-18px;bottom:-18px;transform:scaleY(-1)}.master-corner-br{right:-18px;bottom:-18px;transform:scale(-1)}
+.layout{position:relative;z-index:2;display:grid;grid-template-columns:minmax(0,2.15fr) minmax(300px,.82fr);gap:18px}
+.panel{position:relative;border:1px solid #6e552f;background:#081019;box-shadow:inset 0 0 0 2px #ffffff07,0 8px 20px #0008}
+.monthbar{display:grid;grid-template-columns:70px 1fr 70px;align-items:center;gap:12px;min-height:74px;padding:10px 14px;border-bottom:1px solid #9b7332;background:radial-gradient(circle at 50% -50%,#285e82,#112a3c 48%,#08141e)}
+.monthbar h1{margin:0;text-align:center;color:#f1cf72;font:900 clamp(27px,3.2vw,38px) Georgia,serif;letter-spacing:.04em;text-shadow:0 2px #000,0 0 10px #e3b14b40}
+.navbtn{position:relative;height:48px;border:1px solid #bd9143;background:linear-gradient(#304b60,#0d1a24);color:#f1d17b;font-size:34px;clip-path:polygon(13% 0,87% 0,100% 50%,87% 100%,13% 100%,0 50%);box-shadow:inset 0 0 13px #53bdfb22}
+.week{display:grid;grid-template-columns:repeat(7,1fr);border-bottom:1px solid #6e552f;background:linear-gradient(#1b2d3c,#0b1721)}
+.week span{padding:10px 4px;text-align:center;color:#dfbe6d;font:800 15px Georgia,serif;border-right:1px solid #4a4032}.week span:last-child{border-right:0}
+.grid{display:grid;grid-template-columns:repeat(7,1fr);gap:1px;background:#4c4031;padding:1px}
+.day{position:relative;min-height:112px;padding:7px;background:radial-gradient(circle at 90% 10%,#1c4b6d26,transparent 33%),linear-gradient(145deg,#1f252b,#10151a);overflow:hidden}
+.day:hover{background:radial-gradient(circle at 85% 10%,#2e78a54a,transparent 34%),linear-gradient(145deg,#29333c,#151b20)}
+.day.muted{opacity:.38;background:#090c10}
+.num{display:inline-grid;place-items:center;min-width:28px;height:25px;padding:0 6px;border:1px solid #665638;background:#0b1117dd;color:#f4d889;border-radius:3px;font:800 15px Georgia,serif}
+.event{position:relative;margin-top:5px;padding:6px 7px 6px 9px;border:1px solid;border-radius:4px;font-size:10px;font-weight:900;line-height:1.15;box-shadow:inset 0 0 12px #0007,0 2px 5px #0008}
+.event:before{content:"";position:absolute;left:3px;top:5px;bottom:5px;width:2px;background:#fff6;box-shadow:0 0 6px currentColor}.event time{display:block;margin-bottom:2px;color:#fff2c5;font-size:9px}
+.holiday{color:#ff7d85;border-color:#b83f49;background:linear-gradient(135deg,#7a2630,#3c1016)}.wow{color:#ffd15e;border-color:#a8841c;background:linear-gradient(135deg,#6d5514,#2f2509)}.waschi{color:#d49aff;border-color:#8454a8;background:linear-gradient(135deg,#573174,#271535)}.patch{color:#80dfff;border-color:#3a8caf;background:linear-gradient(135deg,#1d566e,#0b2835)}
+.side{display:flex;flex-direction:column;gap:16px}.sidebox{position:relative;border:1px solid #72592f;background:linear-gradient(#0c151e,#070c11);box-shadow:inset 0 0 0 2px #ffffff06,0 8px 18px #0007}
+.sidebox:before,.sidebox:after{content:"";position:absolute;z-index:3;width:60px;height:60px;background:url('/assets/calendar-ui-corner.svg') center/contain no-repeat;pointer-events:none}.sidebox:before{left:-9px;top:-9px}.sidebox:after{right:-9px;top:-9px;transform:scaleX(-1)}
+.sidehead{position:relative;z-index:2;padding:13px 15px 12px 48px;border-bottom:1px solid #7b5b2c;background:linear-gradient(#20384c,#0c1b27);color:#efcd75;font:800 20px Georgia,serif}.sidehead:before{content:"✦";position:absolute;left:17px;top:12px;color:#69d5ff;text-shadow:0 0 9px #52ceff}
+.upcoming{padding:9px 10px 12px}.upcoming-item{display:grid;grid-template-columns:43px 1fr 18px;gap:9px;align-items:center;margin:7px 0;padding:8px;border:1px solid #3c4d58;background:linear-gradient(#19232b,#0b1116);box-shadow:inset 0 0 0 1px #ffffff05}.medal{width:40px;height:40px;display:grid;place-items:center;border-radius:50%;border:1px solid #a9803c;background:radial-gradient(circle,#274f6d,#0a1721);color:#ffd16b;font-weight:900;box-shadow:inset 0 0 12px #4dccff26}.u-date{display:block;color:#edc970;font:900 11px Georgia,serif}.u-title{display:block;margin-top:2px;color:#eee4d5;font-size:12px;font-weight:900}.arrow{color:#caa555;font-size:21px}
+.detail{min-height:235px;padding:18px;background:radial-gradient(circle at 88% 8%,#316da93b,transparent 33%),linear-gradient(150deg,#0a141e,#080c11)}
+.detailtop{display:flex;gap:12px;align-items:center}.bigmedal{width:54px;height:54px;display:grid;place-items:center;border-radius:50%;border:2px solid #bf9141;background:radial-gradient(circle,#2e5571,#0c1822);color:#ffd476;font-size:26px;box-shadow:0 0 14px #3bc5ff3c}.detail h2{margin:0;color:#efcd76;font:800 21px Georgia,serif}.detail p{color:#cfc5b6;font-size:13px;line-height:1.55}.detail .meta{color:#fff0c1;font-weight:800}
+.legend{position:relative;z-index:2;display:flex;justify-content:center;gap:18px;flex-wrap:wrap;margin:14px 16px 0;padding:10px 16px;border:1px solid #6f552d;background:#091119e8}.legend b{color:#e9c96f}.legend span{font-size:12px;color:#d8cfbf}
+.mobile-hint{display:none}
+@media(max-width:1050px){.layout{grid-template-columns:1fr}.side{display:grid;grid-template-columns:1fr 1fr}.detailbox{grid-column:1/-1}}
+@media(max-width:760px){.prototype{width:min(calc(100% - 12px),1480px);padding-top:10px}.master-frame{margin:0;padding:12px}.filter-frame{margin:0 0 10px;padding:12px}.layout{gap:10px}.day{min-height:78px;padding:4px}.num{min-width:22px;height:20px;font-size:11px}.event{padding:4px 3px 4px 6px;font-size:8px}.event time{font-size:7px}.week span{font-size:10px}.monthbar{grid-template-columns:48px 1fr 48px;min-height:58px}.navbtn{height:38px}.side{display:flex}.master-frame:before,.master-frame:after,.master-corner-br,.master-corner-bl{width:78px;height:78px}.mobile-hint{display:block;margin:10px 0 0;text-align:center;color:#9f9585;font-size:10px}.prototype-note{font-size:9px}.wow-title small{font-size:8px}}
+</style>
+</head>
+<body>
+<div class="site-bg"></div>
+<header class="header"><div class="container navwrap"><a class="brand" href="/"><span class="brand-logo" aria-hidden="true"></span><strong>WASCHI</strong></a><button class="menu" aria-label="Menü">☰</button><nav class="nav"><a href="/"><span class="ico">⌂</span><span>Startseite</span></a><a href="/team/"><span class="ico">♟</span><span>Waschi Gilde</span></a><a href="/mythic/"><span class="ico">⚔</span><span>M+ Team</span></a><a href="/addons/"><span class="ico">⚙</span><span>Erweiterungen</span></a><a href="/bis/"><span class="ico">♣</span><span>BIS-Tools</span></a><a href="/streams/"><span class="ico">▣</span><span>Streams</span></a><a href="/community/"><span class="ico">◉</span><span>Community</span></a><a class="active" href="#"><span class="ico">▦</span><span>Kalender</span></a></nav><div class="rightnav"></div></div></header>
+
+<main class="prototype">
+<div class="prototype-note">Grafikprototyp · keine Änderung an der Live-Seite</div>
+<section class="wow-title"><img src="/assets/calendar-ui-plaque.svg" alt=""><div class="wow-title-inner"><div><small>Gilde · Raids · Azeroth</small><strong>Waschi Kalender</strong></div></div></section>
+<img class="title-divider" src="/assets/calendar-ui-divider.svg" alt="">
+
+<section class="filter-frame"><div class="filters"><b>Filter</b><button class="fbutton active">Alle</button><button class="fbutton">▣ Feiertage</button><button class="fbutton">ⓦ WoW</button><button class="fbutton">🐾 Waschi</button><button class="fbutton">⚒ Patch &amp; Saison</button></div></section>
+
+<section class="master-frame"><span class="master-corner-bl"></span><span class="master-corner-br"></span>
+<div class="layout">
+<section class="panel">
+<div class="monthbar"><button class="navbtn">‹</button><h1>November 2026</h1><button class="navbtn">›</button></div>
+<div class="week"><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span></div>
+<div class="grid">
+<div class="day muted"><span class="num">26</span></div><div class="day muted"><span class="num">27</span></div><div class="day muted"><span class="num">28</span></div><div class="day muted"><span class="num">29</span></div><div class="day muted"><span class="num">30</span></div><div class="day muted"><span class="num">31</span></div><div class="day"><span class="num">1</span></div>
+<div class="day"><span class="num">2</span></div><div class="day"><span class="num">3</span></div><div class="day"><span class="num">4</span></div><div class="day"><span class="num">5</span></div><div class="day"><span class="num">6</span><div class="event waschi"><time>20:00</time>Waschi M+ Abend</div></div><div class="day"><span class="num">7</span></div><div class="day"><span class="num">8</span></div>
+<div class="day"><span class="num">9</span></div><div class="day"><span class="num">10</span><div class="event wow"><time>09:00</time>WoW Wochenreset</div></div><div class="day"><span class="num">11</span></div><div class="day"><span class="num">12</span></div><div class="day"><span class="num">13</span><div class="event patch"><time>19:00</time>Patch-Abend</div></div><div class="day"><span class="num">14</span></div><div class="day"><span class="num">15</span></div>
+<div class="day"><span class="num">16</span></div><div class="day"><span class="num">17</span></div><div class="day"><span class="num">18</span><div class="event waschi"><time>20:15</time>Gildenabend</div></div><div class="day"><span class="num">19</span></div><div class="day"><span class="num">20</span></div><div class="day"><span class="num">21</span><div class="event wow"><time>19:30</time>Raid / M+</div></div><div class="day"><span class="num">22</span></div>
+<div class="day"><span class="num">23</span></div><div class="day"><span class="num">24</span><div class="event wow"><time>09:00</time>WoW Wochenreset</div></div><div class="day"><span class="num">25</span></div><div class="day"><span class="num">26</span></div><div class="day"><span class="num">27</span></div><div class="day"><span class="num">28</span></div><div class="day"><span class="num">29</span><div class="event holiday"><time>ganztägig</time>1. Advent</div></div>
+<div class="day"><span class="num">30</span></div><div class="day muted"><span class="num">1</span></div><div class="day muted"><span class="num">2</span></div><div class="day muted"><span class="num">3</span></div><div class="day muted"><span class="num">4</span></div><div class="day muted"><span class="num">5</span></div><div class="day muted"><span class="num">6</span></div>
+</div>
+</section>
+
+<aside class="side">
+<section class="sidebox"><div class="sidehead">Nächste Termine</div><div class="upcoming">
+<div class="upcoming-item"><span class="medal">🐾</span><span><span class="u-date">06. NOV · 20:00</span><span class="u-title">Waschi M+ Abend</span></span><span class="arrow">›</span></div>
+<div class="upcoming-item"><span class="medal">W</span><span><span class="u-date">10. NOV · 09:00</span><span class="u-title">WoW Wochenreset</span></span><span class="arrow">›</span></div>
+<div class="upcoming-item"><span class="medal">⚒</span><span><span class="u-date">13. NOV · 19:00</span><span class="u-title">Patch-Abend</span></span><span class="arrow">›</span></div>
+<div class="upcoming-item"><span class="medal">⚔</span><span><span class="u-date">21. NOV · 19:30</span><span class="u-title">Raid / M+</span></span><span class="arrow">›</span></div>
+</div></section>
+<section class="sidebox detailbox"><div class="sidehead">Termindetails</div><div class="detail"><div class="detailtop"><span class="bigmedal">🐾</span><div><h2>Waschi M+ Abend</h2><div class="meta">Freitag · 06. November · 20:00 Uhr</div></div></div><p>Gemeinsamer Mythic+-Abend der Waschi-Gilde. Gruppen werden je nach anwesenden Spielern zusammengestellt.</p><p>Die Detailansicht soll später wieder automatisch mit den echten Kalenderdaten gefüllt werden.</p></div></section>
+</aside>
+</div>
+</section>
+
+<div class="legend"><b>Legende:</b><span>▣ Feiertage</span><span>W WoW-Events</span><span>🐾 Waschi-Termine</span><span>⚒ Patch &amp; Saison</span></div>
+<div class="mobile-hint">Grafischer Prototyp – auf Mobilgeräten bewusst vereinfacht.</div>
+</main>
+<script src="/app.js"></script>
+</body>
+</html>

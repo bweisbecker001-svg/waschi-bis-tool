@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 190">
+<defs>
+ <linearGradient id="metal" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#2e465b"/><stop offset=".42" stop-color="#102436"/><stop offset="1" stop-color="#071019"/></linearGradient>
+ <linearGradient id="gold" x1="0" x2="1"><stop stop-color="#684312"/><stop offset=".25" stop-color="#c7902f"/><stop offset=".5" stop-color="#ffe29a"/><stop offset=".75" stop-color="#c7902f"/><stop offset="1" stop-color="#684312"/></linearGradient>
+ <radialGradient id="blue"><stop stop-color="#53c7ff" stop-opacity=".65"/><stop offset=".45" stop-color="#1b6da5" stop-opacity=".28"/><stop offset="1" stop-color="#04101b" stop-opacity="0"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="5" result="c"/><feMerge><feMergeNode in="c"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<path d="M80 25H920L972 95 920 165H80L28 95Z" fill="#05090d" stroke="#3b250d" stroke-width="16"/>
+<path d="M83 29H917L963 95 917 161H83L37 95Z" fill="url(#metal)" stroke="url(#gold)" stroke-width="6"/>
+<ellipse cx="500" cy="95" rx="330" ry="90" fill="url(#blue)"/>
+<path d="M108 46H892M108 144H892" stroke="#f5cd68" stroke-opacity=".38" stroke-width="2"/>
+<path d="M56 95 88 65 120 95 88 125Z" fill="#0d2132" stroke="url(#gold)" stroke-width="5"/>
+<path d="M944 95 912 65 880 95 912 125Z" fill="#0d2132" stroke="url(#gold)" stroke-width="5"/>
+<circle cx="88" cy="95" r="8" fill="#5acfff" stroke="#ffe188" stroke-width="3" filter="url(#glow)"/>
+<circle cx="912" cy="95" r="8" fill="#5acfff" stroke="#ffe188" stroke-width="3" filter="url(#glow)"/>
+</svg>
