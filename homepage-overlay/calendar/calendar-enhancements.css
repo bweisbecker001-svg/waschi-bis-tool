@@ -109,3 +109,107 @@
 .cal-event .event-mini-copy > *:not(.event-mini-time):not(.event-mini-title){
   display:none!important;
 }
+
+
+/* PATCH v7: Monatsnavigation + Neuer-Termin-Button im Kalenderstil */
+.month-arrow{
+  width:54px!important;
+  height:42px!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  border:1px solid #b97a24!important;
+  border-radius:0!important;
+  background:
+    radial-gradient(circle at 50% 35%,#1e496b 0,#10293d 42%,#08131d 72%),
+    linear-gradient(#1d3245,#0b1823)!important;
+  color:#ffd66d!important;
+  font:900 28px/1 Georgia,serif!important;
+  clip-path:polygon(14% 0,86% 0,100% 50%,86% 100%,14% 100%,0 50%)!important;
+  box-shadow:
+    inset 0 0 0 2px #f0c75a1f,
+    inset 0 0 14px #2d8cc84d,
+    0 0 0 1px #4c3212,
+    0 4px 10px #0009!important;
+  text-shadow:0 1px 2px #000,0 0 6px #e6b94a88!important;
+  transition:filter .15s ease,transform .15s ease,box-shadow .15s ease!important;
+  position:relative!important;
+}
+.month-arrow:before{
+  content:""!important;
+  position:absolute!important;
+  inset:4px!important;
+  border:1px solid #e7bd5a55!important;
+  clip-path:inherit!important;
+  pointer-events:none!important;
+}
+.month-arrow:hover{
+  filter:brightness(1.16)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:
+    inset 0 0 0 2px #f0c75a2d,
+    inset 0 0 18px #38aaf06e,
+    0 0 0 1px #60441a,
+    0 5px 12px #000a,
+    0 0 10px #d9a43644!important;
+}
+.month-arrow:active{transform:translateY(0)!important;filter:brightness(.96)!important}
+
+.calendar-side > .calendar-actions{
+  width:100%!important;
+  margin:0 0 12px!important;
+}
+.calendar-side > .calendar-actions .btn.gold{
+  width:100%!important;
+  min-height:48px!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  gap:8px!important;
+  border:1px solid #b97a24!important;
+  border-radius:0!important;
+  background:
+    radial-gradient(circle at 50% 28%,#1e496b 0,#10293d 42%,#08131d 72%),
+    linear-gradient(#1d3245,#0b1823)!important;
+  color:#f8d36c!important;
+  font:900 14px/1 Georgia,serif!important;
+  letter-spacing:.2px!important;
+  text-transform:uppercase!important;
+  clip-path:polygon(4% 0,96% 0,100% 50%,96% 100%,4% 100%,0 50%)!important;
+  box-shadow:
+    inset 0 0 0 2px #f0c75a1f,
+    inset 0 0 16px #2d8cc84d,
+    0 0 0 1px #4c3212,
+    0 5px 12px #0008!important;
+  text-shadow:0 1px 2px #000,0 0 5px #d6a73a66!important;
+  transition:filter .15s ease,transform .15s ease,box-shadow .15s ease!important;
+  position:relative!important;
+}
+.calendar-side > .calendar-actions .btn.gold:before{
+  content:"✦"!important;
+  color:#ffd66d!important;
+  font-size:12px!important;
+  filter:drop-shadow(0 0 3px #dcae3c)!important;
+}
+.calendar-side > .calendar-actions .btn.gold:after{
+  content:""!important;
+  position:absolute!important;
+  inset:4px!important;
+  border:1px solid #e7bd5a55!important;
+  clip-path:inherit!important;
+  pointer-events:none!important;
+}
+.calendar-side > .calendar-actions .btn.gold:hover{
+  filter:brightness(1.12)!important;
+  transform:translateY(-1px)!important;
+  box-shadow:
+    inset 0 0 0 2px #f0c75a2d,
+    inset 0 0 20px #38aaf06e,
+    0 0 0 1px #60441a,
+    0 6px 14px #0009,
+    0 0 12px #d9a43644!important;
+}
+.calendar-side > .calendar-actions .btn.gold:active{
+  transform:translateY(0)!important;
+  filter:brightness(.96)!important;
+}
