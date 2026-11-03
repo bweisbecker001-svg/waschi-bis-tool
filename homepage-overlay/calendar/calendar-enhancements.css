@@ -88,3 +88,24 @@
     width:28px!important;height:28px!important;min-width:28px!important;
   }
 }
+
+
+/* FIX v6: Im Kalendertag nur Symbol + Terminplakette anzeigen.
+   Zusätzliche Länder-/Bundeslandtexte aus Feiertagsdaten werden sicher unterdrückt. */
+.cal-event{
+  font-size:0!important;
+  line-height:0!important;
+}
+.cal-event > *:not(.event-mini){
+  display:none!important;
+}
+.cal-event .event-mini{
+  font-size:initial!important;
+  line-height:normal!important;
+}
+.cal-event .event-mini > *:not(.event-mini-icon):not(.event-mini-copy){
+  display:none!important;
+}
+.cal-event .event-mini-copy > *:not(.event-mini-time):not(.event-mini-title){
+  display:none!important;
+}
