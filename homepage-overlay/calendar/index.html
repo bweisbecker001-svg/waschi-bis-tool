@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#050708">
 <meta name="description" content="Waschi.fun Gilden- und WoW-Kalender">
 <title>Kalender | Waschi.fun</title>
-<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="/styles.css">\n<link rel="stylesheet" href="/calendar/calendar-enhancements.css">
 <style>
 .calendar-page{position:relative;z-index:2;width:min(calc(100% - 26px),1390px);margin:auto;padding:20px 0 56px}
 .calendar-ui{position:relative}
@@ -268,6 +268,6 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
 </main>
 
 <dialog data-event-dialog><section class="site-admin-panel"><h2>Termin bearbeiten</h2><form><input type="hidden" name="id"><label>Titel<input name="title" required maxlength="160"></label><div class="form-row"><label>Datum<input type="date" name="date" required></label><label>Enddatum<input type="date" name="endDate"></label></div><div class="form-row"><label>Uhrzeit<input type="time" name="time"></label><label>Endzeit<input type="time" name="endTime"></label></div><label>Kategorie<select name="category"><option value="holiday">Feiertag</option><option value="wow">WoW</option><option value="waschi" selected>Waschi</option><option value="patch-season">Patch & Saison</option></select></label><label>Beschreibung<textarea name="description" rows="5" maxlength="3000"></textarea></label><label>Link (optional)<input name="link" type="url" placeholder="https://..."></label><div class="article-actions"><button class="btn gold" type="submit">Speichern</button><button class="btn dark" type="button" data-close>Abbrechen</button></div><p data-status></p></form></section></dialog>
-<script src="/app.js"></script>
+<script src="/app.js"></script>\n<script src="/calendar/calendar-enhancements.js"></script>
 </body>
 </html>
