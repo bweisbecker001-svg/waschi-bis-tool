@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Pirata+One&display=swap");
+
 :root{
   --bg:#050708;--panel:rgba(6,10,13,.94);--panel2:rgba(12,16,20,.94);--gold:#d39a32;--gold2:#f0c45a;
   --line:#76521e;--text:#f5efe3;--muted:#b6aa96;--blue:#72b7ff;--red:#df372e;--max:1450px;
@@ -151,3 +153,26 @@ a.member-card:hover{transform:translateY(-3px);border-color:#d29a35}
 .hero-discord-channel:last-child{border-bottom:0}
 .hero-discord-channel-name{color:#f0c45a;font-size:11px;font-weight:800;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hero-discord-voice-dot{font-size:12px;line-height:1;margin-left:auto;opacity:.9}
+
+
+/* WASCHI STANDARD-SCHRIFT – GLOBAL */
+html, body,
+body *,
+button,
+input,
+select,
+textarea,
+option{
+  font-family:"Pirata One","Old English Text MT","Cloister Black",Georgia,serif!important;
+}
+
+/* Lesbarkeit für die neue Standardschrift */
+body{
+  letter-spacing:.015em;
+}
+input,
+select,
+textarea,
+option{
+  letter-spacing:.02em;
+}
