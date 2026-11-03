@@ -201,6 +201,88 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
   .calendar-legend{gap:9px;justify-content:flex-start}
   .form-row{grid-template-columns:1fr}
 }
+
+/* ===== Kalender Phase 2 – grafisches WoW-Interface ===== */
+.calendar-page{width:min(calc(100% - 28px),1480px);padding-top:18px}
+.calendar-hero-title{margin-bottom:4px}
+.calendar-title-plaque{
+  width:min(820px,88vw);min-width:0;aspect-ratio:1000/190;padding:0 120px;
+  border:0;background:url('/assets/calendar-ui-plaque.svg') center/100% 100% no-repeat;
+  clip-path:none;box-shadow:none;color:#f3d273;
+  font:900 clamp(28px,4vw,48px) Georgia,serif;letter-spacing:.055em;text-transform:uppercase;
+  text-shadow:0 3px 2px #000,0 0 14px #d9a13c66
+}
+.calendar-title-plaque:before,.calendar-title-plaque:after{display:none}
+.calendar-title-icon{color:#7bdcff;filter:drop-shadow(0 0 8px #4fc8ff);font-size:28px}
+.calendar-ui:before{
+  content:"";display:block;width:min(610px,72vw);aspect-ratio:600/50;margin:-10px auto 10px;
+  background:url('/assets/calendar-ui-divider.svg') center/contain no-repeat;
+  filter:drop-shadow(0 0 7px #3bbfff44)
+}
+.calendar-filter-shell,.calendar-panel,.calendar-box,.permissions-box,.calendar-legend{
+  border:1px solid #72592f;
+  background:linear-gradient(180deg,rgba(10,18,26,.98),rgba(5,9,13,.99));
+  clip-path:none;
+  box-shadow:inset 0 0 0 2px #f4ce6d12,inset 0 0 0 8px #10192399,inset 0 0 34px #246a981c,0 15px 34px #000a
+}
+.calendar-filter-shell:before,.calendar-panel:before,.calendar-box:before,.calendar-legend:before{
+  content:"";position:absolute;inset:auto auto auto auto;left:-12px;top:-12px;width:78px;height:78px;
+  border:0;background:url('/assets/calendar-ui-corner.svg') center/contain no-repeat;pointer-events:none;z-index:8
+}
+.calendar-filter-shell:after,.calendar-panel:after,.calendar-box:after,.calendar-legend:after{
+  content:"";position:absolute;right:-12px;top:-12px;left:auto;width:78px;height:78px;
+  border:0;background:url('/assets/calendar-ui-corner.svg') center/contain no-repeat;transform:scaleX(-1);pointer-events:none;z-index:8
+}
+.calendar-filter-shell{position:relative;padding:13px 22px;margin-bottom:14px}
+.calendar-filterbar{justify-content:center}
+.calendar-filterbar>strong{color:#ecd079}
+.cal-filter{min-height:38px;padding:8px 15px;border:1px solid #6e5936;border-radius:4px;background:linear-gradient(#2b3945,#101821);color:#eee3d4;box-shadow:inset 0 1px #ffffff16,inset 0 -8px 12px #0006}
+.cal-filter.active{border-color:#e0b758;background:linear-gradient(#1d6792,#0b2d45);color:#fff2c6;box-shadow:0 0 14px #2ac6ff55,inset 0 0 12px #5fd7ff2e}
+.calendar-layout{grid-template-columns:minmax(0,2.15fr) minmax(300px,.82fr);gap:18px}
+.calendar-monthbar{min-height:74px;padding:10px 14px;background:radial-gradient(circle at 50% -50%,#285e82,#112a3c 48%,#08141e);border-bottom:1px solid #9b7332}
+.calendar-monthbar h2{color:#f1cf72;font:900 clamp(27px,3.2vw,38px) Georgia,serif;letter-spacing:.04em;text-shadow:0 2px #000,0 0 10px #e3b14b40}
+.month-arrow{height:48px;border:1px solid #bd9143;background:linear-gradient(#304b60,#0d1a24);color:#f1d17b;box-shadow:inset 0 0 13px #53bdfb22}
+.calendar-week{background:linear-gradient(#1b2d3c,#0b1721);border-bottom:1px solid #6e552f}
+.calendar-week span{padding:10px 4px;color:#dfbe6d;border-right:1px solid #4a4032}
+.calendar-grid{gap:1px;background:#4c4031;padding:1px}
+.cal-day{min-height:112px;padding:7px;border:0;background:radial-gradient(circle at 90% 10%,#1c4b6d26,transparent 33%),linear-gradient(145deg,#1f252b,#10151a)}
+.cal-day:nth-child(7n){border-right:0}
+.cal-day:hover{background:radial-gradient(circle at 85% 10%,#2e78a54a,transparent 34%),linear-gradient(145deg,#29333c,#151b20)}
+.cal-day.muted{opacity:.38;background:#090c10}
+.cal-num{display:inline-grid;place-items:center;min-width:28px;height:25px;padding:0 6px;border:1px solid #665638;background:#0b1117dd;color:#f4d889;border-radius:3px;font:800 15px Georgia,serif}
+.cal-event{border-radius:4px;box-shadow:inset 0 0 12px #0007,0 2px 5px #0008}
+.calendar-box{position:relative}
+.calendar-box-head{padding:13px 15px 12px 48px;background:linear-gradient(#20384c,#0c1b27);border-bottom:1px solid #7b5b2c;color:#efcd75}
+.calendar-box-head .box-icon{position:absolute;left:17px;color:#69d5ff;text-shadow:0 0 9px #52ceff}
+.upcoming{padding:9px 10px 12px}
+.upcoming button{grid-template-columns:43px 1fr 18px;gap:9px;min-height:57px;margin:7px 0;padding:8px;border:1px solid #3c4d58;border-radius:0;background:linear-gradient(#19232b,#0b1116)}
+.upcoming-icon{width:40px;height:40px;border:1px solid #a9803c;border-radius:50%;background:radial-gradient(circle,#274f6d,#0a1721);box-shadow:inset 0 0 12px #4dccff26}
+.upcoming-date{color:#edc970}
+.event-detail{min-height:235px;padding:18px;background:radial-gradient(circle at 88% 8%,#316da93b,transparent 33%),linear-gradient(150deg,#0a141e,#080c11)}
+.detail-icon{width:54px;height:54px;border:2px solid #bf9141;background:radial-gradient(circle,#2e5571,#0c1822);box-shadow:0 0 14px #3bc5ff3c}
+.event-detail h3{color:#efcd76}
+.calendar-legend{position:relative;justify-content:center;padding:12px 18px}
+.legend-dot{border-radius:4px}
+@media(max-width:1050px){
+  .calendar-layout{grid-template-columns:1fr}
+  .calendar-side{display:grid;grid-template-columns:1fr 1fr}
+  .permissions-box{grid-column:1/-1}
+}
+@media(max-width:760px){
+  .calendar-page{width:min(calc(100% - 12px),1480px);padding-top:10px}
+  .calendar-title-plaque{width:min(96vw,620px);padding:0 60px;font-size:clamp(22px,8vw,36px)}
+  .calendar-title-icon{font-size:22px}
+  .calendar-filter-shell{padding:12px;margin-bottom:10px}
+  .calendar-layout{gap:10px}
+  .cal-day{min-height:78px;padding:4px}
+  .cal-num{min-width:22px;height:20px;font-size:11px}
+  .cal-event{padding:4px 3px 4px 6px;font-size:8px}
+  .calendar-week span{font-size:10px}
+  .calendar-monthbar{grid-template-columns:48px 1fr 48px;min-height:58px}
+  .month-arrow{width:46px;height:38px}
+  .calendar-side{display:flex}
+}
+
 </style>
 </head>
 <body>
@@ -210,7 +292,7 @@ dialog .site-admin-panel{margin:0;border:0;box-shadow:none}
 <main class="calendar-page">
 <section class="calendar-ui">
   <div class="calendar-hero-title">
-    <div class="calendar-title-plaque"><span class="calendar-title-icon">▣</span><span>Kalender</span></div>
+    <div class="calendar-title-plaque"><span class="calendar-title-icon">✦</span><span>Waschi Kalender</span></div>
   </div>
 
   <section class="calendar-filter-shell ornate-frame" data-calendar-filters>
