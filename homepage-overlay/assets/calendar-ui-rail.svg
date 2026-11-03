@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 90 640">
+<defs>
+ <linearGradient id="m" x1="0" x2="1"><stop stop-color="#2a1708"/><stop offset=".16" stop-color="#c08a35"/><stop offset=".34" stop-color="#f4d479"/><stop offset=".5" stop-color="#76501f"/><stop offset=".72" stop-color="#d0a14a"/><stop offset="1" stop-color="#24170b"/></linearGradient>
+ <linearGradient id="s" x1="0" x2="1"><stop stop-color="#0b1118"/><stop offset=".5" stop-color="#29465e"/><stop offset="1" stop-color="#071018"/></linearGradient>
+ <filter id="g"><feGaussianBlur stdDeviation="2" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<path d="M28 12h34l13 22-9 30 10 28-10 28 9 29-10 29 10 29-10 29 10 29-10 29 10 29-10 29 10 29-10 29 10 29-10 29 10 29-10 29 10 29-10 29 9 30-13 22H28L15 606l9-30-10-29 10-29-10-29 10-29-10-29 10-29-10-29 10-29-10-29 10-29-10-29 10-29-10-29 10-29-10-29 10-29-9-30z" fill="#070b0e" stroke="#3c2711" stroke-width="8"/>
+<path d="M31 18h28l9 17-8 29 9 28-9 28 9 29-9 29 9 29-9 29 9 29-9 29 9 29-9 29 9 29-9 29 9 29-9 29 9 29-9 29 9 29-9 29 8 29-9 17H31l-9-17 8-29-9-29 9-29-9-29 9-29-9-29 9-29-9-29 9-29-9-29 9-29-9-29 9-29-9-29 9-29-9-29 9-29-8-28 8-29-9-17z" fill="url(#s)" stroke="url(#m)" stroke-width="4"/>
+<path d="M45 72l13 16-13 16-13-16zM45 210l13 16-13 16-13-16zM45 348l13 16-13 16-13-16zM45 486l13 16-13 16-13-16z" fill="#43c9ff" stroke="#f3d276" stroke-width="3" filter="url(#g)"/>
+<path d="M45 117v72M45 255v72M45 393v72M45 531v70" stroke="#d9ad55" stroke-width="3" opacity=".7"/>
+<path d="M34 136l11 10 11-10M34 274l11 10 11-10M34 412l11 10 11-10M34 550l11 10 11-10" fill="none" stroke="#72dfff" stroke-width="2" opacity=".9"/>
+</svg>
