@@ -55,3 +55,36 @@
   border-radius:50%!important;
   background-size:82%!important;
 }
+
+/* 2026-11-03 Fix: eindeutige Reihenfolge Symbol -> Schild */
+.cal-event-grid .event-mini{
+  display:grid!important;
+  grid-template-columns:44px minmax(0,1fr)!important;
+  grid-template-areas:"icon copy"!important;
+  align-items:center!important;
+  column-gap:5px!important;
+}
+.cal-event-grid .event-mini-icon{
+  grid-area:icon!important;
+  display:block!important;
+  width:44px!important;
+  height:44px!important;
+  min-width:44px!important;
+}
+.cal-event-grid .event-mini-copy{
+  grid-area:copy!important;
+  width:100%!important;
+  min-width:0!important;
+}
+.cal-event-grid .cal-event{
+  min-height:60px!important;
+}
+[data-calendar-perms],.permissions-box{display:none!important}
+@media(max-width:760px){
+  .cal-event-grid .event-mini{
+    grid-template-columns:28px minmax(0,1fr)!important;
+  }
+  .cal-event-grid .event-mini-icon{
+    width:28px!important;height:28px!important;min-width:28px!important;
+  }
+}
