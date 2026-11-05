@@ -319,6 +319,38 @@ def discord_bot_guild(token):
     found=next((g for g in guilds if str(g.get("name") or "").strip().lower()=="waschi"),None)
     return found or guilds[0]
 
+
+def discord_member_has_role(user_id, role_name):
+    token=os.environ.get("DISCORD_BOT_TOKEN","").strip()
+    if not token or not str(user_id or "").strip():
+        return False
+    guild=discord_bot_guild(token)
+    guild_id=str(guild.get("id") or "")
+    if not guild_id:
+        return False
+    roles=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/roles",token)
+    wanted=next((r for r in roles if str(r.get("name") or "").strip().lower()==str(role_name or "").strip().lower()),None)
+    if not wanted:
+        return False
+    member=discord_json(f"https://discord.com/api/v10/guilds/{guild_id}/members/{urllib.parse.quote(str(user_id))}",token)
+    member_roles={str(x) for x in (member.get("roles") or [])}
+    return str(wanted.get("id") or "") in member_roles
+
+@app.get("/api/site-role-permissions")
+def site_role_permissions():
+    user_id=clean(request.args.get("id"),40)
+    sig=clean(request.args.get("sig"),128)
+    if not user_id or not sig:
+        return jsonify({"ok":False,"error":"Fehlende Rollenprüfung"}),400
+    want=hmac.new(secret(),user_id.encode("utf-8"),hashlib.sha256).hexdigest()
+    if not hmac.compare_digest(want,sig):
+        return jsonify({"ok":False,"error":"Ungültige Rollenprüfung"}),403
+    try:
+        has_lead=discord_member_has_role(user_id,"Gildenleitung")
+        return jsonify({"ok":True,"hasGildenleitung":bool(has_lead)})
+    except Exception as e:
+        return jsonify({"ok":False,"error":"Discord-Rolle konnte nicht geprüft werden.","detail":str(e)}),502
+
 @app.get("/api/discord-online")
 def discord_online():
     voice=load_voice_snapshot(max_age=120)
