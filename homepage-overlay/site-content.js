@@ -70,10 +70,60 @@ function renderHomeCalendarPreview(){
  box.innerHTML=rows.map(e=>{const d=new Date((e.date||'')+'T12:00:00');const date=isNaN(d)?'':new Intl.DateTimeFormat('de-DE',{day:'2-digit',month:'2-digit'}).format(d);return '<a class="home-calendar-item" href="/calendar/"><span class="home-calendar-date">'+esc(date)+'</span><span class="home-calendar-copy"><strong>'+esc(e.title||'Termin')+'</strong><small>'+esc(catLabel(e.category))+(e.time?' · '+esc(e.time):'')+'</small></span></a>'}).join('');
 }
 function newsForm(existing){
- const n=existing||{};const box=document.createElement('section');box.className='article-panel site-admin-panel';
- box.innerHTML='<h2>'+(n.id?'News bearbeiten':'Neue News erstellen')+'</h2><form data-news-form><input type="hidden" name="id" value="'+esc(n.id||'')+'"><label>Titel<input name="title" required maxlength="180" value="'+esc(n.title||'')+'"></label><label>Datum<input name="date" type="date" required value="'+esc(n.date||new Date().toISOString().slice(0,10))+'"></label><label>Kurztext<textarea name="summary" rows="3" maxlength="700">'+esc(n.summary||'')+'</textarea></label><label>Vollständiger Text<textarea name="body" rows="8" maxlength="8000">'+esc(n.body||'')+'</textarea></label><label class="check"><input name="published" type="checkbox" '+(n.published===false?'':'checked')+'> Veröffentlichen</label><div class="article-actions"><button class="btn gold" type="submit">Speichern</button>'+(n.id?'<button class="btn dark" type="button" data-delete-news>Löschen</button>':'')+'</div><p class="site-form-status" data-status></p></form>';
- const form=box.querySelector('form');form.addEventListener('submit',async e=>{e.preventDefault();const fd=new FormData(form),data=Object.fromEntries(fd.entries());data.published=fd.get('published')==='on';const st=form.querySelector('[data-status]');try{st.textContent='Speichere…';await api('/api/site-news',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});location.href='/news/'}catch(err){st.textContent=err.message}});
- box.querySelector('[data-delete-news]')?.addEventListener('click',async()=>{if(!confirm('Diese News wirklich löschen?'))return;await api('/api/site-news?id='+encodeURIComponent(n.id),{method:'DELETE'});location.href='/news/'});
+ const n=existing||{},box=document.createElement('section');box.className='article-panel site-admin-panel';
+ const published=n.published===true;
+ box.innerHTML='<h2>'+(n.id?'News bearbeiten':'Neue News erstellen')+'</h2>'+
+ '<form data-news-form><input type="hidden" name="id" value="'+esc(n.id||'')+'">'+
+ '<div class="form-row"><label>Kategorie<select name="category"><option value="gilden-news">Gilden-News</option><option value="wow-news">WoW-News</option><option value="homepage">Homepage</option><option value="bis-tool">BiS-Tool</option><option value="event">Event</option></select></label>'+
+ '<label>Datum<input name="date" type="date" required value="'+esc(n.date||new Date().toISOString().slice(0,10))+'"></label></div>'+
+ '<label>Schlagwort / Thema<input name="keyword" maxlength="180" placeholder="z. B. BiS-Tool Mobilversion"></label>'+
+ '<label>Stichpunkte für den KI-Entwurf<textarea name="bullets" rows="5" maxlength="5000" placeholder="Ein Stichpunkt pro Zeile. Nur Fakten eintragen, die in der News vorkommen sollen."></textarea></label>'+
+ '<div class="article-actions"><button class="btn dark" type="button" data-generate-news>KI-Textentwurf erstellen</button></div>'+
+ '<p class="site-form-status" data-ai-status>Die KI erstellt nur einen Entwurf. Veröffentlichung erfolgt niemals automatisch.</p>'+
+ '<label>Titel<input name="title" required maxlength="180" value="'+esc(n.title||'')+'"></label>'+
+ '<label>Kurztext<textarea name="summary" rows="3" maxlength="700">'+esc(n.summary||'')+'</textarea></label>'+
+ '<label>Vollständiger Text<textarea name="body" rows="8" maxlength="8000">'+esc(n.body||'')+'</textarea></label>'+
+ '<label class="check"><input name="published" type="checkbox" '+(published?'checked':'')+'> Veröffentlichen</label>'+
+ '<label class="check"><input name="manualApproved" type="checkbox" '+(published?'checked':'')+'> Ich habe Titel und Text vollständig geprüft und gebe diese News manuell zur Veröffentlichung frei.</label>'+
+ '<div class="article-actions"><button class="btn gold" type="submit">Speichern</button>'+(n.id&&S.auth?.canDeleteNews?'<button class="btn dark" type="button" data-delete-news>Löschen</button>':'')+'</div>'+
+ '<p class="site-form-status" data-status></p></form>';
+ const form=box.querySelector('form');
+ if(n.category&&form.elements.category)form.elements.category.value=n.category;
+ box.querySelector('[data-generate-news]')?.addEventListener('click',async()=>{
+   const keyword=form.elements.keyword.value.trim(),bullets=form.elements.bullets.value.trim(),category=form.elements.category.value;
+   const st=form.querySelector('[data-ai-status]');
+   if(!keyword||!bullets){st.textContent='Bitte zuerst Schlagwort und Stichpunkte eintragen.';return}
+   try{
+     st.textContent='KI-Entwurf wird erstellt…';
+     const r=await api('/api/site-news-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({keyword,bullets,category})});
+     const d=r.draft||{};
+     if(d.title)form.elements.title.value=d.title;
+     if(d.summary)form.elements.summary.value=d.summary;
+     if(d.body)form.elements.body.value=d.body;
+     form.elements.published.checked=false;
+     form.elements.manualApproved.checked=false;
+     st.textContent='Entwurf erstellt. Bitte vollständig prüfen, bei Bedarf bearbeiten und anschließend manuell freigeben.';
+   }catch(err){st.textContent=err.message}
+ });
+ form.addEventListener('submit',async e=>{
+   e.preventDefault();
+   const fd=new FormData(form),data=Object.fromEntries(fd.entries());
+   data.published=fd.get('published')==='on';
+   data.manualApproved=fd.get('manualApproved')==='on';
+   const st=form.querySelector('[data-status]');
+   if(data.published&&!data.manualApproved){st.textContent='Veröffentlichung blockiert: Bitte die manuelle Freigabe bestätigen.';return}
+   try{
+     st.textContent='Speichere…';
+     await api('/api/site-news',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});
+     location.href='/news/';
+   }catch(err){st.textContent=err.message}
+ });
+ box.querySelector('[data-delete-news]')?.addEventListener('click',async()=>{
+   if(!S.auth?.canDeleteNews)return;
+   if(!confirm('Diese News wirklich löschen?'))return;
+   await api('/api/site-news?id='+encodeURIComponent(n.id),{method:'DELETE'});
+   location.href='/news/';
+ });
  return box
 }
 function renderNews(){
@@ -146,7 +196,7 @@ function initCalendarAdmin(){
  const dlg=document.querySelector('[data-event-dialog]');if(!dlg)return;
  document.querySelector('[data-add-event]')?.addEventListener('click',()=>openEventForm({date:new Date().toISOString().slice(0,10)}));dlg.querySelector('[data-close]')?.addEventListener('click',()=>dlg.close());
  dlg.querySelector('form').addEventListener('submit',async ev=>{ev.preventDefault();const f=ev.currentTarget,data=Object.fromEntries(new FormData(f).entries());try{await api('/api/site-calendar',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});dlg.close();await loadContent();renderCalendar()}catch(err){f.querySelector('[data-status]').textContent=err.message}});
- const p=document.querySelector('[data-calendar-perms]');if(p&&S.auth?.canNews){p.hidden=false;const input=p.querySelector('input');input.value=(S.auth.calendarAdmins||[]).join(', ');p.querySelector('form').onsubmit=async ev=>{ev.preventDefault();const admins=input.value.split(',').map(x=>x.trim()).filter(Boolean);const r=await api('/api/site-calendar-admins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({admins})});input.value=r.calendarAdmins.join(', ');p.querySelector('[data-status]').textContent='Gespeichert.'}}
+ const p=document.querySelector('[data-calendar-perms]');if(p&&S.auth?.canManagePermissions){p.hidden=false;const input=p.querySelector('input');input.value=(S.auth.calendarAdmins||[]).join(', ');p.querySelector('form').onsubmit=async ev=>{ev.preventDefault();const admins=input.value.split(',').map(x=>x.trim()).filter(Boolean);const r=await api('/api/site-calendar-admins',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({admins})});input.value=r.calendarAdmins.join(', ');p.querySelector('[data-status]').textContent='Gespeichert.'}}
  if(S.auth?.canCalendar)document.querySelector('[data-add-event]')?.removeAttribute('hidden')
 }
 async function loadContent(){try{S.content=await api('/api/site-content')}catch(e){console.warn(e)}}
