@@ -7,6 +7,7 @@ import re
 import time
 import urllib.parse
 import urllib.request
+import urllib.error
 
 from flask import Flask, jsonify, make_response, redirect, request
 from vercel.blob import sync as blob
@@ -18,6 +19,7 @@ VOICE_PATH = "waschi/discord-voice-state-v1.json"
 SESSION_COOKIE = "waschi_session"
 NEWS_ADMIN = "berndw"
 DEFAULT_CALENDAR_ADMINS = ["cathalon1989", "berndw", "schluffyfelixnowa"]
+DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"
 
 def clean(value, limit=2000):
     return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
@@ -115,10 +117,19 @@ def permissions(user=None, content=None):
     user = user or current_user()
     content = content or load_content()
     username = str((user or {}).get("username") or "").strip().lower()
-    can_news = bool(user and username == NEWS_ADMIN)
     admins = [str(x).strip().lower() for x in ((content.get("permissions") or {}).get("calendarAdmins") or []) if str(x).strip()]
-    can_calendar = bool(user and (can_news or username in admins))
-    return {"authenticated":bool(user),"canNews":can_news,"canCalendar":can_calendar,"calendarAdmins":admins}
+    is_owner = bool(user and username == NEWS_ADMIN)
+    can_calendar = bool(user and (is_owner or username in admins))
+    # Aktuelles nutzt bewusst dieselben Redakteure wie der Kalender.
+    can_news = can_calendar
+    return {
+        "authenticated":bool(user),
+        "canNews":can_news,
+        "canCalendar":can_calendar,
+        "canDeleteNews":is_owner,
+        "canManagePermissions":is_owner,
+        "calendarAdmins":admins
+    }
 
 def require(kind):
     user = current_user()
@@ -127,9 +138,11 @@ def require(kind):
     if not user:
         return None,content,perms,(jsonify({"ok":False,"error":"Nicht angemeldet"}),401)
     if kind=="news" and not perms["canNews"]:
-        return user,content,perms,(jsonify({"ok":False,"error":"Nur Lentor (berndw) darf Aktuelles bearbeiten."}),403)
+        return user,content,perms,(jsonify({"ok":False,"error":"Keine Berechtigung für Aktuelles."}),403)
     if kind=="calendar" and not perms["canCalendar"]:
         return user,content,perms,(jsonify({"ok":False,"error":"Keine Kalender-Berechtigung."}),403)
+    if kind=="owner" and not perms["canDeleteNews"]:
+        return user,content,perms,(jsonify({"ok":False,"error":"Nur Bernd darf News löschen oder Redaktionsrechte ändern."}),403)
     return user,content,perms,None
 
 def make_id(prefix,title=""):
@@ -388,7 +401,8 @@ def auth_logout():
 @app.get("/api/site-content")
 def content_get():
     content=load_content()
-    news=[n for n in content.get("news",[]) if n.get("published",True)]
+    perms=permissions(current_user(),content)
+    news=list(content.get("news",[])) if perms["canNews"] else [n for n in content.get("news",[]) if n.get("published",True)]
     news.sort(key=lambda n:(str(n.get("date") or ""),str(n.get("createdAt") or "")),reverse=True)
     calendar=list(content.get("calendar",[]))
     calendar.sort(key=lambda e:(str(e.get("date") or ""),str(e.get("time") or "")))
@@ -423,6 +437,86 @@ def calendar_delete():
     save_content(content)
     return jsonify({"ok":True})
 
+def _extract_ai_json(text):
+    raw=str(text or "").strip()
+    raw=re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$","",raw,flags=re.I)
+    try:
+        data=json.loads(raw)
+        return data if isinstance(data,dict) else {}
+    except Exception:
+        start=raw.find("{"); end=raw.rfind("}")
+        if start>=0 and end>start:
+            try:
+                data=json.loads(raw[start:end+1])
+                return data if isinstance(data,dict) else {}
+            except Exception:
+                pass
+    return {}
+
+def generate_news_draft(keyword, category, bullets):
+    token=(os.environ.get("AI_GATEWAY_API_KEY","").strip() or os.environ.get("VERCEL_OIDC_TOKEN","").strip())
+    if not token:
+        raise RuntimeError("KI-Texterstellung ist serverseitig noch nicht aktiviert.")
+    model=os.environ.get("AI_GATEWAY_MODEL",DEFAULT_AI_MODEL).strip() or DEFAULT_AI_MODEL
+    system_prompt=(
+        "Du schreibst kurze deutschsprachige News für die World-of-Warcraft-Gilde Waschi. "
+        "Verwende ausschließlich die gelieferten Fakten und erfinde keine Termine, Patchstände, Namen oder Ergebnisse. "
+        "Ton: freundlich, klar, gemeinschaftlich, ohne Marketingfloskeln. "
+        "Gib ausschließlich gültiges JSON mit den Schlüsseln title, summary und body zurück. "
+        "summary maximal 350 Zeichen, body 1 bis 3 kurze Absätze."
+    )
+    user_prompt=f"Schlagwort: {keyword}\nKategorie: {category}\nStichpunkte:\n{bullets}"
+    payload={
+        "model":model,
+        "messages":[
+            {"role":"system","content":system_prompt},
+            {"role":"user","content":user_prompt}
+        ],
+        "response_format":{"type":"json_object"},
+        "max_tokens":900
+    }
+    req=urllib.request.Request(
+        "https://ai-gateway.vercel.sh/v1/chat/completions",
+        data=json.dumps(payload,ensure_ascii=False).encode("utf-8"),
+        method="POST",
+        headers={
+            "Authorization":"Bearer "+token,
+            "Content-Type":"application/json",
+            "Accept":"application/json",
+            "User-Agent":"Waschi.fun"
+        }
+    )
+    try:
+        with urllib.request.urlopen(req,timeout=35) as r:
+            result=json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        detail=e.read().decode("utf-8",errors="replace")[:500]
+        raise RuntimeError(f"KI-Dienst HTTP {e.code}: {detail}") from e
+    content=(((result.get("choices") or [{}])[0].get("message") or {}).get("content") or "")
+    draft=_extract_ai_json(content)
+    title=clean(draft.get("title"),180)
+    summary=clean(draft.get("summary"),700)
+    body=clean(draft.get("body"),8000)
+    if not title or not body:
+        raise RuntimeError("Die KI hat keinen verwendbaren Entwurf geliefert.")
+    return {"title":title,"summary":summary,"body":body,"model":model}
+
+@app.post("/api/site-news-draft")
+def news_draft():
+    user,content,perms,error=require("news")
+    if error:return error
+    data=request.get_json(silent=True) or {}
+    keyword=clean(data.get("keyword"),180)
+    category=clean(data.get("category") or "Gilden-News",80)
+    bullets=str(data.get("bullets") or "").strip()[:5000]
+    if not keyword or not bullets:
+        return jsonify({"ok":False,"error":"Schlagwort und Stichpunkte sind erforderlich."}),400
+    try:
+        draft=generate_news_draft(keyword,category,bullets)
+        return jsonify({"ok":True,"draft":draft})
+    except Exception as e:
+        return jsonify({"ok":False,"error":"KI-Entwurf konnte nicht erstellt werden.","detail":str(e)}),502
+
 @app.post("/api/site-news")
 def news_save():
     user,content,perms,error=require("news")
@@ -434,7 +528,13 @@ def news_save():
     if row is None:
         row={"id":make_id("news",data.get("title")),"createdAt":int(time.time()),"createdBy":user.get("username")}
         rows.append(row)
-    row.update({"title":clean(data.get("title"),180),"date":clean(data.get("date"),10),"summary":clean(data.get("summary"),700),"body":clean(data.get("body"),8000),"published":bool(data.get("published",True)),"updatedAt":int(time.time()),"updatedBy":user.get("username")})
+    publish=bool(data.get("published",False))
+    if publish and not bool(data.get("manualApproved",False)):
+        return jsonify({"ok":False,"error":"Vor der Veröffentlichung ist eine manuelle Freigabe erforderlich."}),400
+    row.update({"title":clean(data.get("title"),180),"date":clean(data.get("date"),10),"summary":clean(data.get("summary"),700),"body":clean(data.get("body"),8000),"category":clean(data.get("category") or "gilden-news",80),"published":publish,"updatedAt":int(time.time()),"updatedBy":user.get("username")})
+    if publish:
+        row["approvedAt"]=int(time.time())
+        row["approvedBy"]=user.get("username")
     if not row["title"] or not re.fullmatch(r"\d{4}-\d{2}-\d{2}",row["date"]):
         return jsonify({"ok":False,"error":"Titel und gültiges Datum sind erforderlich."}),400
     save_content(content)
@@ -442,7 +542,7 @@ def news_save():
 
 @app.delete("/api/site-news")
 def news_delete():
-    user,content,perms,error=require("news")
+    user,content,perms,error=require("owner")
     if error:return error
     news_id=clean(request.args.get("id"),100)
     content["news"]=[x for x in content.get("news",[]) if str(x.get("id"))!=news_id]
@@ -451,7 +551,7 @@ def news_delete():
 
 @app.post("/api/site-calendar-admins")
 def calendar_admins():
-    user,content,perms,error=require("news")
+    user,content,perms,error=require("owner")
     if error:return error
     data=request.get_json(silent=True) or {}
     admins=[]
