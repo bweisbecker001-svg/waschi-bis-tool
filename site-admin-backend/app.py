@@ -19,7 +19,7 @@ VOICE_PATH = "waschi/discord-voice-state-v1.json"
 SESSION_COOKIE = "waschi_session"
 NEWS_ADMIN = "berndw"
 DEFAULT_CALENDAR_ADMINS = ["cathalon1989", "berndw", "schluffyfelixnowa"]
-DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"
+DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"\nDEFAULT_NEWS_IMAGE_MODEL = "openai/gpt-image-2.6-flare"
 
 def clean(value, limit=2000):
     return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
@@ -501,6 +501,61 @@ def generate_news_draft(keyword, category, bullets):
         raise RuntimeError("Die KI hat keinen verwendbaren Entwurf geliefert.")
     return {"title":title,"summary":summary,"body":body,"model":model}
 
+
+def generate_news_images(keyword, category, bullets, title="", summary="", body=""):
+    token=(os.environ.get("AI_GATEWAY_API_KEY","").strip() or os.environ.get("VERCEL_OIDC_TOKEN","").strip())
+    if not token:
+        raise RuntimeError("KI-Bilderstellung ist serverseitig noch nicht aktiviert.")
+    model=os.environ.get("AI_GATEWAY_IMAGE_MODEL",DEFAULT_NEWS_IMAGE_MODEL).strip() or DEFAULT_NEWS_IMAGE_MODEL
+    subject=clean(title or keyword,180)
+    context=" ".join(x for x in [clean(summary,700), clean(bullets,1800), clean(body,1800)] if x).strip()
+    base=(
+        "Erstelle ein hochwertiges Querformat-Vorschaubild für eine deutschsprachige News der World-of-Warcraft-Gilde Waschi. "
+        "Stil: epische High-Fantasy, World-of-Warcraft-inspiriert, gold-blaue Farbwelt, hochwertig und passend zu einer dunklen Gildenhomepage. "
+        "Das Waschi-Thema soll subtil durch einen sympathischen Waschbär-/Maskottchen-Bezug, eine Maske, Pfoten-Details oder ähnliche visuelle Anspielungen erkennbar sein. "
+        "Keine Blizzard-Logos, keine offiziellen Key-Arts, keine Wasserzeichen und kein Text im Bild. "
+        f"Thema: {subject}. Kategorie: {category}. "
+        + (f"Kontext: {context}. " if context else "")
+    )
+    variants=[
+        ("Variante 1","Hero-Shot","Klarer cineastischer Hero-Shot mit starkem Hauptmotiv, dramatische aber saubere Lichtführung."),
+        ("Variante 2","Waschi-Atmosphäre","Etwas wärmer und lebendiger, mit stärkerem Waschi-/Maskottchen-Flair und atmosphärischer Umgebung."),
+        ("Variante 3","Guild-News","Fantasy-Szene mit dezentem Guild-News-/Interface-Flair und sauberem magazinartigem Bildaufbau.")
+    ]
+    images=[]
+    for label,short,extra in variants:
+        payload={"model":model,"prompt":base+extra,"n":1,"size":"1536x1024"}
+        req=urllib.request.Request(
+            "https://ai-gateway.vercel.sh/v1/images/generations",
+            data=json.dumps(payload,ensure_ascii=False).encode("utf-8"),
+            method="POST",
+            headers={
+                "Authorization":"Bearer "+token,
+                "Content-Type":"application/json",
+                "Accept":"application/json",
+                "User-Agent":"Waschi.fun"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req,timeout=120) as r:
+                result=json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            detail=e.read().decode("utf-8",errors="replace")[:700]
+            raise RuntimeError(f"KI-Bilddienst HTTP {e.code}: {detail}") from e
+        first=(result.get("data") or [{}])[0] or {}
+        b64=str(first.get("b64_json") or "")
+        url=str(first.get("url") or "")
+        if b64:
+            image_data="data:image/png;base64,"+b64
+        elif url:
+            with urllib.request.urlopen(url,timeout=90) as img:
+                raw=img.read()
+            image_data="data:image/png;base64,"+base64.b64encode(raw).decode("ascii")
+        else:
+            raise RuntimeError("Die Bild-KI hat keine Bilddaten geliefert.")
+        images.append({"variant":label,"name":short,"description":extra,"dataUrl":image_data,"alt":subject})
+    return {"images":images,"model":model}
+
 @app.post("/api/site-news-draft")
 def news_draft():
     user,content,perms,error=require("news")
@@ -531,7 +586,7 @@ def news_save():
     publish=bool(data.get("published",False))
     if publish and not bool(data.get("manualApproved",False)):
         return jsonify({"ok":False,"error":"Vor der Veröffentlichung ist eine manuelle Freigabe erforderlich."}),400
-    row.update({"title":clean(data.get("title"),180),"date":clean(data.get("date"),10),"summary":clean(data.get("summary"),700),"body":clean(data.get("body"),8000),"category":clean(data.get("category") or "gilden-news",80),"published":publish,"updatedAt":int(time.time()),"updatedBy":user.get("username")})
+    row.update({"title":clean(data.get("title"),180),"date":clean(data.get("date"),10),"summary":clean(data.get("summary"),700),"body":clean(data.get("body"),8000),"category":clean(data.get("category") or "gilden-news",80),"image":clean(data.get("image"),2000000),"imageAlt":clean(data.get("imageAlt") or data.get("title"),240),"published":publish,"updatedAt":int(time.time()),"updatedBy":user.get("username")})
     if publish:
         row["approvedAt"]=int(time.time())
         row["approvedBy"]=user.get("username")
