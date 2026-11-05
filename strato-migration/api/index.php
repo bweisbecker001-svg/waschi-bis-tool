@@ -85,6 +85,21 @@ function permissions(?array $user,array $content,array $config): array {
 }
 function request_json(): array { $raw=file_get_contents('php://input'); $data=json_decode($raw?:'{}',true); return is_array($data)?$data:[]; }
 function make_id(string $prefix,string $title=''): string { return $prefix.'-'.substr(hash('sha256',hrtime(true).':'.bin2hex(random_bytes(12)).':'.$title),0,16); }
+function save_news_image_data(string $dataUrl,string $title='news'): string {
+    if ($dataUrl==='' || !str_starts_with($dataUrl,'data:image/')) return '';
+    if (!preg_match('~^data:image/(png|webp|jpeg);base64,(.+)$~s',$dataUrl,$m)) return '';
+    $ext=$m[1]==='jpeg'?'jpg':$m[1];
+    $raw=base64_decode($m[2],true);
+    if($raw===false || strlen($raw)>12*1024*1024) return '';
+    $slug=strtolower(iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$title)?:$title);
+    $slug=preg_replace('~[^a-z0-9]+~','-',$slug)??'news';
+    $slug=trim($slug,'-')?:'news';
+    $dir=dirname(__DIR__).'/news/generated/'.date('Y-m');
+    if(!is_dir($dir) && !@mkdir($dir,0755,true) && !is_dir($dir)) throw new RuntimeException('News-Bildordner konnte nicht erstellt werden.');
+    $name=$slug.'-'.substr(hash('sha256',microtime(true).bin2hex(random_bytes(6))),0,10).'.'.$ext;
+    if(@file_put_contents($dir.'/'.$name,$raw,LOCK_EX)===false) throw new RuntimeException('Vorschaubild konnte nicht gespeichert werden.');
+    return '/news/generated/'.date('Y-m').'/'.$name;
+}
 function require_permission(string $kind,string $cookieName,string $secret,array &$content,array $config): array {
     $user=current_user($cookieName,$secret); $perms=permissions($user,$content,$config);
     if (!$user) json_response(['ok'=>false,'error'=>'Nicht angemeldet'],401);
@@ -182,18 +197,30 @@ if ($path==='/api/site-news-draft'&&$method==='POST') {
     require_permission('news',$cookieName,$secret,$content,$config);
     proxy_legacy($path,'https://waschi-site-admin.vercel.app');
 }
+if ($path==='/api/site-news-image-drafts'&&$method==='POST') {
+    require_permission('news',$cookieName,$secret,$content,$config);
+    proxy_legacy($path,'https://waschi-site-admin.vercel.app');
+}
 if ($path==='/api/site-news'&&$method==='POST') {
     [$user]=require_permission('news',$cookieName,$secret,$content,$config); $data=request_json(); $id=clean_value($data['id']??'',100); $rows=&$content['news']; $index=null;
     foreach($rows as $i=>$row) if($id!==''&&(string)($row['id']??'')===$id){$index=$i;break;}
     if($index===null){$rows[]=['id'=>make_id('news',(string)($data['title']??'')),'createdAt'=>time(),'createdBy'=>$user['username']??''];$index=array_key_last($rows);}
     $publish=(bool)($data['published']??false);
     if($publish && !((bool)($data['manualApproved']??false))) json_response(['ok'=>false,'error'=>'Vor der Veröffentlichung ist eine manuelle Freigabe erforderlich.'],400);
+    $image=clean_value($data['image']??'',1000);
+    $imageData=(string)($data['imageData']??'');
+    if($imageData!==''){
+        $stored=save_news_image_data($imageData,(string)($data['title']??'news'));
+        if($stored!=='')$image=$stored;
+    }
     $rows[$index]=array_merge($rows[$index],[
         'title'=>clean_value($data['title']??'',180),
         'date'=>clean_value($data['date']??'',10),
         'summary'=>clean_value($data['summary']??'',700),
         'body'=>clean_value($data['body']??'',8000),
         'category'=>clean_value($data['category']??'gilden-news',80),
+        'image'=>$image,
+        'imageAlt'=>clean_value($data['imageAlt']??($data['title']??''),240),
         'published'=>$publish,
         'updatedAt'=>time(),
         'updatedBy'=>$user['username']??''
