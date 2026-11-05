@@ -699,6 +699,19 @@ def news_draft():
         print("NEWS_DRAFT_ERROR:",str(e),flush=True)
         return jsonify({"ok":False,"error":"KI-Entwurf konnte nicht erstellt werden.","detail":str(e)}),502
 
+@app.post("/api/site-news-image-drafts")
+def news_image_drafts():
+    auth,error=require_strato_news()
+    if error:return error
+    # Die aktuellen Gemini-Bildmodelle sind im Google-Free-Tier nicht verfügbar.
+    # Solange kein kostenpflichtiger Bildprovider konfiguriert ist, liefern wir
+    # eine verständliche Meldung statt eines technischen 404/502-Fehlers.
+    return jsonify({
+        "ok":False,
+        "error":"Die automatische KI-Bildgenerierung ist derzeit nicht verfügbar. Die aktuellen Gemini-Bildmodelle sind im kostenlosen Google-Tarif nicht enthalten. Der KI-Textentwurf funktioniert weiterhin."
+    }),503
+
+
 @app.post("/api/site-news")
 def news_save():
     user,content,perms,error=require("news")
