@@ -68,18 +68,32 @@ function load_content(string $contentFile, array $defaults): array {
 }
 function save_content(string $contentFile,array $data): void { $data['updatedAt']=time(); write_json_file($contentFile,$data); }
 function current_user(string $cookieName,string $secret): ?array { return verify_payload($_COOKIE[$cookieName]??null,$secret); }
+function discord_role_permissions(?array $user,array $config): array {
+    if(!$user || empty($user['id'])) return ['hasGildenleitung'=>false];
+    $id=(string)$user['id'];
+    $sig=hash_hmac('sha256',$id,(string)$config['session_secret']);
+    $url='https://waschi-site-admin.vercel.app/api/site-role-permissions?id='.rawurlencode($id).'&sig='.rawurlencode($sig);
+    $ctx=stream_context_create(['http'=>['method'=>'GET','header'=>"User-Agent: Waschi.fun-STRATO\r\n",'timeout'=>10,'ignore_errors'=>true]]);
+    $raw=@file_get_contents($url,false,$ctx);
+    if($raw===false) return ['hasGildenleitung'=>false];
+    $data=json_decode($raw,true);
+    return is_array($data)?$data:['hasGildenleitung'=>false];
+}
 function permissions(?array $user,array $content,array $config): array {
     $username=strtolower(trim((string)($user['username']??'')));
     $admins=array_values(array_filter(array_map(fn($v)=>strtolower(trim((string)$v)),$content['permissions']['calendarAdmins']??$config['calendar_admins_default'])));
     $isOwner=$user!==null && $username===strtolower((string)$config['news_admin']);
-    $canCalendar=$user!==null && ($isOwner || in_array($username,$admins,true));
-    $canNews=$canCalendar;
+    $roles=discord_role_permissions($user,$config);
+    $hasLead=!empty($roles['hasGildenleitung']);
+    $canCalendar=$user!==null && ($isOwner || $hasLead);
+    $canNews=$user!==null && ($isOwner || $hasLead);
     return [
         'authenticated'=>$user!==null,
         'canNews'=>$canNews,
         'canCalendar'=>$canCalendar,
         'canDeleteNews'=>$isOwner,
         'canManagePermissions'=>$isOwner,
+        'hasGildenleitung'=>$hasLead,
         'calendarAdmins'=>$admins
     ];
 }
