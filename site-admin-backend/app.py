@@ -529,7 +529,11 @@ def generate_news_draft(keyword, category, bullets):
     api_key=os.environ.get("GEMINI_API_KEY","").strip()
     if not api_key:
         raise RuntimeError("Gemini ist serverseitig noch nicht aktiviert: GEMINI_API_KEY fehlt.")
-    model=os.environ.get("GEMINI_TEXT_MODEL",DEFAULT_GEMINI_TEXT_MODEL).strip() or DEFAULT_GEMINI_TEXT_MODEL
+    preferred=os.environ.get("GEMINI_TEXT_MODEL",DEFAULT_GEMINI_TEXT_MODEL).strip() or DEFAULT_GEMINI_TEXT_MODEL
+    models=[]
+    for model in [preferred,"gemini-3.6-flash","gemini-3.5-flash-lite"]:
+        if model and model not in models:
+            models.append(model)
     prompt=(
         "Du schreibst kurze deutschsprachige News für die World-of-Warcraft-Gilde Waschi. "
         "Verwende ausschließlich die gelieferten Fakten und erfinde keine Termine, Patchstände, Namen oder Ergebnisse. "
@@ -553,32 +557,41 @@ def generate_news_draft(keyword, category, bullets):
             "maxOutputTokens":1200
         }
     }
-    req=urllib.request.Request(
-        f"https://generativelanguage.googleapis.com/v1beta/models/{urllib.parse.quote(model)}:generateContent",
-        data=json.dumps(payload,ensure_ascii=False).encode("utf-8"),
-        method="POST",
-        headers={
-            "x-goog-api-key":api_key,
-            "Content-Type":"application/json",
-            "Accept":"application/json",
-            "User-Agent":"Waschi.fun"
-        }
-    )
-    try:
-        with urllib.request.urlopen(req,timeout=45) as r:
-            result=json.loads(r.read().decode("utf-8"))
-    except urllib.error.HTTPError as e:
-        detail=e.read().decode("utf-8",errors="replace")[:900]
-        raise RuntimeError(f"Gemini HTTP {e.code}: {detail}") from e
-    parts=((((result.get("candidates") or [{}])[0].get("content") or {}).get("parts") or []))
-    content="".join(str(p.get("text") or "") for p in parts if isinstance(p,dict))
-    draft=_extract_ai_json(content)
-    title=clean(draft.get("title"),180)
-    summary=clean(draft.get("summary"),700)
-    body=clean(draft.get("body"),8000)
-    if not title or not body:
-        raise RuntimeError("Gemini hat keinen verwendbaren News-Entwurf geliefert.")
-    return {"title":title,"summary":summary,"body":body,"model":model,"provider":"google-gemini"}
+    last_error=None
+    for model in models:
+        req=urllib.request.Request(
+            f"https://generativelanguage.googleapis.com/v1beta/models/{urllib.parse.quote(model)}:generateContent",
+            data=json.dumps(payload,ensure_ascii=False).encode("utf-8"),
+            method="POST",
+            headers={
+                "x-goog-api-key":api_key,
+                "Content-Type":"application/json",
+                "Accept":"application/json",
+                "User-Agent":"Waschi.fun"
+            }
+        )
+        try:
+            with urllib.request.urlopen(req,timeout=45) as r:
+                result=json.loads(r.read().decode("utf-8"))
+        except urllib.error.HTTPError as e:
+            detail=e.read().decode("utf-8",errors="replace")[:900]
+            last_error=RuntimeError(f"Gemini {model} HTTP {e.code}: {detail}")
+            if e.code in (429,503):
+                print("GEMINI_FALLBACK:",model,"->",e.code,flush=True)
+                continue
+            raise last_error from e
+        parts=((((result.get("candidates") or [{}])[0].get("content") or {}).get("parts") or []))
+        content="".join(str(p.get("text") or "") for p in parts if isinstance(p,dict))
+        draft=_extract_ai_json(content)
+        title=clean(draft.get("title"),180)
+        summary=clean(draft.get("summary"),700)
+        body=clean(draft.get("body"),8000)
+        if title and body:
+            return {"title":title,"summary":summary,"body":body,"model":model,"provider":"google-gemini"}
+        last_error=RuntimeError(f"Gemini {model} hat keinen verwendbaren News-Entwurf geliefert.")
+    if last_error:
+        raise last_error
+    raise RuntimeError("Kein Gemini-Modell verfügbar.")
 
 
 def generate_news_images(keyword, category, bullets, title="", summary="", body=""):
