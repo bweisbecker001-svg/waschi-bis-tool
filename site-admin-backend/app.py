@@ -531,7 +531,7 @@ def generate_news_draft(keyword, category, bullets):
         raise RuntimeError("Gemini ist serverseitig noch nicht aktiviert: GEMINI_API_KEY fehlt.")
     preferred=os.environ.get("GEMINI_TEXT_MODEL",DEFAULT_GEMINI_TEXT_MODEL).strip() or DEFAULT_GEMINI_TEXT_MODEL
     models=[]
-    for model in [preferred,"gemini-3.6-flash","gemini-3.5-flash-lite"]:
+    for model in [preferred,"gemini-3.6-flash","gemini-3.5-flash-lite","gemini-3.1-flash-lite"]:
         if model and model not in models:
             models.append(model)
     prompt=(
@@ -589,9 +589,31 @@ def generate_news_draft(keyword, category, bullets):
         if title and body:
             return {"title":title,"summary":summary,"body":body,"model":model,"provider":"google-gemini"}
         last_error=RuntimeError(f"Gemini {model} hat keinen verwendbaren News-Entwurf geliefert.")
-    if last_error:
-        raise last_error
-    raise RuntimeError("Kein Gemini-Modell verfügbar.")
+    # Letzte Absicherung: Wenn Google alle Modelle wegen 429/503 ablehnt,
+    # erzeugen wir aus den vorhandenen Fakten einen sauberen Standardentwurf,
+    # damit die Redaktion weiterarbeiten kann.
+    points=[x.strip(" -•\t") for x in str(bullets or "").splitlines() if x.strip()]
+    fallback_title=clean(keyword,180) or "Waschi News"
+    fallback_summary=clean(" ".join(points[:2]),350)
+    if not fallback_summary:
+        fallback_summary=fallback_title
+    paragraphs=[]
+    if points:
+        paragraphs.append(points[0].rstrip(".")+"." )
+        if len(points)>1:
+            paragraphs.append(" ".join(p.rstrip(".") + "." for p in points[1:]))
+    else:
+        paragraphs.append(fallback_title+".")
+    fallback_body="\n\n".join(paragraphs)
+    print("GEMINI_LOCAL_FALLBACK:",str(last_error or "unbekannt"),flush=True)
+    return {
+        "title":fallback_title,
+        "summary":fallback_summary,
+        "body":fallback_body,
+        "model":"local-standard",
+        "provider":"waschi-fallback",
+        "fallback":True
+    }
 
 
 def generate_news_images(keyword, category, bullets, title="", summary="", body=""):
