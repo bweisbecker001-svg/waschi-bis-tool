@@ -11,6 +11,10 @@ import urllib.error
 
 from flask import Flask, jsonify, make_response, redirect, request
 from vercel.blob import sync as blob
+try:
+    from vercel.functions import get_env
+except Exception:
+    get_env=None
 
 app = Flask(__name__)
 
@@ -505,10 +509,24 @@ def _extract_ai_json(text):
                 pass
     return {}
 
-def generate_news_draft(keyword, category, bullets):
+def ai_gateway_token():
     token=(os.environ.get("AI_GATEWAY_API_KEY","").strip() or os.environ.get("VERCEL_OIDC_TOKEN","").strip())
+    if token:
+        return token
+    if get_env is not None:
+        try:
+            env=get_env()
+            value=getattr(env,"VERCEL_OIDC_TOKEN","") or ""
+            if str(value).strip():
+                return str(value).strip()
+        except Exception as e:
+            print("OIDC_GET_ENV_ERROR:",str(e),flush=True)
+    return ""
+
+def generate_news_draft(keyword, category, bullets):
+    token=ai_gateway_token()
     if not token:
-        raise RuntimeError("KI-Texterstellung ist serverseitig noch nicht aktiviert.")
+        raise RuntimeError("KI-Texterstellung ist serverseitig noch nicht aktiviert: kein AI_GATEWAY_API_KEY und kein VERCEL_OIDC_TOKEN verfügbar.")
     model=os.environ.get("AI_GATEWAY_MODEL",DEFAULT_AI_MODEL).strip() or DEFAULT_AI_MODEL
     system_prompt=(
         "Du schreibst kurze deutschsprachige News für die World-of-Warcraft-Gilde Waschi. "
@@ -554,9 +572,9 @@ def generate_news_draft(keyword, category, bullets):
 
 
 def generate_news_images(keyword, category, bullets, title="", summary="", body=""):
-    token=(os.environ.get("AI_GATEWAY_API_KEY","").strip() or os.environ.get("VERCEL_OIDC_TOKEN","").strip())
+    token=ai_gateway_token()
     if not token:
-        raise RuntimeError("KI-Bilderstellung ist serverseitig noch nicht aktiviert.")
+        raise RuntimeError("KI-Bilderstellung ist serverseitig noch nicht aktiviert: kein AI_GATEWAY_API_KEY und kein VERCEL_OIDC_TOKEN verfügbar.")
     model=os.environ.get("AI_GATEWAY_IMAGE_MODEL",DEFAULT_NEWS_IMAGE_MODEL).strip() or DEFAULT_NEWS_IMAGE_MODEL
     subject=clean(title or keyword,180)
     context=" ".join(x for x in [clean(summary,700), clean(bullets,1800), clean(body,1800)] if x).strip()
