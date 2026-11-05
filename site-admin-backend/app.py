@@ -19,7 +19,8 @@ VOICE_PATH = "waschi/discord-voice-state-v1.json"
 SESSION_COOKIE = "waschi_session"
 NEWS_ADMIN = "berndw"
 DEFAULT_CALENDAR_ADMINS = ["cathalon1989", "berndw", "schluffyfelixnowa"]
-DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"\nDEFAULT_NEWS_IMAGE_MODEL = "openai/gpt-image-2.6-flare"
+DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"
+DEFAULT_NEWS_IMAGE_MODEL = "openai/gpt-image-2.6-flare"
 
 def clean(value, limit=2000):
     return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
