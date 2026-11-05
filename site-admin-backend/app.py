@@ -539,7 +539,10 @@ def generate_news_draft(keyword, category, bullets):
         "Du schreibst kurze deutschsprachige News für die World-of-Warcraft-Gilde Waschi. "
         "Verwende ausschließlich die gelieferten Fakten und erfinde keine Termine, Patchstände, Namen oder Ergebnisse. "
         "Ton: freundlich, klar, gemeinschaftlich und passend zu einer WoW-Gildenhomepage, ohne Marketingfloskeln. "
-        "Kurztext maximal 350 Zeichen, Haupttext 1 bis 3 kurze Absätze.\n\n"
+        "Der Kurztext ist ein eigenständiger Teaser mit maximal 220 Zeichen und darf NICHT einfach den Haupttext wiederholen. "
+        "Er soll neugierig machen und nur die wichtigste Aussage nennen. "
+        "Der Haupttext soll deutlich ausführlicher sein: 2 bis 4 Absätze, insgesamt ungefähr 120 bis 260 Wörter, "
+        "mit allen gelieferten Fakten in sinnvoller Reihenfolge. Keine wörtliche Wiederholung des Kurztexts am Anfang.\n\n"
         f"Schlagwort: {keyword}\nKategorie: {category}\nStichpunkte:\n{bullets}"
     )
     payload={
@@ -599,16 +602,20 @@ def generate_news_draft(keyword, category, bullets):
     # damit die Redaktion weiterarbeiten kann.
     points=[x.strip(" -•\t") for x in str(bullets or "").splitlines() if x.strip()]
     fallback_title=clean(keyword,180) or "Waschi News"
-    fallback_summary=clean(" ".join(points[:2]),350)
-    if not fallback_summary:
-        fallback_summary=fallback_title
+    if points:
+        first=points[0].rstrip(".")
+        fallback_summary=clean(f"{first}. Mehr Details findet ihr in der vollständigen Meldung.",220)
+    else:
+        fallback_summary=clean(f"Neuigkeiten zu {fallback_title}. Alle Details findet ihr in der vollständigen Meldung.",220)
     paragraphs=[]
     if points:
-        paragraphs.append(points[0].rstrip(".")+"." )
-        if len(points)>1:
-            paragraphs.append(" ".join(p.rstrip(".") + "." for p in points[1:]))
+        intro=f"Zu {fallback_title} gibt es neue Informationen für unsere Waschi-Gemeinschaft."
+        paragraphs.append(intro)
+        paragraphs.append(" ".join(p.rstrip(".") + "." for p in points))
+        paragraphs.append("Wir halten euch auf Waschi.fun auf dem Laufenden, sobald es dazu weitere bestätigte Informationen gibt.")
     else:
-        paragraphs.append(fallback_title+".")
+        paragraphs.append(f"Zu {fallback_title} gibt es eine neue Meldung für unsere Waschi-Gemeinschaft.")
+        paragraphs.append("Weitere bestätigte Informationen folgen hier, sobald sie vorliegen.")
     fallback_body="\n\n".join(paragraphs)
     print("GEMINI_LOCAL_FALLBACK:",str(last_error or "unbekannt"),flush=True)
     return {
