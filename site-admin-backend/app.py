@@ -8,6 +8,7 @@ import time
 import urllib.parse
 import urllib.request
 import urllib.error
+import socket
 
 from flask import Flask, jsonify, make_response, redirect, request
 from vercel.blob import sync as blob
@@ -571,15 +572,19 @@ def generate_news_draft(keyword, category, bullets):
             }
         )
         try:
-            with urllib.request.urlopen(req,timeout=45) as r:
+            with urllib.request.urlopen(req,timeout=12) as r:
                 result=json.loads(r.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             detail=e.read().decode("utf-8",errors="replace")[:900]
             last_error=RuntimeError(f"Gemini {model} HTTP {e.code}: {detail}")
-            if e.code in (429,503):
-                print("GEMINI_FALLBACK:",model,"->",e.code,flush=True)
+            if e.code in (429,500,502,503,504):
+                print("GEMINI_FALLBACK:",model,"-> HTTP",e.code,flush=True)
                 continue
             raise last_error from e
+        except (TimeoutError, socket.timeout, urllib.error.URLError) as e:
+            last_error=RuntimeError(f"Gemini {model} Verbindungsfehler: {e}")
+            print("GEMINI_FALLBACK:",model,"-> timeout/network",flush=True)
+            continue
         parts=((((result.get("candidates") or [{}])[0].get("content") or {}).get("parts") or []))
         content="".join(str(p.get("text") or "") for p in parts if isinstance(p,dict))
         draft=_extract_ai_json(content)
