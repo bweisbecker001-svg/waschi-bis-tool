@@ -472,7 +472,7 @@ const s=document.createElement("script");s.src=upstream;s.async=true;document.he
 (function(){
   if(!document.querySelector('script[src="/site-content.js"]')){
     const script=document.createElement('script');
-    script.src='/site-content.js';
+    script.src='/site-content.js?v=20261105-2';
     script.defer=true;
     document.head.appendChild(script);
   }
