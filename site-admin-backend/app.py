@@ -340,12 +340,8 @@ def discord_member_has_role(user_id, role_name):
 @app.get("/api/site-role-permissions")
 def site_role_permissions():
     user_id=clean(request.args.get("id"),40)
-    sig=clean(request.args.get("sig"),128)
-    if not user_id or not sig:
-        return jsonify({"ok":False,"error":"Fehlende Rollenprüfung"}),400
-    want=hmac.new(secret(),user_id.encode("utf-8"),hashlib.sha256).hexdigest()
-    if not hmac.compare_digest(want,sig):
-        return jsonify({"ok":False,"error":"Ungültige Rollenprüfung"}),403
+    if not user_id:
+        return jsonify({"ok":False,"error":"Fehlende Discord-ID"}),400
     try:
         has_lead=discord_member_has_role(user_id,"Gildenleitung")
         return jsonify({"ok":True,"hasGildenleitung":bool(has_lead)})
@@ -470,6 +466,29 @@ def calendar_delete():
     save_content(content)
     return jsonify({"ok":True})
 
+def require_strato_news():
+    cookie=str(request.headers.get("Cookie") or "").strip()
+    if not cookie:
+        return None,(jsonify({"ok":False,"error":"Nicht angemeldet"}),401)
+    req=urllib.request.Request(
+        "https://waschi.fun/api/site-auth/status",
+        headers={
+            "Cookie":cookie,
+            "Accept":"application/json",
+            "User-Agent":"Waschi.fun-Vercel-Bridge"
+        }
+    )
+    try:
+        with urllib.request.urlopen(req,timeout=12) as r:
+            status=json.loads(r.read().decode("utf-8"))
+    except Exception as e:
+        return None,(jsonify({"ok":False,"error":"Anmeldung konnte nicht geprüft werden.","detail":str(e)}),502)
+    if not status.get("user"):
+        return None,(jsonify({"ok":False,"error":"Nicht angemeldet"}),401)
+    if not status.get("canNews"):
+        return status,(jsonify({"ok":False,"error":"Keine Berechtigung für Aktuelles."}),403)
+    return status,None
+
 def _extract_ai_json(text):
     raw=str(text or "").strip()
     raw=re.sub(r"^\s*```(?:json)?\s*|\s*```\s*$","",raw,flags=re.I)
@@ -591,7 +610,7 @@ def generate_news_images(keyword, category, bullets, title="", summary="", body=
 
 @app.post("/api/site-news-draft")
 def news_draft():
-    user,content,perms,error=require("news")
+    auth,error=require_strato_news()
     if error:return error
     data=request.get_json(silent=True) or {}
     keyword=clean(data.get("keyword"),180)
