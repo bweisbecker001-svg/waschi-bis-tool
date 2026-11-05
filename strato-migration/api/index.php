@@ -71,8 +71,7 @@ function current_user(string $cookieName,string $secret): ?array { return verify
 function discord_role_permissions(?array $user,array $config): array {
     if(!$user || empty($user['id'])) return ['hasGildenleitung'=>false];
     $id=(string)$user['id'];
-    $sig=hash_hmac('sha256',$id,(string)$config['session_secret']);
-    $url='https://waschi-site-admin.vercel.app/api/site-role-permissions?id='.rawurlencode($id).'&sig='.rawurlencode($sig);
+    $url='https://waschi-site-admin.vercel.app/api/site-role-permissions?id='.rawurlencode($id);
     $ctx=stream_context_create(['http'=>['method'=>'GET','header'=>"User-Agent: Waschi.fun-STRATO\r\n",'timeout'=>10,'ignore_errors'=>true]]);
     $raw=@file_get_contents($url,false,$ctx);
     if($raw===false) return ['hasGildenleitung'=>false];
