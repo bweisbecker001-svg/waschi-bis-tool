@@ -20,7 +20,7 @@ SESSION_COOKIE = "waschi_session"
 NEWS_ADMIN = "berndw"
 DEFAULT_CALENDAR_ADMINS = ["cathalon1989", "berndw", "schluffyfelixnowa"]
 DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"
-DEFAULT_NEWS_IMAGE_MODEL = "openai/gpt-image-2.6-flare"
+DEFAULT_NEWS_IMAGE_MODEL = "openai/gpt-image-2"
 
 def clean(value, limit=2000):
     return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
@@ -524,7 +524,6 @@ def generate_news_draft(keyword, category, bullets):
             {"role":"system","content":system_prompt},
             {"role":"user","content":user_prompt}
         ],
-        "response_format":{"type":"json_object"},
         "max_tokens":900
     }
     req=urllib.request.Request(
@@ -622,6 +621,7 @@ def news_draft():
         draft=generate_news_draft(keyword,category,bullets)
         return jsonify({"ok":True,"draft":draft})
     except Exception as e:
+        print("NEWS_DRAFT_ERROR:",str(e),flush=True)
         return jsonify({"ok":False,"error":"KI-Entwurf konnte nicht erstellt werden.","detail":str(e)}),502
 
 @app.post("/api/site-news")
