@@ -25,6 +25,8 @@ NEWS_ADMIN = "berndw"
 DEFAULT_CALENDAR_ADMINS = ["cathalon1989", "berndw", "schluffyfelixnowa"]
 DEFAULT_AI_MODEL = "openai/gpt-5.6-luna"
 DEFAULT_NEWS_IMAGE_MODEL = "openai/gpt-image-2"
+DEFAULT_GEMINI_TEXT_MODEL = "gemini-3.8-flash"
+DEFAULT_GEMINI_IMAGE_MODEL = "gemini-3.1-flash-image"
 
 def clean(value, limit=2000):
     return re.sub(r"\s+", " ", str(value or "")).strip()[:limit]
@@ -524,51 +526,59 @@ def ai_gateway_token():
     return ""
 
 def generate_news_draft(keyword, category, bullets):
-    token=ai_gateway_token()
-    if not token:
-        raise RuntimeError("KI-Texterstellung ist serverseitig noch nicht aktiviert: kein AI_GATEWAY_API_KEY und kein VERCEL_OIDC_TOKEN verfügbar.")
-    model=os.environ.get("AI_GATEWAY_MODEL",DEFAULT_AI_MODEL).strip() or DEFAULT_AI_MODEL
-    system_prompt=(
+    api_key=os.environ.get("GEMINI_API_KEY","").strip()
+    if not api_key:
+        raise RuntimeError("Gemini ist serverseitig noch nicht aktiviert: GEMINI_API_KEY fehlt.")
+    model=os.environ.get("GEMINI_TEXT_MODEL",DEFAULT_GEMINI_TEXT_MODEL).strip() or DEFAULT_GEMINI_TEXT_MODEL
+    prompt=(
         "Du schreibst kurze deutschsprachige News für die World-of-Warcraft-Gilde Waschi. "
         "Verwende ausschließlich die gelieferten Fakten und erfinde keine Termine, Patchstände, Namen oder Ergebnisse. "
-        "Ton: freundlich, klar, gemeinschaftlich, ohne Marketingfloskeln. "
-        "Gib ausschließlich gültiges JSON mit den Schlüsseln title, summary und body zurück. "
-        "summary maximal 350 Zeichen, body 1 bis 3 kurze Absätze."
+        "Ton: freundlich, klar, gemeinschaftlich und passend zu einer WoW-Gildenhomepage, ohne Marketingfloskeln. "
+        "Kurztext maximal 350 Zeichen, Haupttext 1 bis 3 kurze Absätze.\n\n"
+        f"Schlagwort: {keyword}\nKategorie: {category}\nStichpunkte:\n{bullets}"
     )
-    user_prompt=f"Schlagwort: {keyword}\nKategorie: {category}\nStichpunkte:\n{bullets}"
     payload={
-        "model":model,
-        "messages":[
-            {"role":"system","content":system_prompt},
-            {"role":"user","content":user_prompt}
-        ],
-        "max_tokens":900
+        "contents":[{"role":"user","parts":[{"text":prompt}]}],
+        "generationConfig":{
+            "responseMimeType":"application/json",
+            "responseJsonSchema":{
+                "type":"object",
+                "properties":{
+                    "title":{"type":"string"},
+                    "summary":{"type":"string"},
+                    "body":{"type":"string"}
+                },
+                "required":["title","summary","body"]
+            },
+            "maxOutputTokens":1200
+        }
     }
     req=urllib.request.Request(
-        "https://ai-gateway.vercel.sh/v1/chat/completions",
+        f"https://generativelanguage.googleapis.com/v1beta/models/{urllib.parse.quote(model)}:generateContent",
         data=json.dumps(payload,ensure_ascii=False).encode("utf-8"),
         method="POST",
         headers={
-            "Authorization":"Bearer "+token,
+            "x-goog-api-key":api_key,
             "Content-Type":"application/json",
             "Accept":"application/json",
             "User-Agent":"Waschi.fun"
         }
     )
     try:
-        with urllib.request.urlopen(req,timeout=35) as r:
+        with urllib.request.urlopen(req,timeout=45) as r:
             result=json.loads(r.read().decode("utf-8"))
     except urllib.error.HTTPError as e:
-        detail=e.read().decode("utf-8",errors="replace")[:500]
-        raise RuntimeError(f"KI-Dienst HTTP {e.code}: {detail}") from e
-    content=(((result.get("choices") or [{}])[0].get("message") or {}).get("content") or "")
+        detail=e.read().decode("utf-8",errors="replace")[:900]
+        raise RuntimeError(f"Gemini HTTP {e.code}: {detail}") from e
+    parts=((((result.get("candidates") or [{}])[0].get("content") or {}).get("parts") or []))
+    content="".join(str(p.get("text") or "") for p in parts if isinstance(p,dict))
     draft=_extract_ai_json(content)
     title=clean(draft.get("title"),180)
     summary=clean(draft.get("summary"),700)
     body=clean(draft.get("body"),8000)
     if not title or not body:
-        raise RuntimeError("Die KI hat keinen verwendbaren Entwurf geliefert.")
-    return {"title":title,"summary":summary,"body":body,"model":model}
+        raise RuntimeError("Gemini hat keinen verwendbaren News-Entwurf geliefert.")
+    return {"title":title,"summary":summary,"body":body,"model":model,"provider":"google-gemini"}
 
 
 def generate_news_images(keyword, category, bullets, title="", summary="", body=""):
