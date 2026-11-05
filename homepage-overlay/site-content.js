@@ -98,7 +98,7 @@ function renderHomeCalendarPreview(){
 function newsForm(existing){
  const n=existing||{},box=document.createElement('section');box.className='article-panel site-admin-panel';
  const published=n.published===true;
- let imageDrafts=[],selectedImage=n.image?{url:n.image,dataUrl:'',alt:n.imageAlt||n.title,variant:'Aktuelles Bild'}:null;
+ let selectedImage=n.image?{url:n.image,dataUrl:'',alt:n.imageAlt||n.title,variant:'Aktuelles Bild'}:null;
  box.innerHTML='<h2>'+(n.id?'News bearbeiten':'Neue News erstellen')+'</h2>'+
  '<form data-news-form><input type="hidden" name="id" value="'+esc(n.id||'')+'"><input type="hidden" name="image" value="'+esc(n.image||'')+'"><input type="hidden" name="imageAlt" value="'+esc(n.imageAlt||n.title||'')+'">'+
  '<div class="form-row"><label>Kategorie<select name="category"><option value="gilden-news">Gilden-News</option><option value="wow-news">WoW-News</option><option value="homepage">Homepage</option><option value="bis-tool">BiS-Tool</option><option value="event">Event</option></select></label>'+
@@ -110,29 +110,12 @@ function newsForm(existing){
  '<label>Titel<input name="title" required maxlength="180" value="'+esc(n.title||'')+'"></label>'+
  '<label>Kurztext<textarea name="summary" rows="3" maxlength="700">'+esc(n.summary||'')+'</textarea></label>'+
  '<label>Vollständiger Text<textarea name="body" rows="8" maxlength="8000">'+esc(n.body||'')+'</textarea></label>'+
- '<div class="article-actions"><button class="btn dark" type="button" data-generate-images>3 KI-Bildvorschläge erzeugen</button></div>'+
- '<p class="site-form-status" data-image-status>Die Bild-KI erstellt drei unterschiedliche Vorschläge im Waschi-/WoW-inspirierten Stil. Bitte danach genau einen auswählen.</p>'+
- '<div class="news-ai-image-grid" data-image-drafts></div>'+
  '<label class="check"><input name="published" type="checkbox" '+(published?'checked':'')+'> Veröffentlichen</label>'+
- '<label class="check"><input name="manualApproved" type="checkbox" '+(published?'checked':'')+'> Ich habe Titel, Text und Vorschaubild vollständig geprüft und gebe diese News manuell zur Veröffentlichung frei.</label>'+
+ '<label class="check"><input name="manualApproved" type="checkbox" '+(published?'checked':'')+'> Ich habe Titel und Text vollständig geprüft und gebe diese News manuell zur Veröffentlichung frei.</label>'+
  '<div class="article-actions"><button class="btn gold" type="submit">Speichern</button>'+(n.id&&S.auth?.canDeleteNews?'<button class="btn dark" type="button" data-delete-news>Löschen</button>':'')+'</div>'+
  '<p class="site-form-status" data-status></p></form>';
  const form=box.querySelector('form');
  if(n.category&&form.elements.category)form.elements.category.value=n.category;
- function renderImages(){
-   const wrap=box.querySelector('[data-image-drafts]');
-   const rows=imageDrafts.length?imageDrafts:(selectedImage?[selectedImage]:[]);
-   wrap.innerHTML=rows.map((img,i)=>'<button type="button" class="news-ai-image-card '+(selectedImage&&(selectedImage.dataUrl||selectedImage.url)===(img.dataUrl||img.url)?'selected':'')+'" data-image-index="'+i+'">'+
-      '<img src="'+esc(img.dataUrl||img.url||'')+'" alt="'+esc(img.alt||n.title||'News Vorschaubild')+'"><strong>'+esc(img.variant||('Variante '+(i+1)))+'</strong><span>'+esc(img.description||'')+'</span></button>').join('');
-   wrap.querySelectorAll('[data-image-index]').forEach(btn=>btn.addEventListener('click',()=>{
-      const source=imageDrafts.length?imageDrafts:(selectedImage?[selectedImage]:[]);
-      selectedImage=source[Number(btn.dataset.imageIndex)]||null;
-      form.elements.image.value=selectedImage?.url||'';
-      form.elements.imageAlt.value=selectedImage?.alt||form.elements.title.value||'';
-      renderImages();
-   }));
- }
- renderImages();
  box.querySelector('[data-generate-news]')?.addEventListener('click',async()=>{
    const keyword=form.elements.keyword.value.trim(),bullets=form.elements.bullets.value.trim(),category=form.elements.category.value;
    const st=form.querySelector('[data-ai-status]');
@@ -147,23 +130,6 @@ function newsForm(existing){
      form.elements.published.checked=false;
      form.elements.manualApproved.checked=false;
      st.textContent='Entwurf erstellt. Bitte vollständig prüfen, bei Bedarf bearbeiten und anschließend manuell freigeben.';
-   }catch(err){st.textContent=err.message}
- });
- box.querySelector('[data-generate-images]')?.addEventListener('click',async()=>{
-   const st=form.querySelector('[data-image-status]');
-   const payload={keyword:form.elements.keyword.value.trim(),bullets:form.elements.bullets.value.trim(),category:form.elements.category.value,title:form.elements.title.value.trim(),summary:form.elements.summary.value.trim(),body:form.elements.body.value.trim()};
-   if(!payload.keyword&&!payload.title){st.textContent='Bitte zuerst Schlagwort oder Titel eintragen.';return}
-   try{
-     st.textContent='Drei Bildvorschläge werden erstellt. Das kann etwas länger dauern…';
-     const r=await api('/api/site-news-image-drafts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-     imageDrafts=(r.images||[]).map(x=>({dataUrl:x.dataUrl||'',url:x.url||'',alt:x.alt||payload.title||payload.keyword,variant:x.variant||'Bildvorschlag',description:x.description||''}));
-     selectedImage=imageDrafts[0]||null;
-     form.elements.image.value='';
-     form.elements.imageAlt.value=selectedImage?.alt||payload.title||payload.keyword;
-     form.elements.published.checked=false;
-     form.elements.manualApproved.checked=false;
-     renderImages();
-     st.textContent=imageDrafts.length+' Bildvorschläge erstellt. Bitte genau einen auswählen und anschließend alles manuell prüfen.';
    }catch(err){st.textContent=err.message}
  });
  form.addEventListener('submit',async e=>{
